@@ -4,10 +4,33 @@ A comprehensive clinical chemistry reference website built with React and Expres
 
 ## Tech Stack
 
-- **Frontend**: React 19, React Bootstrap
+- **Frontend**: React 19, React Bootstrap, React Router, Axios
 - **Backend**: Express.js, Node.js
 - **Database**: MongoDB with Mongoose
 - **Development**: Create React App, Nodemon, Concurrently
+
+## Features
+
+### Frontend Features
+- 🎨 **Medical Blue Theme**: Professional clinical chemistry design
+- 📱 **Responsive Design**: Works on mobile, tablet, and desktop
+- 🔍 **Search Functionality**: Search articles integrated in navbar
+- 📄 **Article Cards**: Beautiful preview cards with categories and tags
+- 📊 **Reference Ranges Table**: Display clinical reference ranges in formatted tables
+- 🚀 **React Router**: Smooth navigation between pages
+- ⚡ **Loading States**: Spinner indicators during data fetching
+- ❌ **Error Handling**: User-friendly error messages
+- 🎯 **Clean Code**: Well-organized component structure
+
+### Backend Features
+- 📡 **RESTful API**: Clean and documented API endpoints
+- 🔐 **CORS Enabled**: Cross-origin resource sharing configured
+- 📝 **Full CRUD Operations**: Create, Read, Update, Delete articles
+- 🔎 **Text Search**: MongoDB text search with indexing
+- 📂 **Category Filtering**: Filter articles by category
+- 🏷️ **Tag Support**: Multiple tags per article
+- 👀 **View Tracking**: Automatic view count increment
+- ✅ **Validation**: Mongoose schema validation
 
 ## Prerequisites
 
@@ -29,12 +52,19 @@ npm install
 ```
 
 3. Set up environment variables:
-   - Copy `backend/.env.example` to `backend/.env`
-   - Update the MongoDB connection string if needed
 
-```bash
-cp backend/.env.example backend/.env
-```
+   **Backend (.env in backend/ directory):**
+   ```bash
+   cp backend/.env.example backend/.env
+   ```
+   Update the MongoDB connection string if needed. Set PORT=5001 if you want to use port 5001.
+
+   **Frontend (.env in root directory):**
+   Create a `.env` file in the root directory:
+   ```bash
+   REACT_APP_API_URL=http://localhost:5001/api
+   ```
+   Change the port if your backend runs on a different port.
 
 ## MongoDB Setup
 
@@ -67,7 +97,7 @@ You may also see any lint errors in the console.
 ### `npm run server`
 
 Runs the Express backend server with nodemon.\
-The API will be available at [http://localhost:5000](http://localhost:5000).
+The API will be available at [http://localhost:5001](http://localhost:5001) (default port is 5000, but can be configured in backend/.env).
 
 The server will restart automatically when you make changes to backend files.
 
@@ -76,7 +106,7 @@ The server will restart automatically when you make changes to backend files.
 Runs both frontend and backend concurrently.\
 This is the recommended way to run the full application during development.
 - Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend API: [http://localhost:5000](http://localhost:5000)
+- Backend API: [http://localhost:5001](http://localhost:5001)
 
 ### `npm test`
 
@@ -137,8 +167,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ### Base URL
 ```
-http://localhost:5000/api
+http://localhost:5001/api
 ```
+(Default is 5000, but can be changed via PORT in backend/.env)
 
 ### Endpoints
 
@@ -289,8 +320,24 @@ klinkemipedia/
 │   │   └── articles.js        # Article API routes
 │   ├── .env.example           # Environment variables template
 │   └── server.js              # Express server setup
-├── public/
-├── src/                       # React frontend
+├── public/                     # Static files
+├── src/                        # React frontend
+│   ├── components/            # Reusable React components
+│   │   ├── Navbar.js          # Navigation bar with search
+│   │   ├── ArticleCard.js     # Article preview card
+│   │   ├── ArticleList.js     # Grid of article cards
+│   │   ├── ArticleDetail.js   # Full article view
+│   │   └── LoadingSpinner.js  # Loading spinner
+│   ├── pages/                 # Page components
+│   │   ├── HomePage.js        # Main landing page
+│   │   ├── ArticlePage.js     # Individual article page
+│   │   └── SearchPage.js      # Search results page
+│   ├── services/              # API service layer
+│   │   └── api.js             # Axios API calls
+│   ├── App.js                 # Main app component with routing
+│   ├── App.css                # Global styles
+│   └── index.js               # React entry point
+├── .env                        # Frontend environment variables (not committed)
 └── package.json
 ```
 
