@@ -321,6 +321,108 @@ const searchArticles = async (req, res) => {
   }
 };
 
+// @desc    Get related articles for a given article
+// @route   GET /api/articles/:slug/related
+// @access  Public
+const getRelatedArticles = async (req, res) => {
+  try {
+    const article = await Article.findOne({ slug: req.params.slug });
+
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Article not found'
+      });
+    }
+
+    const limit = parseInt(req.query.limit) || 5;
+
+    // Algorithm to find related articles:
+    // 1. Same category (highest priority)
+    // 2. Shared tags
+    // 3. Related tests mentioned in the article
+    // 4. Similar titles (text search)
+    
+    // Build query to find related articles
+    const relatedQuery = {
+      _id: { $ne: article._id }, // Exclude the current article
+      status: 'published'
+    };
+
+    // Find articles with scoring based on relevance
+    const relatedArticles = await Article.aggregate([
+      { $match: relatedQuery },
+      {
+        $addFields: {
+          relevanceScore: {
+            $add: [
+              // Same category: 10 points
+              { $cond: [{ $eq: ['$category', article.category] }, 10, 0] },
+              // Shared tags: 5 points per tag
+              {
+                $multiply: [
+                  {
+                    $size: {
+                      $ifNull: [
+                        { $setIntersection: ['$tags', article.tags || []] },
+                        []
+                      ]
+                    }
+                  },
+                  5
+                ]
+              },
+              // Shared related tests: 3 points per test
+              {
+                $multiply: [
+                  {
+                    $size: {
+                      $ifNull: [
+                        { $setIntersection: ['$relatedTests', article.relatedTests || []] },
+                        []
+                      ]
+                    }
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        }
+      },
+      { $match: { relevanceScore: { $gt: 0 } } }, // Only include articles with some relevance
+      { $sort: { relevanceScore: -1, views: -1, createdAt: -1 } },
+      { $limit: limit },
+      {
+        $project: {
+          title: 1,
+          slug: 1,
+          category: 1,
+          summary: 1,
+          tags: 1,
+          views: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          relevanceScore: 1
+        }
+      }
+    ]);
+
+    res.json({
+      success: true,
+      count: relatedArticles.length,
+      data: relatedArticles
+    });
+  } catch (error) {
+    console.error('Error in getRelatedArticles:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching related articles',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllArticles,
   getArticleBySlug,
@@ -328,5 +430,6 @@ module.exports = {
   updateArticle,
   deleteArticle,
   getArticlesByCategory,
-  searchArticles
+  searchArticles,
+  getRelatedArticles
 };

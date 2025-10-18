@@ -7,6 +7,7 @@ import ArticlePage from './pages/ArticlePage';
 import SearchPage from './pages/SearchPage';
 import AdminPage from './pages/AdminPage';
 import AdminArticleForm from './pages/AdminArticleForm';
+import UserManagementPage from './pages/UserManagementPage';
 import './App.css';
 
 const NotFoundPage = () => (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/new" element={<AdminArticleForm />} />
           <Route path="/admin/edit/:slug" element={<AdminArticleForm />} />
+          <Route path="/admin/users" element={<UserManagementPage />} />
 
           {/* Main site routes (with main navbar) */}
           <Route path="/*" element={

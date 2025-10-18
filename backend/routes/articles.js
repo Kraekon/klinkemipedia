@@ -7,7 +7,8 @@ const {
   updateArticle,
   deleteArticle,
   getArticlesByCategory,
-  searchArticles
+  searchArticles,
+  getRelatedArticles
 } = require('../controllers/articleController');
 
 // Search route (must be before :slug route to avoid conflicts)
@@ -62,6 +63,9 @@ router.route('/:slug')
       res.status(500).json({ success: false, message: error.message });
     }
   });
+
+// Related articles route (must be after main :slug route to be specific)
+router.get('/:slug/related', getRelatedArticles);
 
 // Update and delete routes by ID (using different parameter name to avoid confusion)
 router.route('/id/:id')

@@ -248,7 +248,36 @@
     flex-direction: column;
   }
 
-  .table-actions button {
+.table-actions button {
     width: 100%;
   }
+}
+
+/* Related Articles Styles */
+.related-articles-section {
+  border-top: 2px solid #e9ecef;
+  padding-top: 2rem;
+}
+
+.related-articles-section h3 {
+  color: var(--primary-blue);
+  font-size: 1.5rem;
+}
+
+.related-article-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #e9ecef;
+}
+
+.related-article-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.related-article-card .card-title a {
+  color: var(--primary-blue);
+}
+
+.related-article-card .card-title a:hover {
+  text-decoration: underline;
 }
