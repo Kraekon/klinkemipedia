@@ -11,7 +11,6 @@ const ArticleSchema = new mongoose.Schema(
     slug: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true
     },
@@ -107,6 +106,6 @@ const ArticleSchema = new mongoose.Schema(
 ArticleSchema.index({ title: 'text', content: 'text', tags: 'text' });
 ArticleSchema.index({ category: 1 });
 ArticleSchema.index({ status: 1 });
-ArticleSchema.index({ slug: 1 });
+ArticleSchema.index({ slug: 1 }, { unique: true });
 
 module.exports = mongoose.model('Article', ArticleSchema);
