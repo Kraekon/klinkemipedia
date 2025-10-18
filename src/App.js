@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Container, Alert, Button } from 'react-bootstrap';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import ArticlePage from './pages/ArticlePage';
@@ -7,6 +8,30 @@ import SearchPage from './pages/SearchPage';
 import AdminPage from './pages/AdminPage';
 import AdminArticleForm from './pages/AdminArticleForm';
 import './App.css';
+
+const NotFoundPage = () => (
+  <Container className="mt-5">
+    <Alert variant="warning" className="text-center">
+      <Alert.Heading className="display-4">404</Alert.Heading>
+      <h2 className="mb-4">Page Not Found</h2>
+      <p className="lead">
+        Oops! The page you're looking for doesn't exist.
+      </p>
+      <p>
+        It might have been moved or deleted, or you may have mistyped the URL.
+      </p>
+      <hr />
+      <div className="d-flex gap-2 justify-content-center">
+        <Button as={Link} to="/" variant="primary" size="lg">
+          Go to Home
+        </Button>
+        <Button as={Link} to="/search" variant="outline-primary" size="lg">
+          Search Articles
+        </Button>
+      </div>
+    </Alert>
+  </Container>
+);
 
 function App() {
   return (
@@ -27,7 +52,7 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/article/:slug" element={<ArticlePage />} />
                   <Route path="/search" element={<SearchPage />} />
-                  <Route path="*" element={<div className="text-center mt-5"><h2>404 - Page Not Found</h2></div>} />
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>
             </>
