@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Alert } from 'react-bootstrap';
+import { useParams, Link } from 'react-router-dom';
+import { Container, Alert, Breadcrumb, Button } from 'react-bootstrap';
 import ArticleDetail from '../components/ArticleDetail';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { getArticleBySlug } from '../services/api';
@@ -44,9 +44,22 @@ const ArticlePage = () => {
   if (error) {
     return (
       <Container>
+        <Breadcrumb className="mt-3">
+          <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>
+            Home
+          </Breadcrumb.Item>
+          <Breadcrumb.Item active>Article</Breadcrumb.Item>
+        </Breadcrumb>
+        
         <Alert variant="danger" className="text-center mt-5">
-          <Alert.Heading>{error === 'Article not found' ? '404 - Article Not Found' : 'Error'}</Alert.Heading>
+          <Alert.Heading>{error === 'Article not found' ? '404 - Article Not Found' : 'Error Loading Article'}</Alert.Heading>
           <p>{error}</p>
+          <hr />
+          <div className="d-flex gap-2 justify-content-center">
+            <Button as={Link} to="/" variant="primary">
+              Go to Home
+            </Button>
+          </div>
         </Alert>
       </Container>
     );
@@ -54,7 +67,21 @@ const ArticlePage = () => {
 
   return (
     <Container>
-      {article && <ArticleDetail article={article} />}
+      {article && (
+        <>
+          <Breadcrumb className="mt-3">
+            <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>
+              Home
+            </Breadcrumb.Item>
+            {article.category && (
+              <Breadcrumb.Item active>{article.category}</Breadcrumb.Item>
+            )}
+            <Breadcrumb.Item active>{article.title}</Breadcrumb.Item>
+          </Breadcrumb>
+          
+          <ArticleDetail article={article} />
+        </>
+      )}
     </Container>
   );
 };

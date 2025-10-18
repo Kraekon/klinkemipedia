@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar as BSNavbar, Container, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import { Navbar as BSNavbar, Container, Nav, Form, FormControl, Button, InputGroup } from 'react-bootstrap';
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -12,6 +12,10 @@ const Navbar = () => {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
     }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
   };
 
   return (
@@ -28,14 +32,29 @@ const Navbar = () => {
             <Nav.Link as={Link} to="/">About</Nav.Link>
           </Nav>
           <Form className="d-flex" onSubmit={handleSearch}>
-            <FormControl
-              type="search"
-              placeholder="Search articles..."
-              className="me-2"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button variant="outline-light" type="submit">Search</Button>
+            <InputGroup>
+              <FormControl
+                type="search"
+                placeholder="Search articles..."
+                className="me-0"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search articles"
+              />
+              {searchQuery && (
+                <Button 
+                  variant="outline-light" 
+                  onClick={handleClearSearch}
+                  aria-label="Clear search"
+                  style={{ borderLeft: 'none' }}
+                >
+                  ✕
+                </Button>
+              )}
+              <Button variant="outline-light" type="submit" aria-label="Submit search">
+                Search
+              </Button>
+            </InputGroup>
           </Form>
         </BSNavbar.Collapse>
       </Container>
