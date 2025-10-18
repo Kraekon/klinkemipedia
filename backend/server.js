@@ -1,7 +1,14 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
+const { validate: validateEnvironment, getEnv } = require('./config/environment');
+
+// Validate environment configuration before starting
+if (!validateEnvironment()) {
+  console.error('\n❌ Server cannot start due to configuration errors.');
+  console.error('Please fix the issues above and try again.\n');
+  process.exit(1);
+}
+
 const connectDB = require('./config/db');
 
 // Initialize Express app
@@ -32,6 +39,18 @@ app.get('/api/test', (req, res) => {
 
 // Mount article routes
 app.use('/api/articles', require('./routes/articles'));
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  const mongoose = require('mongoose');
+  const isDbConnected = mongoose.connection.readyState === 1;
+  
+  res.json({
+    status: isDbConnected ? 'healthy' : 'unhealthy',
+    database: isDbConnected ? 'connected' : 'disconnected',
+    port: getEnv('PORT', 5001)
+  });
+});
 
 // Root route
 app.get('/', (req, res) => {
@@ -68,12 +87,29 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`API available at http://localhost:${PORT}`);
-});
+// Start server with health checks
+const PORT = getEnv('PORT', 5001);
+const StartupHealthCheck = require('./config/startup');
+
+const startServer = async () => {
+  const healthCheck = new StartupHealthCheck();
+  const checksPass = await healthCheck.runChecks(PORT);
+  
+  if (!checksPass) {
+    console.error('❌ Server cannot start due to failed health checks.');
+    process.exit(1);
+  }
+  
+  app.listen(PORT, () => {
+    console.log('🚀 Server Started Successfully!');
+    console.log('─────────────────────────────────────');
+    console.log(`📡 API available at: http://localhost:${PORT}`);
+    console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`📚 Articles API: http://localhost:${PORT}/api/articles`);
+    console.log('─────────────────────────────────────\n');
+  });
+};
+
+startServer();
 
 module.exports = app;

@@ -66,6 +66,59 @@ npm install
    ```
    Change the port if your backend runs on a different port.
 
+## ⚙️ Configuration
+
+This project uses automatic configuration validation to prevent common setup issues.
+
+### Quick Start
+
+1. Copy environment template:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Add your MongoDB URI to `.env`
+
+3. Start the app:
+   ```bash
+   npm run dev
+   ```
+
+The startup system will automatically:
+- ✅ Validate .env file location (must be in project root)
+- ✅ Check required variables (MONGODB_URI, PORT)
+- ✅ Test MongoDB connection
+- ✅ Lock port to 5001 (prevents configuration drift)
+- ✅ Show clear error messages for any issues
+
+### What You'll See
+
+On successful startup:
+```
+🔍 Environment Configuration Check:
+✅ .env file loaded from: /path/to/klinkemipedia/.env
+✅ All environment variables validated successfully
+✅ MongoDB URI configured
+✅ Server will run on port 5001
+
+🏥 Running Startup Health Checks:
+✅ Port 5001 is available
+✅ MongoDB connection healthy
+
+🚀 Server Started Successfully!
+📡 API available at: http://localhost:5001
+🏥 Health check: http://localhost:5001/api/health
+```
+
+### Troubleshooting
+
+If you encounter any issues, see **[docs/SETUP.md](docs/SETUP.md)** for:
+- Detailed setup instructions
+- Common error messages and solutions
+- MongoDB configuration guide
+- Health check usage
+- Configuration files reference
+
 ## MongoDB Setup
 
 ### Option 1: Local MongoDB
