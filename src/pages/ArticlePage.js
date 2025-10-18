@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Container, Alert, Breadcrumb, Button } from 'react-bootstrap';
 import ArticleDetail from '../components/ArticleDetail';
 import LoadingSpinner from '../components/LoadingSpinner';
+import RelatedArticles from '../components/RelatedArticles';
 import { getArticleBySlug } from '../services/api';
 
 const ArticlePage = () => {
@@ -80,6 +81,9 @@ const ArticlePage = () => {
           </Breadcrumb>
           
           <ArticleDetail article={article} />
+          
+          {/* Related Articles Section */}
+          <RelatedArticles currentArticleSlug={slug} />
         </>
       )}
     </Container>

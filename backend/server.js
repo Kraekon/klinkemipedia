@@ -40,6 +40,9 @@ app.get('/api/test', (req, res) => {
 // Mount article routes
 app.use('/api/articles', require('./routes/articles'));
 
+// Mount user routes
+app.use('/api/users', require('./routes/users'));
+
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   const mongoose = require('mongoose');

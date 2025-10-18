@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Alert, Spinner, Badge } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Badge, Toast, ToastContainer } from 'react-bootstrap';
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
@@ -47,6 +47,8 @@ const AdminArticleForm = () => {
   const [availableTags, setAvailableTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [relatedTestInput, setRelatedTestInput] = useState('');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     fetchAvailableTags();
@@ -140,6 +142,11 @@ const AdminArticleForm = () => {
     }));
   };
 
+  // Helper function to count words
+  const countWords = (text) => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
   const handleReferenceChange = (index, value) => {
     const newReferences = [...formData.references];
     newReferences[index] = value;
@@ -164,6 +171,8 @@ const AdminArticleForm = () => {
 
     if (!formData.title.trim()) {
       errors.title = 'Title is required';
+    } else if (formData.title.length > 200) {
+      errors.title = 'Title cannot exceed 200 characters';
     }
 
     if (!formData.category) {
@@ -172,6 +181,8 @@ const AdminArticleForm = () => {
 
     if (!formData.summary.trim()) {
       errors.summary = 'Summary is required';
+    } else if (formData.summary.length > 500) {
+      errors.summary = 'Summary cannot exceed 500 characters';
     }
 
     if (!formData.content.trim()) {
@@ -196,6 +207,7 @@ const AdminArticleForm = () => {
   const handleSubmit = async (publishNow = false) => {
     if (!validateForm()) {
       setError('Please fix the validation errors before submitting');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -212,14 +224,22 @@ const AdminArticleForm = () => {
 
       if (isEditMode) {
         await updateArticle(slug, submitData);
+        setSuccessMessage(`Article "${formData.title}" updated successfully!`);
       } else {
         await createArticle(submitData);
+        setSuccessMessage(`Article "${formData.title}" created successfully!`);
       }
-
-      navigate('/admin');
+      
+      setShowSuccessToast(true);
+      
+      // Navigate back to admin page after a short delay
+      setTimeout(() => {
+        navigate('/admin');
+      }, 1500);
     } catch (err) {
       console.error('Error saving article:', err);
       setError(err.response?.data?.message || err.message || 'Failed to save article');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
@@ -242,6 +262,22 @@ const AdminArticleForm = () => {
       <AdminNavbar />
       <div className="admin-container">
         <h2 className="mb-4">{isEditMode ? 'Edit Article' : 'Create New Article'}</h2>
+
+        {/* Success Toast Notification */}
+        <ToastContainer position="top-end" className="p-3" style={{ position: 'fixed', zIndex: 9999 }}>
+          <Toast 
+            show={showSuccessToast} 
+            onClose={() => setShowSuccessToast(false)}
+            delay={3000}
+            autohide
+            bg="success"
+          >
+            <Toast.Header>
+              <strong className="me-auto">Success</strong>
+            </Toast.Header>
+            <Toast.Body className="text-white">{successMessage}</Toast.Body>
+          </Toast>
+        </ToastContainer>
 
         {error && (
           <Alert variant="danger" dismissible onClose={() => setError(null)}>
@@ -301,7 +337,7 @@ const AdminArticleForm = () => {
                 placeholder="Brief summary of the article (100-300 characters recommended)"
               />
               <div className="char-count">
-                {formData.summary.length} characters
+                {formData.summary.length} characters / {countWords(formData.summary)} words
               </div>
               <Form.Control.Feedback type="invalid">
                 {validationErrors.summary}
@@ -318,6 +354,9 @@ const AdminArticleForm = () => {
                 isInvalid={!!validationErrors.content}
                 placeholder="Article content (Markdown supported)"
               />
+              <div className="char-count">
+                {formData.content.length} characters / {countWords(formData.content)} words
+              </div>
               <Form.Text muted>
                 Supports Markdown formatting: **bold**, *italic*, # Headings, - Lists
               </Form.Text>
