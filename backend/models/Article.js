@@ -25,17 +25,14 @@ const ArticleSchema = new mongoose.Schema(
     category: {
       type: String,
       enum: [
-        'Enzymes',
         'Electrolytes',
+        'Liver Function',
+        'Kidney Function',
+        'Cardiac Markers',
         'Hormones',
-        'Proteins',
-        'Lipids',
-        'Carbohydrates',
-        'Vitamins',
-        'Trace Elements',
-        'Tumor Markers',
-        'Immunology',
+        'Enzymes',
         'Hematology',
+        'Lipid Panel',
         'Other'
       ]
     },
@@ -55,6 +52,11 @@ const ArticleSchema = new mongoose.Schema(
       unit: {
         type: String,
         required: true
+      },
+      ageGroup: {
+        type: String,
+        enum: ['Adult', 'Pediatric', 'Neonatal', 'Geriatric', 'All'],
+        default: 'All'
       },
       notes: String
     }],
