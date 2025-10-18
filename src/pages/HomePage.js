@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import ArticleList from '../components/ArticleList';
+import CategoryFilter from '../components/CategoryFilter';
+import SearchBar from '../components/SearchBar';
 import { getAllArticles } from '../services/api';
 
 const HomePage = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
         setLoading(true);
-        const response = await getAllArticles();
+        const params = {};
+        if (selectedCategory && selectedCategory !== 'All') {
+          params.category = selectedCategory;
+        }
+        const response = await getAllArticles(params);
         setArticles(response.data || []);
         setError(null);
       } catch (err) {
@@ -24,7 +31,7 @@ const HomePage = () => {
     };
 
     fetchArticles();
-  }, []);
+  }, [selectedCategory]);
 
   return (
     <Container>
@@ -35,6 +42,13 @@ const HomePage = () => {
           reference ranges, and laboratory diagnostics.
         </p>
       </div>
+
+      <SearchBar />
+
+      <CategoryFilter 
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+      />
 
       <ArticleList articles={articles} loading={loading} error={error} />
     </Container>
