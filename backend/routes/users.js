@@ -12,6 +12,12 @@ const { adminAuth } = require('../middleware/auth');
 // Apply admin authentication to all routes
 router.use(adminAuth);
 
+// NOTE: Rate limiting should be implemented in production
+// Consider using express-rate-limit middleware for production deployments
+// Example: const rateLimit = require('express-rate-limit');
+// const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+// router.use(limiter);
+
 // Main user routes
 router.route('/')
   .get(getAllUsers)
