@@ -53,7 +53,8 @@ const AdminArticleForm = () => {
     if (isEditMode) {
       fetchArticle();
     }
-  }, [slug]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, isEditMode]);
 
   const fetchAvailableTags = async () => {
     try {
