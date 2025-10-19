@@ -3,6 +3,7 @@
    ============================================ */
 
 .search-bar-container {
+  position: relative;
   background: var(--dark-bg-secondary);
   padding: var(--spacing-xl);
   border-radius: var(--radius-lg);
@@ -10,9 +11,24 @@
   border: 1px solid var(--border-dark);
 }
 
+.search-bar-container.compact {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.search-icon {
+  background-color: var(--dark-bg-tertiary);
+  border: 1px solid var(--border-dark);
+  color: var(--atom-green);
+  font-size: 1.2rem;
+}
+
 .search-input {
   background-color: var(--dark-bg-tertiary);
   border: 1px solid var(--border-dark);
+  border-left: none;
   border-right: none;
   color: var(--text-dark-emphasis);
   padding: 0.75rem 1rem;
@@ -52,12 +68,87 @@
   border-color: var(--atom-green-hover);
 }
 
+/* Dropdown Styles */
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--dark-bg-secondary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.dropdown-header {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark-muted);
+  background: var(--dark-bg-tertiary);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.suggestion-item,
+.popular-search-item {
+  background: var(--dark-bg-secondary);
+  color: var(--text-dark-primary);
+  border: none;
+  border-bottom: 1px solid var(--border-dark);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.suggestion-item:last-child,
+.popular-search-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover,
+.popular-search-item:hover,
+.suggestion-item.active,
+.popular-search-item.active {
+  background: var(--dark-bg-tertiary);
+  color: var(--atom-green);
+}
+
+.search-icon-small {
+  font-size: 0.875rem;
+  opacity: 0.6;
+  margin-right: 0.5rem;
+}
+
+.search-loading {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--dark-bg-secondary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  color: var(--text-dark-muted);
+  font-size: 0.875rem;
+  text-align: center;
+  z-index: 999;
+}
+
 @media (max-width: 768px) {
-  .search-bar-container {
+  .search-bar-container:not(.compact) {
     padding: var(--spacing-md);
   }
 
   .search-button {
     padding: 0.75rem 1rem;
+  }
+
+  .search-dropdown {
+    max-height: 300px;
   }
 }

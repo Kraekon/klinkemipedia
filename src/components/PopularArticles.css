@@ -1,0 +1,137 @@
+/* ============================================
+   POPULAR ARTICLES - ATOM THEME
+   ============================================ */
+
+.popular-articles-card {
+  background: var(--dark-bg-secondary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.popular-articles-card .card-header {
+  background: var(--dark-bg-tertiary);
+  border-bottom: 1px solid var(--border-dark);
+  padding: var(--spacing-md);
+}
+
+.popular-articles-card .card-header h5 {
+  color: var(--text-dark-emphasis);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 0.25rem;
+}
+
+.popular-articles-card .card-header small {
+  color: var(--text-dark-muted);
+  font-size: 0.875rem;
+}
+
+.popular-articles-list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.popular-article-item {
+  background: var(--dark-bg-secondary);
+  border-color: var(--border-dark);
+  padding: var(--spacing-md);
+  transition: var(--transition-base);
+}
+
+.popular-article-item:hover {
+  background: var(--dark-bg-tertiary);
+}
+
+.article-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--atom-green);
+  color: white;
+  font-weight: var(--font-weight-bold);
+  font-size: 0.875rem;
+  border-radius: 50%;
+  margin-right: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.popular-article-item:nth-child(1) .article-rank {
+  background: #FFD700; /* Gold */
+}
+
+.popular-article-item:nth-child(2) .article-rank {
+  background: #C0C0C0; /* Silver */
+}
+
+.popular-article-item:nth-child(3) .article-rank {
+  background: #CD7F32; /* Bronze */
+}
+
+.article-title {
+  color: var(--text-dark-emphasis);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 0.5rem;
+  transition: var(--transition-base);
+}
+
+.article-title:hover {
+  color: var(--atom-green);
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-dark-muted);
+}
+
+.article-meta .badge {
+  font-size: 0.7rem;
+}
+
+.views-count,
+.comments-count {
+  font-size: 0.8rem;
+  color: var(--text-dark-muted);
+}
+
+/* Scrollbar styling */
+.popular-articles-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.popular-articles-list::-webkit-scrollbar-track {
+  background: var(--dark-bg-primary);
+}
+
+.popular-articles-list::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 3px;
+}
+
+.popular-articles-list::-webkit-scrollbar-thumb:hover {
+  background: var(--atom-green);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .popular-articles-list {
+    max-height: 400px;
+  }
+
+  .article-title {
+    font-size: 0.9rem;
+  }
+
+  .article-rank {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+}
