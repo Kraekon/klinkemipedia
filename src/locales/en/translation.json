@@ -373,5 +373,43 @@
     "referenceRanges": "Reference Ranges",
     "images": "Images",
     "empty": "Empty"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "confirmPassword": "Confirm Password",
+    "loginTitle": "Login to Klinkemipedia",
+    "registerTitle": "Create Account",
+    "loginButton": "Login",
+    "registerButton": "Register",
+    "loggingIn": "Logging in...",
+    "registering": "Creating account...",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "registerLink": "Register here",
+    "loginLink": "Login here",
+    "welcomeBack": "Welcome back!",
+    "accountCreated": "Account created successfully!",
+    "logoutSuccess": "Logged out successfully",
+    "myProfile": "My Profile",
+    "settings": "Settings",
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "usernameTooShort": "Username must be at least 3 characters",
+      "usernameTooLong": "Username cannot be more than 20 characters",
+      "passwordMismatch": "Passwords do not match",
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required",
+      "usernameRequired": "Username is required",
+      "loginFailed": "Invalid email or password",
+      "registrationFailed": "Registration failed. Please try again.",
+      "emailTaken": "Email is already registered",
+      "usernameTaken": "Username is already taken"
+    }
   }
 }

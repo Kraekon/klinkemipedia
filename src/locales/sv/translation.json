@@ -373,5 +373,43 @@
     "referenceRanges": "Referensintervall",
     "images": "Bilder",
     "empty": "Tom"
+  },
+  "auth": {
+    "login": "Logga in",
+    "register": "Registrera",
+    "logout": "Logga ut",
+    "email": "E-post",
+    "password": "Lösenord",
+    "username": "Användarnamn",
+    "confirmPassword": "Bekräfta lösenord",
+    "loginTitle": "Logga in på Klinkemipedia",
+    "registerTitle": "Skapa konto",
+    "loginButton": "Logga in",
+    "registerButton": "Registrera",
+    "loggingIn": "Loggar in...",
+    "registering": "Skapar konto...",
+    "noAccount": "Har du inget konto?",
+    "hasAccount": "Har du redan ett konto?",
+    "registerLink": "Registrera här",
+    "loginLink": "Logga in här",
+    "welcomeBack": "Välkommen tillbaka!",
+    "accountCreated": "Kontot har skapats!",
+    "logoutSuccess": "Utloggad",
+    "myProfile": "Min profil",
+    "settings": "Inställningar",
+    "errors": {
+      "invalidEmail": "Ange en giltig e-postadress",
+      "passwordTooShort": "Lösenordet måste vara minst 6 tecken",
+      "usernameTooShort": "Användarnamnet måste vara minst 3 tecken",
+      "usernameTooLong": "Användarnamnet får inte vara längre än 20 tecken",
+      "passwordMismatch": "Lösenorden matchar inte",
+      "emailRequired": "E-post krävs",
+      "passwordRequired": "Lösenord krävs",
+      "usernameRequired": "Användarnamn krävs",
+      "loginFailed": "Ogiltig e-post eller lösenord",
+      "registrationFailed": "Registrering misslyckades. Försök igen.",
+      "emailTaken": "E-postadressen är redan registrerad",
+      "usernameTaken": "Användarnamnet är upptaget"
+    }
   }
 }

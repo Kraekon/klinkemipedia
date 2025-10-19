@@ -2,10 +2,13 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Container, Alert, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import ArticlePage from './pages/ArticlePage';
 import SearchPage from './pages/SearchPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
 import AdminArticleForm from './pages/AdminArticleForm';
 import UserManagementPage from './pages/UserManagementPage';
@@ -15,6 +18,7 @@ import TagBrowsePage from './pages/TagBrowsePage';
 import TagArticlesPage from './pages/TagArticlesPage';
 import AdminTagManagement from './pages/AdminTagManagement';
 import VersionCompare from './components/VersionCompare';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 const NotFoundPage = () => {
@@ -47,38 +51,76 @@ const NotFoundPage = () => {
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          {/* Admin routes (without main navbar) */}
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/new" element={<AdminArticleForm />} />
-          <Route path="/admin/edit/:slug" element={<AdminArticleForm />} />
-          <Route path="/admin/users" element={<UserManagementPage />} />
-          <Route path="/admin/media" element={<AdminMediaLibrary />} />
-          <Route path="/admin/media/analytics" element={<MediaAnalytics />} />
-          <Route path="/admin/tags" element={<AdminTagManagement />} />
-          <Route path="/admin/articles/:slug/compare" element={<VersionCompare />} />
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Auth routes (no navbar) */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-          {/* Main site routes (with main navbar) */}
-          <Route path="/*" element={
-            <>
-              <Navbar />
-              <main className="container mt-4">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/article/:slug" element={<ArticlePage />} />
-                  <Route path="/search" element={<SearchPage />} />
-                  <Route path="/tags" element={<TagBrowsePage />} />
-                  <Route path="/tag/:tagname" element={<TagArticlesPage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </main>
-            </>
-          } />
-        </Routes>
-      </div>
-    </Router>
+            {/* Admin routes (without main navbar, require admin) */}
+            <Route path="/admin" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/new" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminArticleForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/edit/:slug" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminArticleForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/users" element={
+              <ProtectedRoute requireAdmin={true}>
+                <UserManagementPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/media" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminMediaLibrary />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/media/analytics" element={
+              <ProtectedRoute requireAdmin={true}>
+                <MediaAnalytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/tags" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminTagManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/articles/:slug/compare" element={
+              <ProtectedRoute requireAdmin={true}>
+                <VersionCompare />
+              </ProtectedRoute>
+            } />
+
+            {/* Main site routes (with main navbar) */}
+            <Route path="/*" element={
+              <>
+                <Navbar />
+                <main className="container mt-4">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/article/:slug" element={<ArticlePage />} />
+                    <Route path="/search" element={<SearchPage />} />
+                    <Route path="/tags" element={<TagBrowsePage />} />
+                    <Route path="/tag/:tagname" element={<TagArticlesPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </main>
+              </>
+            } />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
