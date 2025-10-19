@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, InputGroup, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import './SearchBar.css';
 
 const SearchBar = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
@@ -21,13 +23,13 @@ const SearchBar = () => {
         <InputGroup size="lg">
           <Form.Control
             type="search"
-            placeholder="Search articles by title, content, or tags..."
+            placeholder={t('search.placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
           />
           <Button variant="primary" type="submit" className="search-button">
-            Search
+            {t('search.button')}
           </Button>
         </InputGroup>
       </Form>

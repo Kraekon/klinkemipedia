@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Container, Alert, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import ArticlePage from './pages/ArticlePage';
@@ -12,29 +13,33 @@ import AdminMediaLibrary from './pages/AdminMediaLibrary';
 import MediaAnalytics from './pages/MediaAnalytics';
 import './App.css';
 
-const NotFoundPage = () => (
-  <Container className="mt-5">
-    <Alert variant="warning" className="text-center">
-      <Alert.Heading className="display-4">404</Alert.Heading>
-      <h2 className="mb-4">Page Not Found</h2>
-      <p className="lead">
-        Oops! The page you're looking for doesn't exist.
-      </p>
-      <p>
-        It might have been moved or deleted, or you may have mistyped the URL.
-      </p>
-      <hr />
-      <div className="d-flex gap-2 justify-content-center">
-        <Button as={Link} to="/" variant="primary" size="lg">
-          Go to Home
-        </Button>
-        <Button as={Link} to="/search" variant="outline-primary" size="lg">
-          Search Articles
-        </Button>
-      </div>
-    </Alert>
-  </Container>
-);
+const NotFoundPage = () => {
+  const { t } = useTranslation();
+  
+  return (
+    <Container className="mt-5">
+      <Alert variant="warning" className="text-center">
+        <Alert.Heading className="display-4">{t('page.notFound.title')}</Alert.Heading>
+        <h2 className="mb-4">{t('page.notFound.heading')}</h2>
+        <p className="lead">
+          {t('page.notFound.message')}
+        </p>
+        <p>
+          {t('page.notFound.description')}
+        </p>
+        <hr />
+        <div className="d-flex gap-2 justify-content-center">
+          <Button as={Link} to="/" variant="primary" size="lg">
+            {t('page.notFound.goHome')}
+          </Button>
+          <Button as={Link} to="/search" variant="outline-primary" size="lg">
+            {t('page.notFound.searchArticles')}
+          </Button>
+        </div>
+      </Alert>
+    </Container>
+  );
+};
 
 function App() {
   return (

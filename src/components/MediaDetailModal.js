@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Button, Spinner, Alert, Badge, ListGroup } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { getImageUrl } from '../utils/imageUrl';
 import { getMediaUsageById } from '../services/api';
 import { Link } from 'react-router-dom';
 
 const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
+  const { t } = useTranslation();
   const [usage, setUsage] = useState(null);
   const [loadingUsage, setLoadingUsage] = useState(false);
   const [error, setError] = useState(null);
@@ -21,11 +23,11 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
       }
     } catch (err) {
       console.error('Failed to fetch usage:', err);
-      setError('Kunde inte ladda användningsdata');
+      setError(t('messages.error.loadFailed'));
     } finally {
       setLoadingUsage(false);
     }
-  }, [media]);
+  }, [media, t]);
 
   useEffect(() => {
     if (show && media) {
@@ -46,17 +48,17 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffDays === 0) {
-      return 'Idag';
+      return t('date.today');
     } else if (diffDays === 1) {
-      return 'Igår';
+      return t('date.yesterday');
     } else if (diffDays < 7) {
-      return `${diffDays} dagar sedan`;
+      return t('date.daysAgo', { count: diffDays });
     } else if (diffDays < 30) {
       const weeks = Math.floor(diffDays / 7);
-      return `${weeks} ${weeks === 1 ? 'vecka' : 'veckor'} sedan`;
+      return t('date.weeksAgo', { count: weeks });
     } else if (diffDays < 365) {
       const months = Math.floor(diffDays / 30);
-      return `${months} ${months === 1 ? 'månad' : 'månader'} sedan`;
+      return t('date.monthsAgo', { count: months });
     } else {
       return date.toLocaleDateString('sv-SE');
     }
@@ -83,7 +85,7 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Bilddetaljer</Modal.Title>
+        <Modal.Title>{t('media.imageDetails')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {/* Image Preview */}
@@ -97,33 +99,33 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
 
         {/* Image Information */}
         <div className="mb-4">
-          <h5>Bildinformation</h5>
+          <h5>{t('media.imageDetails')}</h5>
           <table className="table table-sm">
             <tbody>
               <tr>
-                <td><strong>Filnamn:</strong></td>
+                <td><strong>{t('media.filename')}:</strong></td>
                 <td>{media.filename}</td>
               </tr>
               <tr>
-                <td><strong>Original namn:</strong></td>
+                <td><strong>{t('media.filename')}:</strong></td>
                 <td>{media.originalName}</td>
               </tr>
               <tr>
-                <td><strong>Storlek:</strong></td>
+                <td><strong>{t('media.size')}:</strong></td>
                 <td>{formatFileSize(media.size)}</td>
               </tr>
               {media.width && media.height && (
                 <tr>
-                  <td><strong>Dimensioner:</strong></td>
+                  <td><strong>{t('media.dimensions')}:</strong></td>
                   <td>{media.width} × {media.height} px</td>
                 </tr>
               )}
               <tr>
-                <td><strong>Uppladdad:</strong></td>
+                <td><strong>{t('media.uploaded')}:</strong></td>
                 <td>{formatDate(media.uploadedAt)}</td>
               </tr>
               <tr>
-                <td><strong>Uppladdad av:</strong></td>
+                <td><strong>{t('media.uploadedBy')}:</strong></td>
                 <td>{media.uploadedBy || 'admin'}</td>
               </tr>
               <tr>
@@ -136,18 +138,18 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
 
         {/* Usage Information */}
         <div className="mb-3">
-          <h5>Användningsinformation</h5>
+          <h5>{t('media.usage')}</h5>
           {loadingUsage ? (
             <div className="text-center py-3">
               <Spinner animation="border" size="sm" />
-              <span className="ms-2">Laddar...</span>
+              <span className="ms-2">{t('common.loading')}</span>
             </div>
           ) : error ? (
             <Alert variant="danger">{error}</Alert>
           ) : usage ? (
             <>
               <p>
-                <strong>Antal användningar:</strong>{' '}
+                <strong>{t('media.usageCount', { count: usage.count })}:</strong>{' '}
                 <Badge bg={usage.usageCount > 0 ? 'success' : 'secondary'}>
                   {usage.usageCount}
                 </Badge>
@@ -155,7 +157,7 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
               
               {usage.usageCount > 0 ? (
                 <>
-                  <p><strong>Används i artiklar:</strong></p>
+                  <p><strong>{t('media.usedIn')}:</strong></p>
                   <ListGroup>
                     {usage.articles.map((article) => (
                       <ListGroup.Item key={article._id}>
@@ -172,7 +174,7 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
                 </>
               ) : (
                 <Alert variant="info">
-                  Används inte i någon artikel
+                  {t('media.notUsed')}
                 </Alert>
               )}
             </>
@@ -184,16 +186,16 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
           variant="outline-primary" 
           onClick={handleCopyUrl}
         >
-          📋 Kopiera URL
+          📋 {t('media.copyUrl')}
         </Button>
         <Button 
           variant="outline-danger" 
           onClick={handleDelete}
         >
-          🗑️ Radera
+          🗑️ {t('common.delete')}
         </Button>
         <Button variant="secondary" onClick={onHide}>
-          Stäng
+          {t('common.close')}
         </Button>
       </Modal.Footer>
     </Modal>
