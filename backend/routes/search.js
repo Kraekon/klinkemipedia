@@ -3,7 +3,7 @@ const router = express.Router();
 const rateLimit = require('express-rate-limit');
 const Article = require('../models/Article');
 const Search = require('../models/Search');
-const { authenticate } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 
 // Rate limiting for search API - 60 requests per minute
 const searchLimiter = rateLimit({
@@ -176,7 +176,7 @@ router.get('/suggestions', searchLimiter, async (req, res) => {
 // @desc    Get user's recent searches
 // @route   GET /api/search/history
 // @access  Private
-router.get('/history', authenticate, async (req, res) => {
+router.get('/history', protect, async (req, res) => {
   try {
     const searches = await Search.find({ userId: req.user.id })
       .sort({ createdAt: -1 })
