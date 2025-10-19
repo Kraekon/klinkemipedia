@@ -394,17 +394,254 @@ klinkemipedia/
 └── package.json
 ```
 
+## Image Upload & Management
+
+### Overview
+Klinkemipedia now supports image uploads for articles through an abstracted storage layer. Images are currently stored locally but can easily be migrated to cloud storage (Cloudinary, S3, etc.) in the future.
+
+### Using Image Upload
+
+1. **In Admin Panel**: When creating or editing an article, click the "📷 Upload Image" button below the content editor
+2. **Drag & Drop**: Drag an image file into the upload area, or click to select from your file system
+3. **Preview & Upload**: Review the image preview and click "Upload"
+4. **Auto-Insert**: The image markdown syntax will be automatically inserted into your article content
+
+### Supported Formats
+- JPEG/JPG
+- PNG
+- GIF
+- WEBP
+
+### File Size Limit
+Maximum file size: 5MB per image
+
+### API Endpoint
+
+```
+POST /api/articles/upload
+Content-Type: multipart/form-data
+
+Request Body:
+- image: File (image file)
+
+Response:
+{
+  "success": true,
+  "imageUrl": "/uploads/1234567890-image.jpg",
+  "alt": "image",
+  "filename": "1234567890-image.jpg",
+  "size": 123456
+}
+```
+
+### Storage Architecture
+
+The image storage system is abstracted to allow easy migration to cloud storage:
+
+```javascript
+// Current: Local File System Storage
+const storage = new LocalFileStorage();
+
+// Future: Cloud Storage (Cloudinary)
+const storage = new CloudinaryImageStorage();
+
+// Future: Cloud Storage (AWS S3)
+const storage = new S3Storage();
+```
+
+All images are stored in `backend/public/uploads/` and served via `/uploads` static route.
+
+### Migrating to Cloud Storage
+
+To migrate from local storage to cloud storage (e.g., Cloudinary):
+
+1. **Install Cloudinary SDK** (already installed):
+   ```bash
+   npm install cloudinary
+   ```
+
+2. **Configure Environment Variables**:
+   Add to `backend/.env`:
+   ```
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+   ```
+
+3. **Update Storage Configuration**:
+   In `backend/utils/imageStorage.js`, uncomment the `CloudinaryImageStorage` class and change the export:
+   ```javascript
+   const storage = new CloudinaryImageStorage();
+   module.exports = storage;
+   ```
+
+4. **Restart Server**: No other code changes needed! All endpoints continue working.
+
+See `backend/utils/imageStorage.js` for detailed implementation.
+
+---
+
+## Version History System
+
+### Overview
+Every time an article is updated, Klinkemipedia automatically saves the previous version as a revision. This allows you to:
+- View all past versions of an article
+- Compare differences between versions
+- Restore an article to any previous version
+- Track who made changes and when
+
+### Using Version History
+
+#### Viewing History
+1. Open an article in edit mode
+2. Click the "📜 Version History" button at the top
+3. Browse all revisions with version numbers, timestamps, and change descriptions
+
+#### Viewing a Specific Revision
+1. Click "View" on any revision in the history list
+2. See all fields as they existed in that version
+3. Click "Restore This Version" to revert to that state
+
+#### Comparing Versions
+1. Click "Compare Versions" in the version history modal
+2. Select two versions by checking their checkboxes
+3. Click "Compare Selected"
+4. A new window opens showing side-by-side comparison with highlighted differences
+
+#### Restoring a Previous Version
+1. View the revision you want to restore
+2. Click "Restore This Version"
+3. Confirm the action
+4. A new revision is created (history is never lost)
+
+### API Endpoints
+
+#### Get All Revisions
+```
+GET /api/articles/:slug/revisions?page=1&limit=20
+
+Response:
+{
+  "success": true,
+  "data": [
+    {
+      "versionNumber": 5,
+      "timestamp": "2025-01-15T10:30:00Z",
+      "editedBy": "admin",
+      "changeDescription": "Updated reference ranges"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 45,
+    "pages": 3
+  }
+}
+```
+
+#### Get Specific Revision
+```
+GET /api/articles/:slug/revisions/:versionNumber
+
+Response:
+{
+  "success": true,
+  "data": {
+    "versionNumber": 5,
+    "title": "Sodium (Na+)",
+    "content": "...",
+    "timestamp": "2025-01-15T10:30:00Z",
+    ...
+  }
+}
+```
+
+#### Restore to Previous Version
+```
+POST /api/articles/:slug/restore/:versionNumber
+Content-Type: application/json
+
+Request Body:
+{
+  "editedBy": "admin"  // Optional
+}
+
+Response:
+{
+  "success": true,
+  "data": { /* restored article */ },
+  "message": "Article restored to version 5"
+}
+```
+
+#### Compare Two Versions
+```
+GET /api/articles/:slug/compare?v1=3&v2=5
+
+Response:
+{
+  "success": true,
+  "data": {
+    "version1": { /* full revision data */ },
+    "version2": { /* full revision data */ },
+    "differences": {
+      "title": false,
+      "content": true,
+      "category": false,
+      ...
+    }
+  }
+}
+```
+
+### ArticleRevision Schema
+
+```javascript
+{
+  articleId: ObjectId (ref: Article),
+  versionNumber: Number,
+  title: String,
+  slug: String,
+  content: String,
+  summary: String,
+  category: String,
+  tags: [String],
+  referenceRanges: [Object],
+  clinicalSignificance: String,
+  interpretation: String,
+  relatedTests: [String],
+  references: [String],
+  images: [Object],
+  status: String,
+  editedBy: String,
+  changeDescription: String,
+  timestamp: Date
+}
+```
+
+### Technical Details
+
+- **Auto-Save**: Revisions are automatically created before any article update
+- **Version Numbers**: Auto-incrementing version numbers per article
+- **No Data Loss**: Restoring a version creates a new revision instead of deleting history
+- **Efficient Storage**: Indexed queries for fast retrieval
+- **Pagination**: Large revision histories are paginated to improve performance
+
+---
+
 ## Future Features
 
 - User authentication and authorization
 - Role-based access control (user, contributor, admin)
-- Article versioning
 - Comments and discussions
 - Bookmark/favorite articles
 - Advanced search with filters
-- Image upload functionality
 - PDF export of articles
 - Multi-language support
+- Rich text diff visualization for version comparison
+- Bulk image upload
+- Image optimization and resizing
 
 ## Contributing
 
