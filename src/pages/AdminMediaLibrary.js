@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Button, Form, Alert, Spinner, Modal, Toast } from 'react-bootstrap';
 import AdminNavbar from '../components/AdminNavbar';
 import MediaCard from '../components/MediaCard';
@@ -42,7 +42,7 @@ const AdminMediaLibrary = () => {
   const [toastVariant, setToastVariant] = useState('success');
 
   // Fetch media library
-  const fetchMedia = async () => {
+  const fetchMedia = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -67,11 +67,11 @@ const AdminMediaLibrary = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit, sort, order, filter]);
 
   useEffect(() => {
     fetchMedia();
-  }, [page, filter, sort, order]);
+  }, [fetchMedia]);
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value);

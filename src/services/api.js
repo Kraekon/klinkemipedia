@@ -155,3 +155,23 @@ export const getMediaStats = async () => {
   const response = await axios.get(`${API_BASE_URL}/media/stats`);
   return response.data;
 };
+
+// Get analytics data
+export const getMediaAnalytics = async () => {
+  const response = await axios.get(`${API_BASE_URL}/media/analytics`);
+  return response.data;
+};
+
+// Get usage details for a specific image (by ID or filename)
+export const getMediaUsageById = async (mediaId) => {
+  const response = await axios.get(`${API_BASE_URL}/media/${mediaId}/usage`);
+  return response.data;
+};
+
+// Bulk delete images
+export const bulkDeleteMedia = async (imageIds) => {
+  const response = await axios.delete(`${API_BASE_URL}/media/bulk`, {
+    data: { imageIds }
+  });
+  return response.data;
+};

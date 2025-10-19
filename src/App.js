@@ -9,6 +9,7 @@ import AdminPage from './pages/AdminPage';
 import AdminArticleForm from './pages/AdminArticleForm';
 import UserManagementPage from './pages/UserManagementPage';
 import AdminMediaLibrary from './pages/AdminMediaLibrary';
+import MediaAnalytics from './pages/MediaAnalytics';
 import './App.css';
 
 const NotFoundPage = () => (
@@ -46,6 +47,7 @@ function App() {
           <Route path="/admin/edit/:slug" element={<AdminArticleForm />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/media" element={<AdminMediaLibrary />} />
+          <Route path="/admin/media/analytics" element={<MediaAnalytics />} />
 
           {/* Main site routes (with main navbar) */}
           <Route path="/*" element={
