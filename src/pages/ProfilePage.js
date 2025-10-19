@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { Container, Row, Col, Card, Nav, Badge } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import FollowButton from '../components/FollowButton';
 import UserCard from '../components/UserCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import './ProfilePage.css';
@@ -20,6 +19,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
 
   const fetchUserProfile = async () => {
