@@ -1,9 +1,35 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const { protect, adminOnly } = require('../middleware/auth');
 const Comment = require('../models/Comment');
 const Article = require('../models/Article');
 const User = require('../models/User');
+
+// Rate limiting configurations
+const commentCreateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 comment creations per windowMs
+  message: 'Too many comments created from this IP, please try again after 15 minutes',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const commentVoteLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 30, // Limit each IP to 30 votes per minute
+  message: 'Too many vote requests from this IP, please slow down',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const commentReportLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // Limit each IP to 5 reports per hour
+  message: 'Too many report requests from this IP, please try again after an hour',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Input validation helper
 const validateCommentContent = (content) => {
@@ -132,7 +158,7 @@ router.get('/articles/:slug/comments', async (req, res) => {
 });
 
 // POST /api/articles/:slug/comments - Create a new comment (requires auth)
-router.post('/articles/:slug/comments', protect, async (req, res) => {
+router.post('/articles/:slug/comments', commentCreateLimiter, protect, async (req, res) => {
   try {
     const article = await Article.findOne({ slug: req.params.slug });
     if (!article) {
@@ -184,7 +210,7 @@ router.post('/articles/:slug/comments', protect, async (req, res) => {
 });
 
 // PUT /api/comments/:id - Edit own comment (requires auth)
-router.put('/comments/:id', protect, async (req, res) => {
+router.put('/comments/:id', commentCreateLimiter, protect, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -288,7 +314,7 @@ router.delete('/comments/:id', protect, async (req, res) => {
 });
 
 // POST /api/comments/:id/reply - Reply to a comment (requires auth)
-router.post('/comments/:id/reply', protect, async (req, res) => {
+router.post('/comments/:id/reply', commentCreateLimiter, protect, async (req, res) => {
   try {
     const parentComment = await Comment.findById(req.params.id);
     
@@ -365,7 +391,7 @@ router.post('/comments/:id/reply', protect, async (req, res) => {
 });
 
 // POST /api/comments/:id/upvote - Upvote a comment (requires auth)
-router.post('/comments/:id/upvote', protect, async (req, res) => {
+router.post('/comments/:id/upvote', commentVoteLimiter, protect, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -417,7 +443,7 @@ router.post('/comments/:id/upvote', protect, async (req, res) => {
 });
 
 // POST /api/comments/:id/downvote - Downvote a comment (requires auth)
-router.post('/comments/:id/downvote', protect, async (req, res) => {
+router.post('/comments/:id/downvote', commentVoteLimiter, protect, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -469,7 +495,7 @@ router.post('/comments/:id/downvote', protect, async (req, res) => {
 });
 
 // DELETE /api/comments/:id/vote - Remove vote (requires auth)
-router.delete('/comments/:id/vote', protect, async (req, res) => {
+router.delete('/comments/:id/vote', commentVoteLimiter, protect, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -511,7 +537,7 @@ router.delete('/comments/:id/vote', protect, async (req, res) => {
 });
 
 // POST /api/comments/:id/report - Report a comment (requires auth)
-router.post('/comments/:id/report', protect, async (req, res) => {
+router.post('/comments/:id/report', commentReportLimiter, protect, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -585,8 +611,11 @@ router.get('/admin/comments', protect, adminOnly, async (req, res) => {
     const { status, page = 1, limit = 20 } = req.query;
     const skip = (page - 1) * limit;
 
+    // Validate status to prevent injection
+    const validStatuses = ['approved', 'pending', 'spam', 'deleted'];
+    
     const filter = {};
-    if (status) {
+    if (status && validStatuses.includes(status)) {
       filter.status = status;
     }
 
