@@ -4,10 +4,11 @@ A comprehensive clinical chemistry reference website built with React and Expres
 
 ## Tech Stack
 
-- **Frontend**: React 19, React Bootstrap, React Router, Axios
+- **Frontend**: React 19, React Bootstrap, React Router, Axios, react-i18next
 - **Backend**: Express.js, Node.js
 - **Database**: MongoDB with Mongoose
 - **Development**: Create React App, Nodemon, Concurrently
+- **Internationalization**: i18next, react-i18next, i18next-browser-languagedetector
 
 ## Features
 
@@ -21,6 +22,7 @@ A comprehensive clinical chemistry reference website built with React and Expres
 - ⚡ **Loading States**: Spinner indicators during data fetching
 - ❌ **Error Handling**: User-friendly error messages
 - 🎯 **Clean Code**: Well-organized component structure
+- 🌍 **Internationalization (i18n)**: Multi-language support (Swedish and English)
 
 ### Backend Features
 - 📡 **RESTful API**: Clean and documented API endpoints
@@ -627,6 +629,81 @@ Response:
 - **No Data Loss**: Restoring a version creates a new revision instead of deleting history
 - **Efficient Storage**: Indexed queries for fast retrieval
 - **Pagination**: Large revision histories are paginated to improve performance
+
+---
+
+## Internationalization (i18n)
+
+### Overview
+Klinkemipedia supports multiple languages using **react-i18next**. The application currently supports:
+- **Swedish (sv)** - Default language
+- **English (en)** - Secondary language
+
+### Language Switching
+Users can switch languages using the language switcher in the navigation bar:
+- **Public pages**: Dropdown in the top-right corner of the navbar
+- **Admin pages**: Dropdown in the admin navbar next to other navigation items
+
+The selected language preference is saved to `localStorage` and persists across sessions.
+
+### For Users
+1. Click the language switcher (flag icon) in the navigation bar
+2. Select your preferred language (Swedish or English)
+3. All text on the page will update immediately
+4. Your preference is saved automatically
+
+### For Developers
+
+#### Adding New Translations
+To add or update translations, edit the translation files:
+- **English**: `src/locales/en/translation.json`
+- **Swedish**: `src/locales/sv/translation.json`
+
+Example:
+```json
+{
+  "mySection": {
+    "newKey": "New text here"
+  }
+}
+```
+
+#### Using Translations in Components
+```javascript
+import { useTranslation } from 'react-i18next';
+
+function MyComponent() {
+  const { t } = useTranslation();
+  
+  return <div>{t('mySection.newKey')}</div>;
+}
+```
+
+#### Pluralization
+```javascript
+// Translation file
+{
+  "articleCount": "{{count}} article",
+  "articleCount_plural": "{{count}} articles"
+}
+
+// Component
+<p>{t('articleCount', { count: articles.length })}</p>
+```
+
+#### Interpolation
+```javascript
+// Translation file
+{
+  "welcome": "Welcome, {{name}}!"
+}
+
+// Component
+<p>{t('welcome', { name: user.name })}</p>
+```
+
+### Documentation
+For detailed translation management guidelines, see [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md).
 
 ---
 

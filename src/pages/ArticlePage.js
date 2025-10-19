@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Container, Alert, Breadcrumb, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import ArticleDetail from '../components/ArticleDetail';
 import LoadingSpinner from '../components/LoadingSpinner';
 import RelatedArticles from '../components/RelatedArticles';
 import { getArticleBySlug } from '../services/api';
 
 const ArticlePage = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ const ArticlePage = () => {
   if (loading) {
     return (
       <Container>
-        <LoadingSpinner message="Loading article..." />
+        <LoadingSpinner message={t('article.loadingArticles')} />
       </Container>
     );
   }
@@ -47,18 +49,18 @@ const ArticlePage = () => {
       <Container>
         <Breadcrumb className="mt-3">
           <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>
-            Home
+            {t('navigation.home')}
           </Breadcrumb.Item>
-          <Breadcrumb.Item active>Article</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('navigation.articles')}</Breadcrumb.Item>
         </Breadcrumb>
         
         <Alert variant="danger" className="text-center mt-5">
-          <Alert.Heading>{error === 'Article not found' ? '404 - Article Not Found' : 'Error Loading Article'}</Alert.Heading>
+          <Alert.Heading>{error === 'Article not found' ? t('article.articleNotFound') : t('article.errorLoadingArticle')}</Alert.Heading>
           <p>{error}</p>
           <hr />
           <div className="d-flex gap-2 justify-content-center">
             <Button as={Link} to="/" variant="primary">
-              Go to Home
+              {t('page.notFound.goHome')}
             </Button>
           </div>
         </Alert>
@@ -72,7 +74,7 @@ const ArticlePage = () => {
         <>
           <Breadcrumb className="mt-3">
             <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>
-              Home
+              {t('navigation.home')}
             </Breadcrumb.Item>
             {article.category && (
               <Breadcrumb.Item active>{article.category}</Breadcrumb.Item>

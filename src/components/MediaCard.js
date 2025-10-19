@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Card, Button, Badge, Spinner } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { getImageUrl } from '../utils/imageUrl';
 import './MediaCard.css';
 
 const MediaCard = ({ media, onDelete, onCopyUrl }) => {
+  const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const formatFileSize = (bytes) => {
@@ -85,10 +87,10 @@ const MediaCard = ({ media, onDelete, onCopyUrl }) => {
           <div className="mt-2">
             {media.usageCount > 0 ? (
               <Badge bg="success">
-                Used in {media.usageCount} article{media.usageCount !== 1 ? 's' : ''}
+                {t('media.usageCount', { count: media.usageCount })}
               </Badge>
             ) : (
-              <Badge bg="secondary">Unused</Badge>
+              <Badge bg="secondary">{t('media.unused')}</Badge>
             )}
           </div>
         </div>
@@ -99,7 +101,7 @@ const MediaCard = ({ media, onDelete, onCopyUrl }) => {
             onClick={handleCopyUrl}
             className="w-100 mb-2"
           >
-            📋 Copy URL
+            📋 {t('media.copyUrl')}
           </Button>
           <Button 
             variant="outline-danger" 
@@ -111,10 +113,10 @@ const MediaCard = ({ media, onDelete, onCopyUrl }) => {
             {isDeleting ? (
               <>
                 <Spinner animation="border" size="sm" className="me-2" />
-                Deleting...
+                {t('common.loading')}
               </>
             ) : (
-              '🗑️ Delete'
+              `🗑️ ${t('common.delete')}`
             )}
           </Button>
         </div>
