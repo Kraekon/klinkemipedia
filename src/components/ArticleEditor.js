@@ -29,7 +29,6 @@ const ArticleEditor = ({
   const [showPreview, setShowPreview] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState(draftId);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState(null);
   
   const autoSaveTimeoutRef = useRef(null);
@@ -145,11 +144,9 @@ const ArticleEditor = ({
       
       uploadMedia(file, (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        setUploadProgress(percentCompleted);
         progress(percentCompleted);
       })
         .then(response => {
-          setUploadProgress(0);
           if (response.success) {
             // Return the full URL for TinyMCE
             const imageUrl = response.data.url.startsWith('http') 
@@ -161,7 +158,6 @@ const ArticleEditor = ({
           }
         })
         .catch(error => {
-          setUploadProgress(0);
           setUploadError(error.message || 'Upload failed');
           setTimeout(() => setUploadError(null), 3000);
           reject(error.message || 'Upload failed');

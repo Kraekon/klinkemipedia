@@ -19,6 +19,8 @@ const AdminNavbar = () => {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/admin">{t('navigation.dashboard')}</Nav.Link>
             <Nav.Link as={Link} to="/admin/new">{t('navigation.newArticle')}</Nav.Link>
+            <Nav.Link as={Link} to="/admin/editor/new">✍️ Rich Editor</Nav.Link>
+            <Nav.Link as={Link} to="/admin/my-drafts">📝 My Drafts</Nav.Link>
             <Nav.Link as={Link} to="/admin/media">📁 {t('navigation.mediaLibrary')}</Nav.Link>
             <Nav.Link as={Link} to="/admin/media/analytics">📊 {t('navigation.mediaAnalytics')}</Nav.Link>
             <Nav.Link as={Link} to="/admin/tags">🏷️ {t('navigation.tags')}</Nav.Link>
