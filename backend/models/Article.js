@@ -98,6 +98,10 @@ const ArticleSchema = new mongoose.Schema(
     views: {
       type: Number,
       default: 0
+    },
+    commentCount: {
+      type: Number,
+      default: 0
     }
   },
   {

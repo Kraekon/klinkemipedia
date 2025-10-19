@@ -1,0 +1,100 @@
+/* Comment Section Styles - Atom Theme */
+
+.comment-section {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  background: #282C34;
+  border-radius: 8px;
+  padding: 2rem;
+  color: #ABB2BF;
+}
+
+.comment-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #5FB04B;
+  padding-bottom: 1rem;
+}
+
+.comment-section-header h3 {
+  color: #5FB04B;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.comment-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.sort-select {
+  background-color: #21252B;
+  border: 1px solid #3E4451;
+  color: #ABB2BF;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  min-width: 120px;
+}
+
+.sort-select:focus {
+  background-color: #21252B;
+  border-color: #5FB04B;
+  color: #ABB2BF;
+  box-shadow: 0 0 0 0.2rem rgba(95, 176, 75, 0.25);
+}
+
+.sort-select option {
+  background-color: #21252B;
+  color: #ABB2BF;
+}
+
+.login-prompt {
+  background-color: #21252B;
+  border: 1px solid #3E4451;
+  color: #61AFEF;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #5C6370;
+  font-style: italic;
+}
+
+.no-comments p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .comment-section {
+    padding: 1rem;
+    border-radius: 0;
+  }
+
+  .comment-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .comment-section-header h3 {
+    font-size: 1.5rem;
+  }
+
+  .comment-controls {
+    width: 100%;
+  }
+
+  .sort-select {
+    width: 100%;
+  }
+}

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import ArticleDetail from '../components/ArticleDetail';
 import LoadingSpinner from '../components/LoadingSpinner';
 import RelatedArticles from '../components/RelatedArticles';
+import CommentSection from '../components/CommentSection';
 import { getArticleBySlug } from '../services/api';
 
 const ArticlePage = () => {
@@ -86,6 +87,9 @@ const ArticlePage = () => {
           
           {/* Related Articles Section */}
           <RelatedArticles currentArticleSlug={slug} />
+          
+          {/* Comments Section */}
+          <CommentSection articleSlug={slug} />
         </>
       )}
     </Container>

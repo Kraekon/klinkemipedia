@@ -23,6 +23,7 @@ const AdminNavbar = () => {
             <Nav.Link as={Link} to="/admin/media/analytics">📊 {t('navigation.mediaAnalytics')}</Nav.Link>
             <Nav.Link as={Link} to="/admin/tags">🏷️ {t('navigation.tags')}</Nav.Link>
             <Nav.Link as={Link} to="/admin/users">{t('navigation.users')}</Nav.Link>
+            <Nav.Link as={Link} to="/admin/comments">💬 {t('navigation.comments')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.viewSite')}</Nav.Link>
           </Nav>
           <div className="ms-2">

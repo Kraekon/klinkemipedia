@@ -239,3 +239,82 @@ export const bulkDeleteMedia = async (imageIds) => {
   });
   return response.data;
 };
+
+// Comment APIs
+export const getComments = async (articleSlug, sort = 'newest') => {
+  const response = await axios.get(`${API_BASE_URL}/articles/${articleSlug}/comments`, {
+    params: { sort }
+  });
+  return response.data;
+};
+
+export const createComment = async (articleSlug, content) => {
+  const response = await axios.post(`${API_BASE_URL}/articles/${articleSlug}/comments`, {
+    content
+  });
+  return response.data;
+};
+
+export const editComment = async (commentId, content) => {
+  const response = await axios.put(`${API_BASE_URL}/comments/${commentId}`, {
+    content
+  });
+  return response.data;
+};
+
+export const deleteComment = async (commentId) => {
+  const response = await axios.delete(`${API_BASE_URL}/comments/${commentId}`);
+  return response.data;
+};
+
+export const replyToComment = async (commentId, content) => {
+  const response = await axios.post(`${API_BASE_URL}/comments/${commentId}/reply`, {
+    content
+  });
+  return response.data;
+};
+
+export const upvoteComment = async (commentId) => {
+  const response = await axios.post(`${API_BASE_URL}/comments/${commentId}/upvote`);
+  return response.data;
+};
+
+export const downvoteComment = async (commentId) => {
+  const response = await axios.post(`${API_BASE_URL}/comments/${commentId}/downvote`);
+  return response.data;
+};
+
+export const removeVote = async (commentId) => {
+  const response = await axios.delete(`${API_BASE_URL}/comments/${commentId}/vote`);
+  return response.data;
+};
+
+export const reportComment = async (commentId, reason) => {
+  const response = await axios.post(`${API_BASE_URL}/comments/${commentId}/report`, {
+    reason
+  });
+  return response.data;
+};
+
+// Admin comment APIs
+export const getAdminComments = async (status, page = 1, limit = 20) => {
+  const params = { page, limit };
+  if (status) params.status = status;
+  const response = await axios.get(`${API_BASE_URL}/admin/comments`, { params });
+  return response.data;
+};
+
+export const approveComment = async (commentId) => {
+  const response = await axios.put(`${API_BASE_URL}/admin/comments/${commentId}/approve`);
+  return response.data;
+};
+
+export const rejectComment = async (commentId) => {
+  const response = await axios.put(`${API_BASE_URL}/admin/comments/${commentId}/reject`);
+  return response.data;
+};
+
+export const deleteCommentPermanently = async (commentId) => {
+  const response = await axios.delete(`${API_BASE_URL}/admin/comments/${commentId}`);
+  return response.data;
+};

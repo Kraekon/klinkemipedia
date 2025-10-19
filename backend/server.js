@@ -61,6 +61,9 @@ app.use('/api/media', require('./routes/media'));
 // Mount user routes
 app.use('/api/users', require('./routes/users'));
 
+// Mount comment routes
+app.use('/api', require('./routes/comments'));
+
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   const mongoose = require('mongoose');
