@@ -1,30 +1,42 @@
+/* ============================================
+   MEDIA CARD - ATOM THEME
+   ============================================ */
+
 .media-card {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: var(--transition-base);
+  background-color: var(--dark-bg-secondary);
 }
 
 .media-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--atom-green);
 }
 
 .media-card-thumbnail {
   width: 100%;
   height: 200px;
   overflow: hidden;
-  background-color: #f8f9fa;
+  background-color: var(--dark-bg-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--border-dark);
+  position: relative;
 }
 
 .media-card-thumbnail img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  transition: var(--transition-base);
+}
+
+.media-card:hover .media-card-thumbnail img {
+  transform: scale(1.05);
 }
 
 .media-card-info {
@@ -32,28 +44,29 @@
 }
 
 .media-card-filename {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.5rem;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark-emphasis);
+  margin-bottom: var(--spacing-sm);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .media-card-meta small {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   line-height: 1.5;
+  color: var(--text-dark-muted);
 }
 
 .media-card-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 .media-card-actions .btn {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   padding: 0.375rem 0.75rem;
 }
 

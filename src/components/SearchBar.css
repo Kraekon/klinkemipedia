@@ -1,39 +1,60 @@
+/* ============================================
+   SEARCH BAR - ATOM THEME
+   ============================================ */
+
 .search-bar-container {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--dark-bg-secondary);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-dark);
 }
 
 .search-input {
+  background-color: var(--dark-bg-tertiary);
+  border: 1px solid var(--border-dark);
   border-right: none;
+  color: var(--text-dark-emphasis);
   padding: 0.75rem 1rem;
+  transition: var(--transition-base);
+}
+
+.search-input::placeholder {
+  color: var(--text-dark-muted);
 }
 
 .search-input:focus {
-  border-color: var(--primary-blue);
+  background-color: var(--dark-bg-elevated);
+  border-color: var(--atom-green);
+  color: var(--text-dark-emphasis);
   box-shadow: none;
 }
 
 .search-button {
-  background-color: var(--primary-blue);
-  border-color: var(--primary-blue);
+  background-color: var(--atom-green);
+  border-color: var(--atom-green);
+  color: white;
   padding: 0.75rem 1.5rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-base);
 }
 
 .search-button:hover {
-  background-color: #0052a3;
-  border-color: #0052a3;
+  background-color: var(--atom-green-hover);
+  border-color: var(--atom-green-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .search-button:focus {
-  box-shadow: 0 0 0 0.2rem rgba(0,102,204,0.25);
+  box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
+  background-color: var(--atom-green-hover);
+  border-color: var(--atom-green-hover);
 }
 
 @media (max-width: 768px) {
   .search-bar-container {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .search-button {

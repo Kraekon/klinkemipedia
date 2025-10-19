@@ -1,52 +1,70 @@
+/* ============================================
+   CATEGORY FILTER - ATOM THEME
+   ============================================ */
+
 .category-filter {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--dark-bg-secondary);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-dark);
 }
 
 .category-filter h5 {
-  color: var(--primary-blue);
-  font-weight: 600;
-  margin-bottom: 1rem;
+  color: var(--atom-green);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
 }
 
 .category-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--spacing-sm);
 }
 
 .category-badge {
   cursor: pointer;
   padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-base);
   border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  background-color: var(--dark-bg-elevated);
+  color: var(--text-dark-emphasis);
 }
 
 .category-badge:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-md);
+  border-color: var(--atom-green);
+  color: var(--atom-green);
 }
 
 .category-badge.active {
-  border-color: var(--primary-blue);
-  box-shadow: 0 2px 8px rgba(0,102,204,0.3);
+  background-color: var(--atom-green) !important;
+  color: white !important;
+  border-color: var(--atom-green);
+  box-shadow: var(--shadow-md);
+}
+
+.category-badge.active:hover {
+  background-color: var(--atom-green-hover) !important;
+  border-color: var(--atom-green-hover);
 }
 
 @media (max-width: 768px) {
   .category-filter {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .category-badges {
-    gap: 0.5rem;
+    gap: var(--spacing-xs);
   }
 
   .category-badge {
     padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
+    font-size: var(--font-size-xs);
   }
 }
