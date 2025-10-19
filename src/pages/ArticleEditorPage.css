@@ -1,0 +1,20 @@
+.article-editor-page {
+  max-width: 1200px;
+}
+
+.article-editor-page h2 {
+  color: #212529;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .article-editor-page .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .article-editor-page h2 {
+    font-size: 1.5rem;
+  }
+}

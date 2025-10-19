@@ -349,3 +349,43 @@ export const deleteCommentPermanently = async (commentId) => {
   const response = await axios.delete(`${API_BASE_URL}/admin/comments/${commentId}`);
   return response.data;
 };
+
+// Draft APIs
+export const getDrafts = async () => {
+  const response = await axios.get(`${API_BASE_URL}/drafts`);
+  return response.data;
+};
+
+export const getDraft = async (draftId) => {
+  const response = await axios.get(`${API_BASE_URL}/drafts/${draftId}`);
+  return response.data;
+};
+
+export const saveDraft = async (draftData) => {
+  const response = await axios.post(`${API_BASE_URL}/drafts`, draftData);
+  return response.data;
+};
+
+export const updateDraft = async (draftId, draftData) => {
+  const response = await axios.put(`${API_BASE_URL}/drafts/${draftId}`, draftData);
+  return response.data;
+};
+
+export const deleteDraft = async (draftId) => {
+  const response = await axios.delete(`${API_BASE_URL}/drafts/${draftId}`);
+  return response.data;
+};
+
+// Media Upload API
+export const uploadMedia = async (file, onUploadProgress) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await axios.post(`${API_BASE_URL}/media/upload`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    onUploadProgress
+  });
+  return response.data;
+};

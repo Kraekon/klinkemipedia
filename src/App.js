@@ -11,6 +11,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
 import AdminArticleForm from './pages/AdminArticleForm';
+import ArticleEditorPage from './pages/ArticleEditorPage';
+import MyDrafts from './pages/MyDrafts';
 import UserManagementPage from './pages/UserManagementPage';
 import AdminMediaLibrary from './pages/AdminMediaLibrary';
 import MediaAnalytics from './pages/MediaAnalytics';
@@ -77,6 +79,26 @@ function App() {
             <Route path="/admin/edit/:slug" element={
               <ProtectedRoute requireAdmin={true}>
                 <AdminArticleForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/editor/new" element={
+              <ProtectedRoute requireAdmin={true}>
+                <ArticleEditorPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/editor/:slug" element={
+              <ProtectedRoute requireAdmin={true}>
+                <ArticleEditorPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/editor/draft/:draftId" element={
+              <ProtectedRoute requireAdmin={true}>
+                <ArticleEditorPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/my-drafts" element={
+              <ProtectedRoute requireAdmin={true}>
+                <MyDrafts />
               </ProtectedRoute>
             } />
             <Route path="/admin/users" element={
