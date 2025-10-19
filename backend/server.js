@@ -26,6 +26,9 @@ app.use(cors({
 })); // Enable CORS for all routes
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+// CSRF Protection Note: JWT tokens in httpOnly cookies provide some CSRF protection
+// as they can only be sent by the same origin. For production, consider adding
+// explicit CSRF tokens using libraries like 'csurf' for additional security.
 app.use(cookieParser()); // Parse cookies
 
 // Serve static files from uploads directory
@@ -66,6 +69,12 @@ app.use('/api', require('./routes/comments'));
 
 // Mount search routes
 app.use('/api/search', require('./routes/search'));
+
+// Mount notification routes
+app.use('/api/notifications', require('./routes/notifications'));
+
+// Mount badge routes
+app.use('/api/badges', require('./routes/badges'));
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {

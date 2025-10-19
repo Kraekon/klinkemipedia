@@ -22,6 +22,9 @@
 # uploaded files
 /backend/public/uploads/*
 !/backend/public/uploads/.gitkeep
+!/backend/public/uploads/avatars/
+/backend/public/uploads/avatars/*
+!/backend/public/uploads/avatars/.gitkeep
 
 npm-debug.log*
 yarn-debug.log*
