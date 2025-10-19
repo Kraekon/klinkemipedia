@@ -38,7 +38,8 @@
     "users": "Users",
     "viewSite": "View Site",
     "logout": "Logout",
-    "tags": "Tags"
+    "tags": "Tags",
+    "comments": "Comments"
   },
   "language": {
     "label": "Language",

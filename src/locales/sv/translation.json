@@ -38,7 +38,8 @@
     "users": "Användare",
     "viewSite": "Visa webbplats",
     "logout": "Logga ut",
-    "tags": "Taggar"
+    "tags": "Taggar",
+    "comments": "Kommentarer"
   },
   "language": {
     "label": "Språk",

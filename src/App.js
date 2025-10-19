@@ -17,6 +17,7 @@ import MediaAnalytics from './pages/MediaAnalytics';
 import TagBrowsePage from './pages/TagBrowsePage';
 import TagArticlesPage from './pages/TagArticlesPage';
 import AdminTagManagement from './pages/AdminTagManagement';
+import AdminCommentModeration from './pages/AdminCommentModeration';
 import VersionCompare from './components/VersionCompare';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -93,6 +94,11 @@ function App() {
             <Route path="/admin/tags" element={
               <ProtectedRoute requireAdmin={true}>
                 <AdminTagManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/comments" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminCommentModeration />
               </ProtectedRoute>
             } />
             <Route path="/admin/articles/:slug/compare" element={
