@@ -389,3 +389,77 @@ export const uploadMedia = async (file, onUploadProgress) => {
   });
   return response.data;
 };
+
+// Bookmark APIs
+export const getBookmarks = async (params = {}) => {
+  const response = await axios.get(`${API_BASE_URL}/bookmarks`, { params });
+  return response.data;
+};
+
+export const getBookmark = async (id) => {
+  const response = await axios.get(`${API_BASE_URL}/bookmarks/${id}`);
+  return response.data;
+};
+
+export const createBookmark = async (bookmarkData) => {
+  const response = await axios.post(`${API_BASE_URL}/bookmarks`, bookmarkData);
+  return response.data;
+};
+
+export const updateBookmark = async (id, bookmarkData) => {
+  const response = await axios.put(`${API_BASE_URL}/bookmarks/${id}`, bookmarkData);
+  return response.data;
+};
+
+export const deleteBookmark = async (id) => {
+  const response = await axios.delete(`${API_BASE_URL}/bookmarks/${id}`);
+  return response.data;
+};
+
+export const checkBookmark = async (articleId) => {
+  const response = await axios.get(`${API_BASE_URL}/bookmarks/check/${articleId}`);
+  return response.data;
+};
+
+// Collection APIs
+export const getCollections = async (params = {}) => {
+  const response = await axios.get(`${API_BASE_URL}/collections`, { params });
+  return response.data;
+};
+
+export const getCollection = async (id) => {
+  const response = await axios.get(`${API_BASE_URL}/collections/${id}`);
+  return response.data;
+};
+
+export const createCollection = async (collectionData) => {
+  const response = await axios.post(`${API_BASE_URL}/collections`, collectionData);
+  return response.data;
+};
+
+export const updateCollection = async (id, collectionData) => {
+  const response = await axios.put(`${API_BASE_URL}/collections/${id}`, collectionData);
+  return response.data;
+};
+
+export const deleteCollection = async (id) => {
+  const response = await axios.delete(`${API_BASE_URL}/collections/${id}`);
+  return response.data;
+};
+
+export const addBookmarkToCollection = async (collectionId, bookmarkId) => {
+  const response = await axios.post(`${API_BASE_URL}/collections/${collectionId}/bookmarks`, {
+    bookmarkId
+  });
+  return response.data;
+};
+
+export const removeBookmarkFromCollection = async (collectionId, bookmarkId) => {
+  const response = await axios.delete(`${API_BASE_URL}/collections/${collectionId}/bookmarks/${bookmarkId}`);
+  return response.data;
+};
+
+export const getPublicCollections = async (params = {}) => {
+  const response = await axios.get(`${API_BASE_URL}/collections/public`, { params });
+  return response.data;
+};
