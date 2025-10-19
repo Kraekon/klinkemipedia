@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Card, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import './EditProfilePage.css';
 
 const EditProfilePage = () => {
   const { t } = useTranslation();
-  const { user, updateUser } = useContext(AuthContext);
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Tabs, Tab } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import FollowButton from '../components/FollowButton';
 import UserCard from '../components/UserCard';
@@ -12,7 +12,7 @@ import './ProfilePage.css';
 const ProfilePage = () => {
   const { username } = useParams();
   const { t } = useTranslation();
-  const { user: currentUser } = useContext(AuthContext);
+  const { user: currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [activity, setActivity] = useState({ articles: [], comments: [] });
   const [followers, setFollowers] = useState([]);
@@ -22,6 +22,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ const ProfilePage = () => {
     } else if (activeTab === 'following' && following.length === 0) {
       fetchFollowing();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const fetchUserProfile = async () => {

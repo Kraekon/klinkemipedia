@@ -17,6 +17,7 @@ const LeaderboardPage = () => {
 
   useEffect(() => {
     fetchLeaderboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period, category, page]);
 
   const fetchLeaderboard = async () => {

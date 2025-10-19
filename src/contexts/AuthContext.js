@@ -99,12 +99,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+        withCredentials: true
+      });
+      
+      if (response.data.success) {
+        setUser(response.data.user);
+      }
+    } catch (error) {
+      console.error('Update user error:', error);
+    }
+  };
+
   const value = {
     user,
     loading,
     login,
     logout,
     register,
+    updateUser,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin'
   };
