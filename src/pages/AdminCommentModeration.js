@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Table, Button, Badge, Form, Alert, Pagination } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -20,7 +20,7 @@ const AdminCommentModeration = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getAdminComments(statusFilter, currentPage, 20);
@@ -33,11 +33,11 @@ const AdminCommentModeration = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, currentPage, t]);
 
   useEffect(() => {
     fetchComments();
-  }, [statusFilter, currentPage]);
+  }, [fetchComments]);
 
   const handleApprove = async (commentId) => {
     try {
