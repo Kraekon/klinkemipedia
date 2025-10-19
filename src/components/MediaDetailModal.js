@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Button, Spinner, Alert, Badge, ListGroup } from 'react-bootstrap';
 import { getImageUrl } from '../utils/imageUrl';
-import { getMediaUsageById, deleteMedia } from '../services/api';
+import { getMediaUsageById } from '../services/api';
 import { Link } from 'react-router-dom';
 
 const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
@@ -9,13 +9,7 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
   const [loadingUsage, setLoadingUsage] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (show && media) {
-      fetchUsage();
-    }
-  }, [show, media]);
-
-  const fetchUsage = async () => {
+  const fetchUsage = useCallback(async () => {
     if (!media) return;
     
     setLoadingUsage(true);
@@ -31,7 +25,13 @@ const MediaDetailModal = ({ show, onHide, media, onDelete, onCopyUrl }) => {
     } finally {
       setLoadingUsage(false);
     }
-  };
+  }, [media]);
+
+  useEffect(() => {
+    if (show && media) {
+      fetchUsage();
+    }
+  }, [show, media, fetchUsage]);
 
   const formatFileSize = (bytes) => {
     if (bytes < 1024) return bytes + ' B';
