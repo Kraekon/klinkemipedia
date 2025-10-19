@@ -99,6 +99,12 @@ const ArticleSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    uniqueViews: [{
+      type: mongoose.Schema.Types.ObjectId
+    }],
+    lastViewedAt: {
+      type: Date
+    },
     commentCount: {
       type: Number,
       default: 0
@@ -109,10 +115,28 @@ const ArticleSchema = new mongoose.Schema(
   }
 );
 
-// Index for better search performance
-ArticleSchema.index({ title: 'text', content: 'text', tags: 'text' });
+// Text index for full-text search with weights
+ArticleSchema.index(
+  { 
+    title: 'text', 
+    content: 'text', 
+    tags: 'text' 
+  },
+  { 
+    weights: {
+      title: 10,
+      tags: 8,
+      content: 5
+    },
+    name: 'article_text_index'
+  }
+);
+
+// Other indexes for better query performance
 ArticleSchema.index({ category: 1 });
 ArticleSchema.index({ status: 1 });
 ArticleSchema.index({ slug: 1 }, { unique: true });
+ArticleSchema.index({ views: -1 });
+ArticleSchema.index({ lastViewedAt: -1 });
 
 module.exports = mongoose.model('Article', ArticleSchema);

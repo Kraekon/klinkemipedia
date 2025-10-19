@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import ArticleList from '../components/ArticleList';
 import CategoryFilter from '../components/CategoryFilter';
 import SearchBar from '../components/SearchBar';
+import PopularArticles from '../components/PopularArticles';
 import { getAllArticles } from '../services/api';
 import './HomePage.css';
 
@@ -47,12 +48,22 @@ const HomePage = () => {
 
       <SearchBar />
 
-      <CategoryFilter 
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-      />
+      <Row>
+        <Col lg={8}>
+          <CategoryFilter 
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
 
-      <ArticleList articles={articles} loading={loading} error={error} />
+          <ArticleList articles={articles} loading={loading} error={error} />
+        </Col>
+        
+        <Col lg={4}>
+          <div className="sidebar-widgets">
+            <PopularArticles period="week" limit={10} />
+          </div>
+        </Col>
+      </Row>
     </Container>
   );
 };

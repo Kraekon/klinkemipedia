@@ -65,6 +65,15 @@
 }
 
 /* Search Bar in Navbar */
+.navbar-search-container {
+  width: 350px;
+  margin: 0 var(--spacing-md);
+}
+
+.navbar-search-container .search-bar-container {
+  margin-bottom: 0;
+}
+
 .navbar .form-control {
   background-color: var(--dark-bg-primary);
   border: 1px solid var(--border-dark);
@@ -125,6 +134,10 @@
   .navbar .input-group {
     max-width: 100%;
     margin-top: var(--spacing-md);
+  }
+
+  .navbar-search-container {
+    display: none !important;
   }
 }
 
