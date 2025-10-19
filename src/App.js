@@ -20,6 +20,9 @@ import AdminTagManagement from './pages/AdminTagManagement';
 import AdminCommentModeration from './pages/AdminCommentModeration';
 import VersionCompare from './components/VersionCompare';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProfilePage from './pages/ProfilePage';
+import EditProfilePage from './pages/EditProfilePage';
+import LeaderboardPage from './pages/LeaderboardPage';
 import './App.css';
 
 const NotFoundPage = () => {
@@ -118,6 +121,13 @@ function App() {
                     <Route path="/search" element={<SearchPage />} />
                     <Route path="/tags" element={<TagBrowsePage />} />
                     <Route path="/tag/:tagname" element={<TagArticlesPage />} />
+                    <Route path="/profile/:username" element={<ProfilePage />} />
+                    <Route path="/profile/edit" element={
+                      <ProtectedRoute>
+                        <EditProfilePage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/leaderboard" element={<LeaderboardPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </main>

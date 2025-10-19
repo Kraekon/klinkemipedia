@@ -1,0 +1,142 @@
+.edit-profile-page {
+  padding: 2rem 0;
+  max-width: 900px;
+}
+
+.page-title {
+  color: #abb2bf;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.edit-card {
+  background-color: #282c34;
+  border: 1px solid #3e4451;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #abb2bf;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.edit-card .form-label {
+  color: #abb2bf;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.edit-card .form-control,
+.edit-card .form-control:focus {
+  background-color: #21252b;
+  border: 1px solid #3e4451;
+  color: #abb2bf;
+}
+
+.edit-card .form-control:focus {
+  border-color: #98c379;
+  box-shadow: 0 0 0 0.2rem rgba(152, 195, 121, 0.25);
+}
+
+.edit-card textarea.form-control {
+  resize: vertical;
+}
+
+.edit-card .form-text {
+  color: #5c6370;
+}
+
+.avatar-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #98c379;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #98c379 0%, #61afef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #282c34;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-actions .btn {
+  padding: 0.75rem 2rem;
+}
+
+.btn-success {
+  background-color: #98c379;
+  border-color: #98c379;
+}
+
+.btn-success:hover {
+  background-color: #7db669;
+  border-color: #7db669;
+}
+
+.btn-success:focus {
+  box-shadow: 0 0 0 0.2rem rgba(152, 195, 121, 0.5);
+}
+
+.btn-outline-secondary {
+  color: #5c6370;
+  border-color: #3e4451;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #3e4451;
+  border-color: #3e4451;
+  color: #abb2bf;
+}
+
+@media (max-width: 768px) {
+  .edit-profile-page {
+    padding: 1rem 0;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .avatar-upload-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}

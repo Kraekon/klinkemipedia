@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import UserMenu from './UserMenu';
 import SearchBar from './SearchBar';
+import NotificationsDropdown from './NotificationsDropdown';
 import { useAuth } from '../contexts/AuthContext';
 import './Navbar.css';
 
@@ -24,6 +25,7 @@ const Navbar = () => {
             <Nav.Link as={Link} to="/">{t('navigation.home')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.articles')}</Nav.Link>
             <Nav.Link as={Link} to="/tags">{t('navigation.tags')}</Nav.Link>
+            <Nav.Link as={Link} to="/leaderboard">{t('leaderboard.title')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.about')}</Nav.Link>
           </Nav>
           <div className="navbar-search-container d-none d-lg-block">
@@ -33,9 +35,14 @@ const Navbar = () => {
             <LanguageSwitcher variant="navbar" />
           </div>
           {user ? (
-            <div className="ms-2">
-              <UserMenu />
-            </div>
+            <>
+              <div className="ms-2">
+                <NotificationsDropdown />
+              </div>
+              <div className="ms-2">
+                <UserMenu />
+              </div>
+            </>
           ) : (
             <div className="ms-2 d-flex gap-2">
               <Button 
