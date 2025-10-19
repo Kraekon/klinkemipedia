@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Button, Badge, Spinner } from 'react-bootstrap';
+import { getImageUrl } from '../utils/imageUrl';
 import './MediaCard.css';
 
 const MediaCard = ({ media, onDelete, onCopyUrl }) => {
@@ -58,7 +59,7 @@ const MediaCard = ({ media, onDelete, onCopyUrl }) => {
     <Card className="media-card h-100">
       <div className="media-card-thumbnail">
         <img 
-          src={media.url} 
+          src={getImageUrl(media.url)}
           alt={media.originalName}
           loading="lazy"
         />

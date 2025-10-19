@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
+import { getImageUrl } from '../utils/imageUrl';
 import './MediaPickerCard.css';
 
 const MediaPickerCard = ({ media, onSelect }) => {
@@ -31,7 +32,7 @@ const MediaPickerCard = ({ media, onSelect }) => {
     <Card className="media-picker-card h-100">
       <div className="media-picker-thumbnail">
         <img 
-          src={media.url} 
+          src={getImageUrl(media.url)}
           alt={media.originalName}
           loading="lazy"
         />

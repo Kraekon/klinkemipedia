@@ -182,7 +182,7 @@ const ImageUploader = ({ onUploadSuccess, onUploadError }) => {
             className="w-100 browse-library-btn"
             onClick={() => setShowMediaLibrary(true)}
           >
-            📁 Browse Media Library
+            📁 Insert from Library
           </Button>
         </>
       ) : (
@@ -219,7 +219,7 @@ const ImageUploader = ({ onUploadSuccess, onUploadError }) => {
               onClick={handleUpload}
               disabled={uploading}
             >
-              {uploading ? 'Uploading...' : 'Upload'}
+              {uploading ? 'Inserting Image...' : 'Insert Image'}
             </Button>
           </div>
         </div>
