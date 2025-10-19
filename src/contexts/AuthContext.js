@@ -19,26 +19,26 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is authenticated on mount
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
-        withCredentials: true
-      });
-      
-      if (response.data.success) {
-        setUser(response.data.user);
-      } else {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+          withCredentials: true
+        });
+        
+        if (response.data.success) {
+          setUser(response.data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    checkAuth();
+  }, [API_BASE_URL]);
 
   const register = async (username, email, password) => {
     try {
