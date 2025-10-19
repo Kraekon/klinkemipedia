@@ -3,6 +3,7 @@ import { Card, Badge, Table, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { getImageUrl } from '../utils/imageUrl';
+import TagBadge from './TagBadge';
 
 const ArticleDetail = ({ article }) => {
   return (
@@ -20,7 +21,7 @@ const ArticleDetail = ({ article }) => {
               <Badge bg="primary" className="me-2">{article.category}</Badge>
             )}
             {article.tags && article.tags.map((tag, index) => (
-              <Badge key={index} bg="secondary" className="me-1">{tag}</Badge>
+              <TagBadge key={index} tag={tag} clickable={true} />
             ))}
           </div>
 

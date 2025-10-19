@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import TagBadge from './TagBadge';
 
 const ArticleCard = ({ article }) => {
   const { t } = useTranslation();
@@ -21,9 +22,7 @@ const ArticleCard = ({ article }) => {
         {article.tags && article.tags.length > 0 && (
           <div className="mb-3">
             {article.tags.map((tag, index) => (
-              <Badge key={index} bg="secondary" className="me-1">
-                {tag}
-              </Badge>
+              <TagBadge key={index} tag={tag} clickable={true} />
             ))}
           </div>
         )}

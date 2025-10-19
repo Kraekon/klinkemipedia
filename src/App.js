@@ -11,6 +11,9 @@ import AdminArticleForm from './pages/AdminArticleForm';
 import UserManagementPage from './pages/UserManagementPage';
 import AdminMediaLibrary from './pages/AdminMediaLibrary';
 import MediaAnalytics from './pages/MediaAnalytics';
+import TagBrowsePage from './pages/TagBrowsePage';
+import TagArticlesPage from './pages/TagArticlesPage';
+import AdminTagManagement from './pages/AdminTagManagement';
 import './App.css';
 
 const NotFoundPage = () => {
@@ -53,6 +56,7 @@ function App() {
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/media" element={<AdminMediaLibrary />} />
           <Route path="/admin/media/analytics" element={<MediaAnalytics />} />
+          <Route path="/admin/tags" element={<AdminTagManagement />} />
 
           {/* Main site routes (with main navbar) */}
           <Route path="/*" element={
@@ -63,6 +67,8 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/article/:slug" element={<ArticlePage />} />
                   <Route path="/search" element={<SearchPage />} />
+                  <Route path="/tags" element={<TagBrowsePage />} />
+                  <Route path="/tag/:tagname" element={<TagArticlesPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>

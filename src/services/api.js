@@ -42,6 +42,39 @@ export const getAllTags = async () => {
   return response.data;
 };
 
+// Get all tags with counts
+export const getTagsWithCounts = async () => {
+  const response = await axios.get(`${API_BASE_URL}/tags`);
+  return response.data;
+};
+
+// Get articles by tag
+export const getArticlesByTag = async (tag, page = 1, limit = 10) => {
+  const response = await axios.get(`${API_BASE_URL}/tags/${encodeURIComponent(tag)}/articles`, {
+    params: { page, limit }
+  });
+  return response.data;
+};
+
+// Merge tags (admin)
+export const mergeTags = async (sourceTags, targetTag) => {
+  const response = await axios.put(`${API_BASE_URL}/tags/merge`, {
+    sourceTags,
+    targetTag
+  }, {
+    headers: getAdminHeaders()
+  });
+  return response.data;
+};
+
+// Delete tag (admin)
+export const deleteTag = async (tag) => {
+  const response = await axios.delete(`${API_BASE_URL}/tags/${encodeURIComponent(tag)}`, {
+    headers: getAdminHeaders()
+  });
+  return response.data;
+};
+
 // Get related articles
 export const getRelatedArticles = async (slug, limit = 5) => {
   const response = await axios.get(`${API_BASE_URL}/articles/${slug}/related`, { params: { limit } });
