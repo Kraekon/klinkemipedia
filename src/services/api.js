@@ -48,6 +48,47 @@ export const getRelatedArticles = async (slug, limit = 5) => {
   return response.data;
 };
 
+// Upload image
+export const uploadImage = async (file, onUploadProgress) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await axios.post(`${API_BASE_URL}/articles/upload`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    onUploadProgress
+  });
+  return response.data;
+};
+
+// Version History APIs
+export const getArticleRevisions = async (slug, page = 1, limit = 20) => {
+  const response = await axios.get(`${API_BASE_URL}/articles/${slug}/revisions`, {
+    params: { page, limit }
+  });
+  return response.data;
+};
+
+export const getArticleRevision = async (slug, versionNumber) => {
+  const response = await axios.get(`${API_BASE_URL}/articles/${slug}/revisions/${versionNumber}`);
+  return response.data;
+};
+
+export const restoreArticleRevision = async (slug, versionNumber, editedBy = 'admin') => {
+  const response = await axios.post(`${API_BASE_URL}/articles/${slug}/restore/${versionNumber}`, {
+    editedBy
+  });
+  return response.data;
+};
+
+export const compareArticleRevisions = async (slug, v1, v2) => {
+  const response = await axios.get(`${API_BASE_URL}/articles/${slug}/compare`, {
+    params: { v1, v2 }
+  });
+  return response.data;
+};
+
 // User Management APIs
 const getAdminHeaders = () => {
   // In production, this should use JWT tokens stored in localStorage/cookies

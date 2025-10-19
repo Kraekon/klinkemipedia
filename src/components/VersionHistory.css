@@ -1,0 +1,38 @@
+.revision-view {
+  padding: 1rem;
+}
+
+.revision-header {
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 1rem;
+}
+
+.revision-header h5 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.revision-content h6 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #495057;
+  font-weight: 600;
+}
+
+.revision-content p {
+  margin-bottom: 0.5rem;
+}
+
+.content-preview {
+  background-color: #f8f9fa;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.revision-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  border-top: 1px solid #dee2e6;
+  padding-top: 1rem;
+}

@@ -19,6 +19,10 @@
 .env.test.local
 .env.production.local
 
+# uploaded files
+/backend/public/uploads/*
+!/backend/public/uploads/.gitkeep
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
