@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Table, Spinner, Alert, Toast, Badge } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import AdminNavbar from '../components/AdminNavbar';
 import MediaCard from '../components/MediaCard';
 import MediaDetailModal from '../components/MediaDetailModal';
@@ -8,6 +9,7 @@ import { getMediaAnalytics, getAllMedia, bulkDeleteMedia } from '../services/api
 import { getImageUrl } from '../utils/imageUrl';
 
 const MediaAnalytics = () => {
+  const { t } = useTranslation();
   const [analytics, setAnalytics] = useState(null);
   const [unusedImages, setUnusedImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,11 +26,7 @@ const MediaAnalytics = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastVariant, setToastVariant] = useState('success');
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = React.useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -45,11 +43,15 @@ const MediaAnalytics = () => {
         setUnusedImages(unusedResponse.data);
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Något gick fel');
+      setError(err.response?.data?.message || err.message || t('messages.error.somethingWrong'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   const formatBytes = (bytes) => {
     if (bytes < 1024) return bytes + ' B';
@@ -77,22 +79,22 @@ const MediaAnalytics = () => {
       const response = await bulkDeleteMedia(imageIds);
       
       if (response.success) {
-        showSuccessToast(`${response.deleted} bilder raderade!`);
+        showSuccessToast(t('messages.success.imagesDeleted', { count: response.deleted }));
         setShowBulkDeleteModal(false);
         // Refresh analytics
         fetchAnalytics();
       } else {
-        showErrorToast('Kunde inte radera bilder');
+        showErrorToast(t('messages.error.deleteFailed'));
       }
     } catch (err) {
-      showErrorToast(err.response?.data?.message || err.message || 'Något gick fel');
+      showErrorToast(err.response?.data?.message || err.message || t('messages.error.somethingWrong'));
     } finally {
       setDeleting(false);
     }
   };
 
   const handleCopyUrl = (url) => {
-    showSuccessToast('URL kopierad till urklipp');
+    showSuccessToast(t('messages.success.urlCopied'));
   };
 
   const showSuccessToast = (message) => {
@@ -118,9 +120,9 @@ const MediaAnalytics = () => {
         <Container className="mt-4">
           <div className="text-center py-5">
             <Spinner animation="border" role="status">
-              <span className="visually-hidden">Laddar...</span>
+              <span className="visually-hidden">{t('common.loading')}</span>
             </Spinner>
-            <p className="mt-3">Laddar statistik...</p>
+            <p className="mt-3">{t('common.loading')}</p>
           </div>
         </Container>
       </>
@@ -133,10 +135,10 @@ const MediaAnalytics = () => {
         <AdminNavbar />
         <Container className="mt-4">
           <Alert variant="danger">
-            <Alert.Heading>Fel vid laddning</Alert.Heading>
+            <Alert.Heading>{t('messages.error.loadFailed')}</Alert.Heading>
             <p>{error}</p>
             <Button variant="outline-danger" onClick={fetchAnalytics}>
-              Försök igen
+              {t('common.back')}
             </Button>
           </Alert>
         </Container>
@@ -150,7 +152,7 @@ const MediaAnalytics = () => {
         <AdminNavbar />
         <Container className="mt-4">
           <Alert variant="warning">
-            Ingen data tillgänglig
+            {t('messages.info.noData')}
           </Alert>
         </Container>
       </>
@@ -166,9 +168,9 @@ const MediaAnalytics = () => {
       <AdminNavbar />
       <Container className="mt-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1>📊 Medieanalys</h1>
+          <h1>📊 {t('navigation.mediaAnalytics')}</h1>
           <Button variant="outline-primary" onClick={fetchAnalytics}>
-            🔄 Uppdatera
+            🔄 {t('common.back')}
           </Button>
         </div>
 
@@ -179,7 +181,7 @@ const MediaAnalytics = () => {
               <Card.Body className="text-center">
                 <div style={{ fontSize: '2rem' }}>📷</div>
                 <h2 className="mt-2">{analytics.totalImages}</h2>
-                <p className="text-muted mb-0">Totalt Bilder</p>
+                <p className="text-muted mb-0">{t('media.totalImages')}</p>
               </Card.Body>
             </Card>
           </Col>
@@ -189,7 +191,7 @@ const MediaAnalytics = () => {
               <Card.Body className="text-center">
                 <div style={{ fontSize: '2rem' }}>💾</div>
                 <h2 className="mt-2">{formatBytes(analytics.totalSize)}</h2>
-                <p className="text-muted mb-0">Totalt Lagringsutrymme</p>
+                <p className="text-muted mb-0">{t('media.totalSize')}</p>
               </Card.Body>
             </Card>
           </Col>
@@ -199,7 +201,7 @@ const MediaAnalytics = () => {
               <Card.Body className="text-center">
                 <div style={{ fontSize: '2rem' }}>✅</div>
                 <h2 className="mt-2">{analytics.usedImages}</h2>
-                <p className="text-muted mb-0">Använda Bilder</p>
+                <p className="text-muted mb-0">{t('media.usedImages')}</p>
                 <small className="text-muted">
                   {formatPercentage(analytics.usedImages, analytics.totalImages)}
                 </small>
@@ -212,13 +214,13 @@ const MediaAnalytics = () => {
               <Card.Body className="text-center">
                 <div style={{ fontSize: '2rem' }}>⚠️</div>
                 <h2 className="mt-2">{analytics.unusedImages}</h2>
-                <p className="text-muted mb-0">Oanvända Bilder</p>
+                <p className="text-muted mb-0">{t('media.unusedImages')}</p>
                 <small className="text-muted">
                   {formatPercentage(analytics.unusedImages, analytics.totalImages)}
                 </small>
                 {unusedPercentage > 20 && (
                   <Badge bg="warning" text="dark" className="mt-2">
-                    Hög andel oanvända
+                    {t('media.unused')}
                   </Badge>
                 )}
               </Card.Body>
@@ -230,17 +232,17 @@ const MediaAnalytics = () => {
         {analytics.mostUsed && analytics.mostUsed.length > 0 && (
           <Card className="mb-4">
             <Card.Header>
-              <h4 className="mb-0">Mest Använda Bilder</h4>
+              <h4 className="mb-0">{t('media.usedImages')}</h4>
             </Card.Header>
             <Card.Body>
               <Table responsive hover>
                 <thead>
                   <tr>
-                    <th>Bild</th>
-                    <th>Filnamn</th>
-                    <th>Användningar</th>
-                    <th>Storlek</th>
-                    <th>Åtgärd</th>
+                    <th>{t('media.filename')}</th>
+                    <th>{t('media.filename')}</th>
+                    <th>{t('media.usage')}</th>
+                    <th>{t('media.size')}</th>
+                    <th>{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -273,7 +275,7 @@ const MediaAnalytics = () => {
                           size="sm"
                           onClick={() => handleImageClick(media)}
                         >
-                          Visa detaljer
+                          {t('media.viewUsage')}
                         </Button>
                       </td>
                     </tr>
@@ -288,9 +290,9 @@ const MediaAnalytics = () => {
         <Card className="mb-4">
           <Card.Header className="d-flex justify-content-between align-items-center">
             <div>
-              <h4 className="mb-0">Oanvända Bilder</h4>
+              <h4 className="mb-0">{t('media.unusedImages')}</h4>
               <small className="text-muted">
-                {unusedImages.length} bilder ({formatBytes(calculateUnusedSize())})
+                {t('media.usageCount', { count: unusedImages.length })} ({formatBytes(calculateUnusedSize())})
               </small>
             </div>
             {unusedImages.length > 0 && (
@@ -298,19 +300,19 @@ const MediaAnalytics = () => {
                 variant="danger"
                 onClick={() => setShowBulkDeleteModal(true)}
               >
-                🗑️ Radera oanvända bilder
+                🗑️ {t('media.deleteUnused')}
               </Button>
             )}
           </Card.Header>
           <Card.Body>
             {unusedImages.length === 0 ? (
               <Alert variant="success">
-                <strong>Inga oanvända bilder hittades!</strong> Alla bilder används i minst en artikel.
+                <strong>{t('media.noImagesFound')}</strong>
               </Alert>
             ) : (
               <>
                 <Alert variant="warning">
-                  ⚠️ <strong>Dessa bilder används inte i någon artikel</strong>
+                  ⚠️ <strong>{t('media.notUsed')}</strong>
                 </Alert>
                 <Row>
                   {unusedImages.map((media) => (
@@ -412,15 +414,15 @@ const MediaAnalytics = () => {
           show={showBulkDeleteModal}
           onHide={() => setShowBulkDeleteModal(false)}
           onConfirm={handleBulkDelete}
-          title="Bekräfta radering"
-          message={`Är du säker på att du vill radera ${unusedImages.length} oanvända bilder? Detta kan inte ångras.`}
-          confirmText="Radera"
-          cancelText="Avbryt"
+          title={t('messages.confirm.deleteUnusedImages')}
+          message={t('messages.confirm.deleteUnusedImagesDetail', { count: unusedImages.length })}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
           variant="danger"
           isLoading={deleting}
         >
           <Alert variant="info">
-            <strong>Total storlek:</strong> {formatBytes(calculateUnusedSize())}
+            <strong>{t('media.totalSize')}:</strong> {formatBytes(calculateUnusedSize())}
           </Alert>
         </ConfirmModal>
 

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Badge, Modal, Alert, Spinner, Form } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import AdminNavbar from '../components/AdminNavbar';
 import { getAllArticles, deleteArticle } from '../services/api';
 import './Admin.css';
 
 const AdminPage = () => {
+  const { t } = useTranslation();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -88,9 +90,9 @@ const AdminPage = () => {
       <div className="admin-container">
         <div className="admin-header">
           <div>
-            <h2>Article Dashboard</h2>
+            <h2>{t('article.articleDashboard')}</h2>
             <div className="article-count">
-              {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
+              {t('article.articleCount', { count: filteredArticles.length })}
             </div>
           </div>
           <Button 
@@ -98,7 +100,7 @@ const AdminPage = () => {
             size="lg"
             onClick={() => navigate('/admin/new')}
           >
-            + Create New Article
+            + {t('article.createArticle')}
           </Button>
         </div>
 
@@ -116,29 +118,29 @@ const AdminPage = () => {
 
         <div className="mb-3 d-flex gap-3 align-items-end">
           <Form.Group className="flex-grow-1">
-            <Form.Label>Search</Form.Label>
+            <Form.Label>{t('common.search')}</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Search by title or category..."
+              placeholder={t('article.searchArticles')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </Form.Group>
           <Form.Group style={{ minWidth: '150px' }}>
-            <Form.Label>Sort by</Form.Label>
+            <Form.Label>{t('sort.by')}</Form.Label>
             <Form.Select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-              <option value="updatedAt">Last Updated</option>
-              <option value="createdAt">Created Date</option>
-              <option value="title">Title</option>
-              <option value="category">Category</option>
-              <option value="views">Views</option>
+              <option value="updatedAt">{t('article.lastModified')}</option>
+              <option value="createdAt">{t('article.createdAt')}</option>
+              <option value="title">{t('article.title')}</option>
+              <option value="category">{t('article.category')}</option>
+              <option value="views">{t('article.views')}</option>
             </Form.Select>
           </Form.Group>
           <Form.Group style={{ minWidth: '120px' }}>
-            <Form.Label>Order</Form.Label>
+            <Form.Label>{t('sort.by')}</Form.Label>
             <Form.Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-              <option value="desc">Descending</option>
-              <option value="asc">Ascending</option>
+              <option value="desc">{t('sort.descending')}</option>
+              <option value="asc">{t('sort.ascending')}</option>
             </Form.Select>
           </Form.Group>
         </div>
@@ -146,18 +148,18 @@ const AdminPage = () => {
         {loading ? (
           <div className="text-center py-5">
             <Spinner animation="border" variant="primary" />
-            <p className="mt-3">Loading articles...</p>
+            <p className="mt-3">{t('article.loadingArticles')}</p>
           </div>
         ) : filteredArticles.length === 0 ? (
           <div className="empty-state">
-            <h3>No articles yet</h3>
-            <p>Create your first article to get started!</p>
+            <h3>{t('article.noArticlesFound')}</h3>
+            <p>{t('article.createArticle')}</p>
             <Button 
               variant="primary" 
               size="lg"
               onClick={() => navigate('/admin/new')}
             >
-              + Create New Article
+              + {t('article.createArticle')}
             </Button>
           </div>
         ) : (
@@ -165,12 +167,12 @@ const AdminPage = () => {
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
-                  <th>Title</th>
-                  <th>Category</th>
-                  <th>Status</th>
-                  <th>Views</th>
-                  <th>Last Updated</th>
-                  <th style={{ width: '200px' }}>Actions</th>
+                  <th>{t('table.title')}</th>
+                  <th>{t('table.category')}</th>
+                  <th>{t('table.status')}</th>
+                  <th>{t('article.views')}</th>
+                  <th>{t('article.lastModified')}</th>
+                  <th style={{ width: '200px' }}>{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -198,21 +200,21 @@ const AdminPage = () => {
                           size="sm"
                           onClick={() => navigate(`/admin/edit/${article.slug}`)}
                         >
-                          Edit
+                          {t('common.edit')}
                         </Button>
                         <Button
                           variant="info"
                           size="sm"
                           onClick={() => navigate(`/article/${article.slug}`)}
                         >
-                          View
+                          {t('common.view')}
                         </Button>
                         <Button
                           variant="danger"
                           size="sm"
                           onClick={() => setDeleteModal({ show: true, article })}
                         >
-                          Delete
+                          {t('common.delete')}
                         </Button>
                       </div>
                     </td>
@@ -226,18 +228,17 @@ const AdminPage = () => {
 
       <Modal show={deleteModal.show} onHide={() => setDeleteModal({ show: false, article: null })}>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Delete</Modal.Title>
+          <Modal.Title>{t('messages.confirm.deleteArticle')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete the article <strong>{deleteModal.article?.title}</strong>?
-          This action cannot be undone.
+          {t('messages.confirm.deleteArticleDetail', { title: deleteModal.article?.title })}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setDeleteModal({ show: false, article: null })}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button variant="danger" onClick={handleDelete}>
-            Delete Article
+            {t('article.deleteArticle')}
           </Button>
         </Modal.Footer>
       </Modal>
