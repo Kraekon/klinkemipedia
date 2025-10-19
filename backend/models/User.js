@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -24,8 +25,8 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Please add a password'],
-      minlength: [6, 'Password must be at least 6 characters']
-      // TODO: Add password hashing with bcrypt before saving
+      minlength: [6, 'Password must be at least 6 characters'],
+      select: false // Don't include password in queries by default
     },
     role: {
       type: String,
@@ -59,5 +60,32 @@ const UserSchema = new mongoose.Schema(
 // Index for faster queries
 UserSchema.index({ email: 1 });
 UserSchema.index({ username: 1 });
+
+// Hash password before saving
+UserSchema.pre('save', async function (next) {
+  // Only hash the password if it has been modified (or is new)
+  if (!this.isModified('password')) {
+    return next();
+  }
+
+  try {
+    // Generate salt with 10 rounds
+    const salt = await bcrypt.genSalt(10);
+    // Hash the password
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Method to compare password for login
+UserSchema.methods.comparePassword = async function (candidatePassword) {
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw new Error('Password comparison failed');
+  }
+};
 
 module.exports = mongoose.model('User', UserSchema);

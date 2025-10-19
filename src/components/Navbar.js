@@ -3,10 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Navbar as BSNavbar, Container, Nav, Form, FormControl, Button, InputGroup } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import UserMenu from './UserMenu';
+import { useAuth } from '../contexts/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
@@ -64,6 +67,30 @@ const Navbar = () => {
           <div className="ms-2">
             <LanguageSwitcher variant="navbar" />
           </div>
+          {user ? (
+            <div className="ms-2">
+              <UserMenu />
+            </div>
+          ) : (
+            <div className="ms-2 d-flex gap-2">
+              <Button 
+                as={Link} 
+                to="/login" 
+                variant="outline-light"
+                size="sm"
+              >
+                {t('auth.login')}
+              </Button>
+              <Button 
+                as={Link} 
+                to="/register" 
+                variant="success"
+                size="sm"
+              >
+                {t('auth.register')}
+              </Button>
+            </div>
+          )}
         </BSNavbar.Collapse>
       </Container>
     </BSNavbar>

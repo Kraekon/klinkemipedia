@@ -2,6 +2,37 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
+// Configure axios to send cookies with requests
+axios.defaults.withCredentials = true;
+
+// Auth APIs
+export const register = async (username, email, password) => {
+  const response = await axios.post(`${API_BASE_URL}/auth/register`, {
+    username,
+    email,
+    password
+  });
+  return response.data;
+};
+
+export const login = async (email, password) => {
+  const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+    email,
+    password
+  });
+  return response.data;
+};
+
+export const logout = async () => {
+  const response = await axios.post(`${API_BASE_URL}/auth/logout`);
+  return response.data;
+};
+
+export const getCurrentUser = async () => {
+  const response = await axios.get(`${API_BASE_URL}/auth/me`);
+  return response.data;
+};
+
 // Article APIs
 export const getAllArticles = async (params = {}) => {
   const response = await axios.get(`${API_BASE_URL}/articles`, { params });

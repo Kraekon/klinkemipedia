@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const { validate: validateEnvironment, getEnv } = require('./config/environment');
 
@@ -19,9 +20,13 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors()); // Enable CORS for all routes
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true // Allow cookies to be sent
+})); // Enable CORS for all routes
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+app.use(cookieParser()); // Parse cookies
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
@@ -43,6 +48,9 @@ app.get('/api/test', (req, res) => {
 
 // Mount article routes
 app.use('/api/articles', require('./routes/articles'));
+
+// Mount auth routes
+app.use('/api/auth', require('./routes/auth'));
 
 // Mount tags routes
 app.use('/api/tags', require('./routes/tags'));
