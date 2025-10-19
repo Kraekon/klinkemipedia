@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Button, Alert, ProgressBar } from 'react-bootstrap';
 import { uploadImage } from '../services/api';
+import MediaLibraryModal from './MediaLibraryModal';
 import './ImageUploader.css';
 
 const ImageUploader = ({ onUploadSuccess, onUploadError }) => {
@@ -10,6 +11,7 @@ const ImageUploader = ({ onUploadSuccess, onUploadError }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState(null);
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const fileInputRef = useRef(null);
 
   const validateFile = (file) => {
@@ -124,6 +126,18 @@ const ImageUploader = ({ onUploadSuccess, onUploadError }) => {
     }
   };
 
+  const handleSelectFromLibrary = (imageData) => {
+    // Call success callback with image data from library
+    if (onUploadSuccess) {
+      onUploadSuccess({
+        url: imageData.url,
+        alt: imageData.originalName,
+        filename: imageData.filename
+      });
+    }
+    setShowMediaLibrary(false);
+  };
+
   return (
     <div className="image-uploader">
       {error && (
@@ -133,28 +147,44 @@ const ImageUploader = ({ onUploadSuccess, onUploadError }) => {
       )}
 
       {!preview ? (
-        <div
-          className={`upload-area ${isDragging ? 'dragging' : ''}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <div className="upload-icon">📁</div>
-          <p className="upload-text">
-            Drag & drop an image here, or click to select
-          </p>
-          <p className="upload-hint">
-            Supported: JPG, PNG, GIF, WEBP (max 5MB)
-          </p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-            onChange={handleFileInputChange}
-            style={{ display: 'none' }}
-          />
-        </div>
+        <>
+          <div
+            className={`upload-area ${isDragging ? 'dragging' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <div className="upload-icon">📁</div>
+            <p className="upload-text">
+              Drag & drop an image here, or click to select
+            </p>
+            <p className="upload-hint">
+              Supported: JPG, PNG, GIF, WEBP (max 5MB)
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+              onChange={handleFileInputChange}
+              style={{ display: 'none' }}
+            />
+          </div>
+          
+          <div className="divider-container">
+            <div className="divider-line"></div>
+            <span className="divider-text">OR</span>
+            <div className="divider-line"></div>
+          </div>
+
+          <Button
+            variant="outline-primary"
+            className="w-100 browse-library-btn"
+            onClick={() => setShowMediaLibrary(true)}
+          >
+            📁 Browse Media Library
+          </Button>
+        </>
       ) : (
         <div className="preview-area">
           <div className="image-preview">
@@ -194,6 +224,13 @@ const ImageUploader = ({ onUploadSuccess, onUploadError }) => {
           </div>
         </div>
       )}
+
+      {/* Media Library Modal */}
+      <MediaLibraryModal
+        show={showMediaLibrary}
+        onHide={() => setShowMediaLibrary(false)}
+        onSelectImage={handleSelectFromLibrary}
+      />
     </div>
   );
 };

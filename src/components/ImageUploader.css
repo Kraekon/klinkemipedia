@@ -87,3 +87,39 @@
 .upload-actions button {
   min-width: 120px;
 }
+
+/* Divider styling */
+.divider-container {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: #dee2e6;
+}
+
+.divider-text {
+  padding: 0 1rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Browse Library Button */
+.browse-library-btn {
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 2px dashed #0d6efd;
+  transition: all 0.3s ease;
+}
+
+.browse-library-btn:hover {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+  transform: scale(1.02);
+}
