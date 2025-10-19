@@ -25,6 +25,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import BookmarksPage from './pages/BookmarksPage';
+import CollectionsPage from './pages/CollectionsPage';
+import CollectionDetailPage from './pages/CollectionDetailPage';
 import './App.css';
 
 const NotFoundPage = () => {
@@ -150,6 +153,17 @@ function App() {
                       </ProtectedRoute>
                     } />
                     <Route path="/leaderboard" element={<LeaderboardPage />} />
+                    <Route path="/bookmarks" element={
+                      <ProtectedRoute>
+                        <BookmarksPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/collections" element={
+                      <ProtectedRoute>
+                        <CollectionsPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/collections/:id" element={<CollectionDetailPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </main>

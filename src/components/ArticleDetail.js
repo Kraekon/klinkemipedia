@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import { getImageUrl } from '../utils/imageUrl';
 import TagBadge from './TagBadge';
+import BookmarkButton from './BookmarkButton';
 import VersionHistory from './VersionHistory';
 import './ArticleDetail.css';
 
@@ -17,13 +18,21 @@ const ArticleDetail = ({ article }) => {
         <Button as={Link} to="/" variant="outline-primary">
           ← {t('common.back')} to {t('navigation.articles')}
         </Button>
-        <Button 
-          variant="outline-secondary" 
-          size="sm"
-          onClick={() => setShowVersionHistory(true)}
-        >
-          📜 {t('revisions.viewHistory')}
-        </Button>
+        <div className="d-flex gap-2">
+          <BookmarkButton 
+            articleId={article._id}
+            articleSlug={article.slug}
+            size="sm"
+            showLabel={true}
+          />
+          <Button 
+            variant="outline-secondary" 
+            size="sm"
+            onClick={() => setShowVersionHistory(true)}
+          >
+            📜 {t('revisions.viewHistory')}
+          </Button>
+        </div>
       </div>
       
       <Card className="article-detail-card">
