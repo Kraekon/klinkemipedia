@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Badge, Table, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import { getImageUrl } from '../utils/imageUrl';
 
 const ArticleDetail = ({ article }) => {
   return (
@@ -33,11 +34,24 @@ const ArticleDetail = ({ article }) => {
           )}
 
           <div className="mb-4">
-  <h5>Content</h5>
-  <div className="article-content">
-    <ReactMarkdown>{article.content}</ReactMarkdown>
-  </div>
-</div>
+            <h5>Content</h5>
+            <div className="article-content">
+              <ReactMarkdown
+                components={{
+                  img: ({node, ...props}) => (
+                    <img
+                      {...props}
+                      src={getImageUrl(props.src)}
+                      alt={props.alt}
+                      style={{ maxWidth: '100%', height: 'auto' }}
+                    />
+                  )
+                }}
+              >
+                {article.content}
+              </ReactMarkdown>
+            </div>
+          </div>
 
           {article.referenceRanges && article.referenceRanges.length > 0 && (
             <div className="mb-4">
@@ -66,13 +80,26 @@ const ArticleDetail = ({ article }) => {
           )}
 
           {article.clinicalSignificance && (
-  <div className="mb-4">
-    <h5>Clinical Significance</h5>
-    <div className="clinical-significance">
-      <ReactMarkdown>{article.clinicalSignificance}</ReactMarkdown>
-    </div>
-  </div>
-)}
+            <div className="mb-4">
+              <h5>Clinical Significance</h5>
+              <div className="clinical-significance">
+                <ReactMarkdown
+                  components={{
+                    img: ({node, ...props}) => (
+                      <img
+                        {...props}
+                        src={getImageUrl(props.src)}
+                        alt={props.alt}
+                        style={{ maxWidth: '100%', height: 'auto' }}
+                      />
+                    )
+                  }}
+                >
+                  {article.clinicalSignificance}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
 
           {article.relatedTests && article.relatedTests.length > 0 && (
             <div className="mb-4">

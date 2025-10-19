@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal } from 'react-bootstrap';
+import { getImageUrl } from '../utils/imageUrl';
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import ImageUploader from '../components/ImageUploader';
@@ -387,14 +388,26 @@ const AdminArticleForm = () => {
   <Form.Label>Content <span className="text-danger">*</span></Form.Label>
   <div data-color-mode="light">
     <MDEditor
-      value={formData.content}
-      onChange={(value) => handleInputChange('content', value || '')}
-      preview="live"
-      height={500}
-      textareaProps={{
-        placeholder: 'Article content (Markdown supported with live preview)'
-      }}
-    />
+  value={formData.content}
+  onChange={(value) => handleInputChange('content', value || '')}
+  preview="live"
+  height={500}
+  textareaProps={{
+    placeholder: 'Article content (Markdown supported with live preview)'
+  }}
+  previewOptions={{
+    components: {
+      img: ({node, ...props}) => (
+        <img
+          {...props}
+          src={getImageUrl(props.src)}
+          alt={props.alt}
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
+      )
+    }
+  }}
+/>
   </div>
   <div className="char-count mt-2">
     {formData.content.length} characters / {countWords(formData.content)} words
@@ -442,14 +455,26 @@ const AdminArticleForm = () => {
   <Form.Label>Clinical Significance</Form.Label>
   <div data-color-mode="light">
     <MDEditor
-      value={formData.clinicalSignificance}
-      onChange={(value) => handleInputChange('clinicalSignificance', value || '')}
-      preview="edit"
-      height={300}
-      textareaProps={{
-        placeholder: 'Describe what abnormal values mean (Markdown supported)'
-      }}
-    />
+  value={formData.clinicalSignificance}
+  onChange={(value) => handleInputChange('clinicalSignificance', value || '')}
+  preview="edit"
+  height={300}
+  textareaProps={{
+    placeholder: 'Describe what abnormal values mean (Markdown supported)'
+  }}
+  previewOptions={{
+    components: {
+      img: ({node, ...props}) => (
+        <img
+          {...props}
+          src={getImageUrl(props.src)}
+          alt={props.alt}
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
+      )
+    }
+  }}
+/>
   </div>
 </Form.Group>
 
@@ -457,14 +482,26 @@ const AdminArticleForm = () => {
   <Form.Label>Interpretation</Form.Label>
   <div data-color-mode="light">
     <MDEditor
-      value={formData.interpretation}
-      onChange={(value) => handleInputChange('interpretation', value || '')}
-      preview="edit"
-      height={300}
-      textareaProps={{
-        placeholder: 'How to interpret results (Markdown supported)'
-      }}
-    />
+  value={formData.interpretation}
+  onChange={(value) => handleInputChange('interpretation', value || '')}
+  preview="edit"
+  height={300}
+  textareaProps={{
+    placeholder: 'How to interpret results (Markdown supported)'
+  }}
+  previewOptions={{
+    components: {
+      img: ({node, ...props}) => (
+        <img
+          {...props}
+          src={getImageUrl(props.src)}
+          alt={props.alt}
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
+      )
+    }
+  }}
+/>
   </div>
 </Form.Group>
 
