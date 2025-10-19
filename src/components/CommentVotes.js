@@ -1,13 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { upvoteComment, downvoteComment, removeVote } from '../services/api';
 import './CommentVotes.css';
 
 const CommentVotes = ({ comment, onVoteUpdate }) => {
   const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [isVoting, setIsVoting] = useState(false);
   const [localScore, setLocalScore] = useState(comment.score || 0);
   const [localUserVote, setLocalUserVote] = useState(comment.userVote || null);

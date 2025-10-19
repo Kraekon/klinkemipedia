@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Alert, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { getComments } from '../services/api';
 import CommentList from './CommentList';
 import CommentForm from './CommentForm';
@@ -10,13 +10,13 @@ import './CommentSection.css';
 
 const CommentSection = ({ articleSlug }) => {
   const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('newest');
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getComments(articleSlug, sortBy);
@@ -28,11 +28,11 @@ const CommentSection = ({ articleSlug }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [articleSlug, sortBy, t]);
 
   useEffect(() => {
     fetchComments();
-  }, [articleSlug, sortBy]);
+  }, [fetchComments]);
 
   const handleCommentAdded = (newComment) => {
     setComments(prevComments => [newComment, ...prevComments]);

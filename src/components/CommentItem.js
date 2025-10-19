@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import CommentForm from './CommentForm';
 import CommentVotes from './CommentVotes';
 import CommentActions from './CommentActions';
@@ -16,7 +16,7 @@ const CommentItem = ({
   depth = 0 
 }) => {
   const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
 
