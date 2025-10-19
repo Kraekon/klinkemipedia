@@ -1,0 +1,71 @@
+.compare-header {
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 1rem;
+}
+
+.compare-header h2 {
+  margin-bottom: 0.5rem;
+}
+
+.legend {
+  margin-top: 1rem;
+}
+
+.comparison-content {
+  margin-top: 2rem;
+}
+
+.compare-field {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+.compare-field.different {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+}
+
+.compare-field h6 {
+  margin-bottom: 1rem;
+  color: #495057;
+  font-weight: 600;
+}
+
+.version-column {
+  padding: 1rem;
+}
+
+.version-column.left {
+  border-right: 2px solid #dee2e6;
+}
+
+.version-label {
+  margin-bottom: 0.5rem;
+}
+
+.field-content {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 4px;
+  min-height: 60px;
+  overflow-x: auto;
+}
+
+.field-content pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+}
+
+.compare-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  border-top: 1px solid #dee2e6;
+  padding-top: 1rem;
+}

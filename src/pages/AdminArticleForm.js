@@ -4,6 +4,7 @@ import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal } from 'reac
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import ImageUploader from '../components/ImageUploader';
+import VersionHistory from '../components/VersionHistory';
 import MDEditor from '@uiw/react-md-editor';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { slugify } from '../utils/slugify';
@@ -51,6 +52,7 @@ const AdminArticleForm = () => {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
 
   useEffect(() => {
     fetchAvailableTags();
@@ -224,6 +226,13 @@ const AdminArticleForm = () => {
     setError(errorMessage);
   };
 
+  const handleRevisionRestore = () => {
+    // Refresh the article data after restore
+    if (isEditMode) {
+      fetchArticle();
+    }
+  };
+
   const handleSubmit = async (publishNow = false) => {
     if (!validateForm()) {
       setError('Please fix the validation errors before submitting');
@@ -281,7 +290,17 @@ const AdminArticleForm = () => {
     <>
       <AdminNavbar />
       <div className="admin-container">
-        <h2 className="mb-4">{isEditMode ? 'Edit Article' : 'Create New Article'}</h2>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="mb-0">{isEditMode ? 'Edit Article' : 'Create New Article'}</h2>
+          {isEditMode && (
+            <Button 
+              variant="outline-secondary" 
+              onClick={() => setShowVersionHistory(true)}
+            >
+              📜 Version History
+            </Button>
+          )}
+        </div>
 
         {/* Success Toast Notification */}
         <ToastContainer position="top-end" className="p-3" style={{ position: 'fixed', zIndex: 9999 }}>
@@ -590,6 +609,16 @@ const AdminArticleForm = () => {
             />
           </Modal.Body>
         </Modal>
+
+        {/* Version History Modal */}
+        {isEditMode && (
+          <VersionHistory
+            show={showVersionHistory}
+            onHide={() => setShowVersionHistory(false)}
+            slug={slug}
+            onRestore={handleRevisionRestore}
+          />
+        )}
       </div>
     </>
   );

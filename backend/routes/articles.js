@@ -86,16 +86,30 @@ router.route('/:slug')
   .put(async (req, res) => {
     try {
       const Article = require('../models/Article');
-      const article = await Article.findOneAndUpdate(
+      const ArticleRevision = require('../models/ArticleRevision');
+      
+      // Find the current article before updating
+      const currentArticle = await Article.findOne({ slug: req.params.slug });
+      if (!currentArticle) {
+        return res.status(404).json({ success: false, message: 'Article not found' });
+      }
+
+      // Save current version as a revision before updating
+      const editedBy = req.body.editedBy || req.headers['x-edited-by'] || 'admin';
+      const changeDescription = req.body.changeDescription || '';
+      
+      await ArticleRevision.createFromArticle(currentArticle, editedBy, changeDescription);
+
+      // Now update the article
+      const updatedArticle = await Article.findOneAndUpdate(
         { slug: req.params.slug },
         req.body,
         { new: true, runValidators: true }
       );
-      if (!article) {
-        return res.status(404).json({ success: false, message: 'Article not found' });
-      }
-      res.json({ success: true, data: article });
+      
+      res.json({ success: true, data: updatedArticle });
     } catch (error) {
+      console.error('Error updating article:', error);
       res.status(400).json({ success: false, message: error.message });
     }
   })
@@ -114,6 +128,203 @@ router.route('/:slug')
 
 // Related articles route (must be after main :slug route to be specific)
 router.get('/:slug/related', getRelatedArticles);
+
+// Version history routes
+// Get all revisions for an article (paginated)
+router.get('/:slug/revisions', async (req, res) => {
+  try {
+    const Article = require('../models/Article');
+    const ArticleRevision = require('../models/ArticleRevision');
+    
+    // Find the article first
+    const article = await Article.findOne({ slug: req.params.slug });
+    if (!article) {
+      return res.status(404).json({ success: false, message: 'Article not found' });
+    }
+
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    // Get revisions
+    const revisions = await ArticleRevision.find({ articleId: article._id })
+      .sort({ versionNumber: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('versionNumber timestamp editedBy changeDescription')
+      .lean();
+
+    // Get total count
+    const total = await ArticleRevision.countDocuments({ articleId: article._id });
+
+    res.json({
+      success: true,
+      data: revisions,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching revisions:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Get specific revision
+router.get('/:slug/revisions/:versionNumber', async (req, res) => {
+  try {
+    const Article = require('../models/Article');
+    const ArticleRevision = require('../models/ArticleRevision');
+    
+    // Find the article
+    const article = await Article.findOne({ slug: req.params.slug });
+    if (!article) {
+      return res.status(404).json({ success: false, message: 'Article not found' });
+    }
+
+    const versionNumber = parseInt(req.params.versionNumber);
+    const revision = await ArticleRevision.findOne({
+      articleId: article._id,
+      versionNumber
+    });
+
+    if (!revision) {
+      return res.status(404).json({ success: false, message: 'Revision not found' });
+    }
+
+    res.json({ success: true, data: revision });
+  } catch (error) {
+    console.error('Error fetching revision:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Restore article to a previous version
+router.post('/:slug/restore/:versionNumber', async (req, res) => {
+  try {
+    const Article = require('../models/Article');
+    const ArticleRevision = require('../models/ArticleRevision');
+    
+    // Find the article
+    const article = await Article.findOne({ slug: req.params.slug });
+    if (!article) {
+      return res.status(404).json({ success: false, message: 'Article not found' });
+    }
+
+    const versionNumber = parseInt(req.params.versionNumber);
+    const revision = await ArticleRevision.findOne({
+      articleId: article._id,
+      versionNumber
+    });
+
+    if (!revision) {
+      return res.status(404).json({ success: false, message: 'Revision not found' });
+    }
+
+    // Save current version before restoring
+    const editedBy = req.body.editedBy || req.headers['x-edited-by'] || 'admin';
+    await ArticleRevision.createFromArticle(
+      article,
+      editedBy,
+      `Restored to version ${versionNumber}`
+    );
+
+    // Update article with revision data
+    const restoredArticle = await Article.findByIdAndUpdate(
+      article._id,
+      {
+        title: revision.title,
+        content: revision.content,
+        summary: revision.summary,
+        category: revision.category,
+        tags: revision.tags,
+        referenceRanges: revision.referenceRanges,
+        clinicalSignificance: revision.clinicalSignificance,
+        interpretation: revision.interpretation,
+        relatedTests: revision.relatedTests,
+        references: revision.references,
+        images: revision.images,
+        status: revision.status
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      data: restoredArticle,
+      message: `Article restored to version ${versionNumber}`
+    });
+  } catch (error) {
+    console.error('Error restoring revision:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Compare two versions
+router.get('/:slug/compare', async (req, res) => {
+  try {
+    const Article = require('../models/Article');
+    const ArticleRevision = require('../models/ArticleRevision');
+    
+    const v1 = parseInt(req.query.v1);
+    const v2 = parseInt(req.query.v2);
+
+    if (!v1 || !v2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Both v1 and v2 version numbers are required'
+      });
+    }
+
+    // Find the article
+    const article = await Article.findOne({ slug: req.params.slug });
+    if (!article) {
+      return res.status(404).json({ success: false, message: 'Article not found' });
+    }
+
+    // Get both revisions
+    const [revision1, revision2] = await Promise.all([
+      ArticleRevision.findOne({ articleId: article._id, versionNumber: v1 }),
+      ArticleRevision.findOne({ articleId: article._id, versionNumber: v2 })
+    ]);
+
+    if (!revision1 || !revision2) {
+      return res.status(404).json({ success: false, message: 'One or both revisions not found' });
+    }
+
+    // Simple comparison - return both versions with highlighted differences
+    const differences = {
+      title: revision1.title !== revision2.title,
+      content: revision1.content !== revision2.content,
+      summary: revision1.summary !== revision2.summary,
+      category: revision1.category !== revision2.category,
+      tags: JSON.stringify(revision1.tags) !== JSON.stringify(revision2.tags),
+      referenceRanges: JSON.stringify(revision1.referenceRanges) !== JSON.stringify(revision2.referenceRanges),
+      clinicalSignificance: revision1.clinicalSignificance !== revision2.clinicalSignificance,
+      interpretation: revision1.interpretation !== revision2.interpretation,
+      relatedTests: JSON.stringify(revision1.relatedTests) !== JSON.stringify(revision2.relatedTests),
+      references: JSON.stringify(revision1.references) !== JSON.stringify(revision2.references),
+      images: JSON.stringify(revision1.images) !== JSON.stringify(revision2.images),
+      status: revision1.status !== revision2.status
+    };
+
+    res.json({
+      success: true,
+      data: {
+        version1: revision1,
+        version2: revision2,
+        differences
+      }
+    });
+  } catch (error) {
+    console.error('Error comparing revisions:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // Update and delete routes by ID (using different parameter name to avoid confusion)
 router.route('/id/:id')
