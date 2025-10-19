@@ -1,0 +1,118 @@
+/* Comment Item Styles - Atom Theme */
+
+.comment-item {
+  margin-bottom: 1rem;
+}
+
+.comment-content-wrapper {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #21252B;
+  border-radius: 6px;
+  border-left: 3px solid #3E4451;
+  transition: border-color 0.2s ease;
+}
+
+.comment-content-wrapper:hover {
+  border-left-color: #5FB04B;
+}
+
+.comment-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #E06C75;
+  font-size: 0.95rem;
+}
+
+.comment-separator {
+  color: #5C6370;
+  font-size: 0.8rem;
+}
+
+.comment-date {
+  color: #5C6370;
+  font-size: 0.85rem;
+}
+
+.comment-edited {
+  color: #5C6370;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.comment-body {
+  color: #ABB2BF;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.comment-body.deleted {
+  color: #5C6370;
+  font-style: italic;
+}
+
+/* Nested comment indentation */
+.comment-item.depth-1 .comment-content-wrapper {
+  margin-left: 2rem;
+}
+
+.comment-item.depth-2 .comment-content-wrapper {
+  margin-left: 4rem;
+}
+
+.comment-item.depth-3 .comment-content-wrapper {
+  margin-left: 6rem;
+}
+
+.comment-item.depth-4 .comment-content-wrapper {
+  margin-left: 8rem;
+}
+
+/* Reduce indentation on mobile */
+@media (max-width: 768px) {
+  .comment-item.depth-1 .comment-content-wrapper {
+    margin-left: 0.5rem;
+  }
+
+  .comment-item.depth-2 .comment-content-wrapper {
+    margin-left: 1rem;
+  }
+
+  .comment-item.depth-3 .comment-content-wrapper {
+    margin-left: 1.5rem;
+  }
+
+  .comment-item.depth-4 .comment-content-wrapper {
+    margin-left: 2rem;
+  }
+
+  .comment-content-wrapper {
+    padding: 0.75rem;
+  }
+}
+
+.reply-form-wrapper {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #1B1E23;
+  border-radius: 4px;
+}
+
+.comment-thread {
+  margin-top: 0.5rem;
+}

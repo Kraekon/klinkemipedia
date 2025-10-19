@@ -1,0 +1,91 @@
+/* Comment Form Styles - Atom Theme */
+
+.comment-form {
+  margin-bottom: 2rem;
+}
+
+.comment-textarea {
+  background-color: #21252B !important;
+  border: 1px solid #3E4451 !important;
+  color: #ABB2BF !important;
+  border-radius: 6px !important;
+  padding: 0.75rem !important;
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comment-textarea:focus {
+  background-color: #21252B !important;
+  border-color: #5FB04B !important;
+  color: #ABB2BF !important;
+  box-shadow: 0 0 0 0.2rem rgba(95, 176, 75, 0.25) !important;
+}
+
+.comment-textarea::placeholder {
+  color: #5C6370 !important;
+  opacity: 0.7;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #5C6370;
+  margin-top: 0.25rem;
+}
+
+.comment-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.comment-form-actions .btn {
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.comment-form-actions .btn-success {
+  background-color: #5FB04B;
+  border-color: #5FB04B;
+  color: #fff;
+}
+
+.comment-form-actions .btn-success:hover:not(:disabled) {
+  background-color: #4E9A3D;
+  border-color: #4E9A3D;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(95, 176, 75, 0.3);
+}
+
+.comment-form-actions .btn-success:disabled {
+  background-color: #3E4451;
+  border-color: #3E4451;
+  color: #5C6370;
+  cursor: not-allowed;
+}
+
+.comment-form-actions .btn-secondary {
+  background-color: #3E4451;
+  border-color: #3E4451;
+  color: #ABB2BF;
+}
+
+.comment-form-actions .btn-secondary:hover:not(:disabled) {
+  background-color: #4B5263;
+  border-color: #4B5263;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 576px) {
+  .comment-form-actions {
+    flex-direction: column;
+  }
+
+  .comment-form-actions .btn {
+    width: 100%;
+  }
+}
