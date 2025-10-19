@@ -14,6 +14,7 @@ import MediaAnalytics from './pages/MediaAnalytics';
 import TagBrowsePage from './pages/TagBrowsePage';
 import TagArticlesPage from './pages/TagArticlesPage';
 import AdminTagManagement from './pages/AdminTagManagement';
+import VersionCompare from './components/VersionCompare';
 import './App.css';
 
 const NotFoundPage = () => {
@@ -57,6 +58,7 @@ function App() {
           <Route path="/admin/media" element={<AdminMediaLibrary />} />
           <Route path="/admin/media/analytics" element={<MediaAnalytics />} />
           <Route path="/admin/tags" element={<AdminTagManagement />} />
+          <Route path="/admin/articles/:slug/compare" element={<VersionCompare />} />
 
           {/* Main site routes (with main navbar) */}
           <Route path="/*" element={

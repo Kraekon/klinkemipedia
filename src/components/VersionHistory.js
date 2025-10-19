@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Table, Button, Alert, Spinner, Badge, Pagination } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { getArticleRevisions, getArticleRevision, restoreArticleRevision } from '../services/api';
 import './VersionHistory.css';
 
 const VersionHistory = ({ show, onHide, slug, onRestore }) => {
+  const { t } = useTranslation();
   const [revisions, setRevisions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -52,7 +54,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
   };
 
   const handleRestoreRevision = async (versionNumber) => {
-    if (!window.confirm(`Are you sure you want to restore to version ${versionNumber}? This will create a new revision.`)) {
+    if (!window.confirm(t('revisions.confirmRestore', { version: versionNumber }) + ' ' + t('messages.confirm.proceedAction'))) {
       return;
     }
 
@@ -60,7 +62,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
       setRestoring(true);
       setError(null);
       await restoreArticleRevision(slug, versionNumber);
-      alert(`Successfully restored to version ${versionNumber}`);
+      alert(t('revisions.restored', { version: versionNumber }));
       setViewingRevision(false);
       setSelectedRevision(null);
       if (onRestore) {
@@ -69,7 +71,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
       onHide();
     } catch (err) {
       console.error('Error restoring revision:', err);
-      setError(err.response?.data?.message || 'Failed to restore revision');
+      setError(err.response?.data?.message || t('messages.error.saveFailed'));
     } finally {
       setRestoring(false);
     }
@@ -118,7 +120,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
     <Modal show={show} onHide={onHide} size="xl" centered>
       <Modal.Header closeButton>
         <Modal.Title>
-          {viewingRevision ? `Revision ${selectedRevision?.versionNumber}` : 'Version History'}
+          {viewingRevision ? t('revisions.versionNumber', { number: selectedRevision?.versionNumber }) : t('revisions.title')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -131,13 +133,13 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
         {loading && !viewingRevision && (
           <div className="text-center py-5">
             <Spinner animation="border" variant="primary" />
-            <p className="mt-3">Loading revisions...</p>
+            <p className="mt-3">{t('revisions.loadingRevisions')}</p>
           </div>
         )}
 
         {!loading && !viewingRevision && revisions.length === 0 && (
           <Alert variant="info">
-            No revision history available yet. Revisions will be created when you edit the article.
+            {t('revisions.noRevisionsAvailable')}
           </Alert>
         )}
 
@@ -152,7 +154,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
                   setSelectedForCompare([]);
                 }}
               >
-                {compareMode ? 'Cancel Compare' : 'Compare Versions'}
+                {compareMode ? t('revisions.cancelCompare') : t('revisions.compareVersions')}
               </Button>
               {compareMode && selectedForCompare.length === 2 && (
                 <Button
@@ -161,12 +163,12 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
                   className="ms-2"
                   onClick={handleCompare}
                 >
-                  Compare Selected
+                  {t('revisions.compareSelected')}
                 </Button>
               )}
               {compareMode && (
                 <span className="ms-2 text-muted">
-                  Select 2 versions to compare ({selectedForCompare.length}/2 selected)
+                  {t('revisions.selectToCompare', { count: selectedForCompare.length })}
                 </span>
               )}
             </div>
@@ -175,11 +177,11 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
               <thead>
                 <tr>
                   {compareMode && <th style={{ width: '50px' }}></th>}
-                  <th style={{ width: '100px' }}>Version</th>
-                  <th>Date</th>
-                  <th>Edited By</th>
-                  <th>Description</th>
-                  <th style={{ width: '150px' }}>Actions</th>
+                  <th style={{ width: '100px' }}>{t('revisions.version')}</th>
+                  <th>{t('date.date')}</th>
+                  <th>{t('revisions.editedBy')}</th>
+                  <th>{t('revisions.changeDescription')}</th>
+                  <th style={{ width: '150px' }}>{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -201,7 +203,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
                     <td>{formatDate(revision.timestamp)}</td>
                     <td>{revision.editedBy}</td>
                     <td>
-                      {revision.changeDescription || <em className="text-muted">No description</em>}
+                      {revision.changeDescription || <em className="text-muted">{t('revisions.noDescription')}</em>}
                     </td>
                     <td>
                       <Button
@@ -209,7 +211,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
                         size="sm"
                         onClick={() => handleViewRevision(revision.versionNumber)}
                       >
-                        View
+                        {t('common.view')}
                       </Button>
                     </td>
                   </tr>
@@ -268,35 +270,35 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
         {viewingRevision && selectedRevision && (
           <div className="revision-view">
             <div className="revision-header mb-3">
-              <h5>Version {selectedRevision.versionNumber}</h5>
+              <h5>{t('revisions.versionNumber', { number: selectedRevision.versionNumber })}</h5>
               <p className="text-muted">
-                Edited by {selectedRevision.editedBy} on {formatDate(selectedRevision.timestamp)}
+                {t('revisions.editedBy')} {selectedRevision.editedBy} {t('common.at')} {formatDate(selectedRevision.timestamp)}
               </p>
               {selectedRevision.changeDescription && (
                 <Alert variant="info">
-                  <strong>Change Description:</strong> {selectedRevision.changeDescription}
+                  <strong>{t('revisions.changeDescription')}:</strong> {selectedRevision.changeDescription}
                 </Alert>
               )}
             </div>
 
             <div className="revision-content">
-              <h6>Title</h6>
+              <h6>{t('article.title')}</h6>
               <p>{selectedRevision.title}</p>
 
-              <h6>Category</h6>
+              <h6>{t('revisions.category')}</h6>
               <p>{selectedRevision.category}</p>
 
-              <h6>Summary</h6>
+              <h6>{t('revisions.summary')}</h6>
               <p>{selectedRevision.summary}</p>
 
-              <h6>Content</h6>
+              <h6>{t('article.content')}</h6>
               <div className="content-preview" style={{ maxHeight: '300px', overflow: 'auto', border: '1px solid #dee2e6', padding: '1rem', borderRadius: '4px' }}>
                 <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
                   {selectedRevision.content}
                 </pre>
               </div>
 
-              <h6 className="mt-3">Status</h6>
+              <h6 className="mt-3">{t('article.status')}</h6>
               <Badge bg={selectedRevision.status === 'published' ? 'success' : 'secondary'}>
                 {selectedRevision.status}
               </Badge>
@@ -310,7 +312,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
                   setSelectedRevision(null);
                 }}
               >
-                Back to List
+                {t('revisions.backToList')}
               </Button>
               <Button
                 variant="primary"
@@ -318,7 +320,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
                 disabled={restoring}
                 className="ms-2"
               >
-                {restoring ? 'Restoring...' : 'Restore This Version'}
+                {restoring ? t('revisions.restoring') : t('revisions.restoreThisVersion')}
               </Button>
             </div>
           </div>

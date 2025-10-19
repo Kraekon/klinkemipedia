@@ -41,7 +41,8 @@ const AdminArticleForm = () => {
     relatedTests: [],
     tags: [],
     references: [''],
-    status: 'draft'
+    status: 'draft',
+    changeDescription: ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -89,7 +90,8 @@ const AdminArticleForm = () => {
         relatedTests: article.relatedTests || [],
         tags: article.tags || [],
         references: article.references?.length > 0 ? article.references : [''],
-        status: article.status || 'draft'
+        status: article.status || 'draft',
+        changeDescription: '' // Reset after each load
       });
     } catch (err) {
       console.error('Error fetching article:', err);
@@ -551,6 +553,23 @@ const AdminArticleForm = () => {
                 + Add Reference
               </Button>
             </Form.Group>
+
+            {/* Change Description (optional, for edit mode) */}
+            {isEditMode && (
+              <Form.Group className="mb-3">
+                <Form.Label>Change Description (Optional)</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Describe what you changed in this version..."
+                  value={formData.changeDescription}
+                  onChange={(e) => handleInputChange('changeDescription', e.target.value)}
+                  maxLength={200}
+                />
+                <Form.Text className="text-muted">
+                  Help others understand what changed in this revision (max 200 characters)
+                </Form.Text>
+              </Form.Group>
+            )}
 
             <Form.Group className="mb-3">
               <Form.Label>Status</Form.Label>
