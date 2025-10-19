@@ -1,0 +1,36 @@
+/* ============================================
+   LOADING SPINNER - ATOM THEME
+   ============================================ */
+
+.loading-spinner-container {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-md);
+}
+
+.loading-spinner-container .spinner-border {
+  border-color: var(--atom-green);
+  border-right-color: transparent;
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
+}
+
+.loading-spinner-container p {
+  margin-top: var(--spacing-md);
+  color: var(--text-dark);
+  font-size: var(--font-size-base);
+}
+
+/* Animated pulse effect */
+@keyframes spinnerPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(95, 176, 75, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(95, 176, 75, 0);
+  }
+}
+
+.loading-spinner-container .spinner-border {
+  animation: spinnerPulse 2s infinite;
+}

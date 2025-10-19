@@ -1,28 +1,33 @@
 .admin-container {
-  padding: 2rem;
+  padding: var(--spacing-xl);
   max-width: 1400px;
   margin: 0 auto;
+  background-color: var(--dark-bg-primary);
+  min-height: 100vh;
 }
 
 .admin-table {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--dark-bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-dark);
+  overflow: hidden;
 }
 
 .article-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--dark-bg-secondary);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-dark);
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .form-section {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #e9ecef;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--border-dark);
 }
 
 .form-section:last-child {
@@ -30,31 +35,45 @@
 }
 
 .form-section h3 {
-  color: var(--primary-blue);
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
+  color: var(--atom-green);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
 }
 
 .tag-input-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
   min-height: 45px;
-  background: white;
+  background: var(--dark-bg-tertiary);
+  transition: var(--transition-base);
+}
+
+.tag-input-container:focus-within {
+  border-color: var(--atom-green);
+  box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
 }
 
 .tag-chip {
-  background: var(--primary-blue);
+  background: var(--atom-green);
   color: white;
   padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-full);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-base);
+}
+
+.tag-chip:hover {
+  background: var(--atom-green-hover);
+  transform: scale(1.05);
 }
 
 .tag-chip button {
@@ -65,10 +84,13 @@
   padding: 0;
   font-size: 1.1rem;
   line-height: 1;
+  opacity: 0.8;
+  transition: var(--transition-fast);
 }
 
 .tag-chip button:hover {
-  opacity: 0.8;
+  opacity: 1;
+  transform: scale(1.2);
 }
 
 .tag-input-field {
@@ -76,7 +98,9 @@
   outline: none;
   flex: 1;
   min-width: 120px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
+  background: transparent;
+  color: var(--text-dark-emphasis);
 }
 
 .reference-range-table {
@@ -93,18 +117,19 @@
 }
 
 .preview-mode {
-  background: #f8f9fa;
-  padding: 2rem;
-  border-radius: 8px;
-  margin-top: 1rem;
-  border: 1px solid #dee2e6;
+  background: var(--dark-bg-tertiary);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  margin-top: var(--spacing-md);
+  border: 1px solid var(--border-dark);
 }
 
 .preview-mode h2 {
-  color: var(--primary-blue);
-  border-bottom: 2px solid var(--primary-blue);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+  color: var(--atom-green);
+  border-bottom: 2px solid var(--atom-green);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: 0 2px 0 rgba(95, 176, 75, 0.2);
 }
 
 .slug-preview {
@@ -122,13 +147,13 @@
 
 .empty-state {
   text-align: center;
-  padding: 3rem 1rem;
-  color: #6c757d;
+  padding: var(--spacing-3xl) var(--spacing-md);
+  color: var(--text-dark-muted);
 }
 
 .empty-state h3 {
-  color: var(--dark-text);
-  margin-bottom: 1rem;
+  color: var(--text-dark-emphasis);
+  margin-bottom: var(--spacing-md);
 }
 
 .related-tests-input {
@@ -196,18 +221,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-dark);
 }
 
 .admin-header h2 {
-  color: var(--primary-blue);
+  color: var(--atom-green);
   margin: 0;
+  font-weight: var(--font-weight-bold);
+  text-shadow: 0 0 10px rgba(95, 176, 75, 0.2);
 }
 
 .article-count {
-  color: #6c757d;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  color: var(--text-dark-muted);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
 }
 
 .table-actions {

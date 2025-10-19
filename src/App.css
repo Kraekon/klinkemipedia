@@ -1,50 +1,166 @@
-:root {
-  --primary-blue: #0066cc;
-  --secondary-teal: #17a2b8;
-  --light-bg: #f8f9fa;
-  --dark-text: #333;
+/* ============================================
+   APP-SPECIFIC ATOM THEME STYLES
+   ============================================ */
+
+/* App Container */
+.App {
+  min-height: 100vh;
+  background-color: var(--dark-bg-primary);
 }
 
-body {
-  background-color: var(--light-bg);
-  color: var(--dark-text);
+/* Hero Section - Atom Green Gradient */
+.hero-section {
+  background: linear-gradient(135deg, #2C313A 0%, #282C34 50%, #1d4d2e 100%);
+  color: var(--text-dark-emphasis);
+  padding: 3rem 2rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
 }
 
-.navbar {
-  background-color: var(--primary-blue) !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(95, 176, 75, 0.1) 100%);
+  pointer-events: none;
 }
 
-.navbar-brand {
-  color: white !important;
-  font-size: 1.5rem;
-  font-weight: bold;
+.hero-section * {
+  position: relative;
+  z-index: 1;
 }
 
+.hero-section h1 {
+  color: var(--text-dark-emphasis);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-section .lead {
+  color: var(--text-dark);
+  font-size: var(--font-size-lg);
+}
+
+.hero-section .display-4 {
+  color: var(--text-dark-emphasis);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Article Cards - Enhanced Dark Theme */
 .card {
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background-color: var(--dark-bg-secondary);
+  border: 1px solid var(--border-dark);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  height: 100%;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--atom-green);
 }
 
+.card-title {
+  color: var(--text-dark-emphasis);
+  font-weight: var(--font-weight-semibold);
+}
+
+.card-text {
+  color: var(--text-dark);
+}
+
+/* Badges with Atom Green Theme */
 .badge {
-  font-size: 0.85rem;
-  padding: 0.4em 0.6em;
+  font-size: var(--font-size-sm);
+  padding: 0.4em 0.75em;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
 }
 
+/* Reference Ranges Table */
 .reference-ranges-table {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-family-code);
+  background-color: var(--dark-bg-secondary);
+  border-radius: var(--radius-md);
 }
 
-.hero-section {
-  background: linear-gradient(135deg, var(--primary-blue), var(--secondary-teal));
-  color: white;
-  padding: 3rem 2rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
+/* Container Improvements */
+.container {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+}
+
+/* Empty State Styling */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  color: var(--text-dark-muted);
+}
+
+.empty-state h3 {
+  color: var(--text-dark-emphasis);
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-state p {
+  color: var(--text-dark);
+  font-size: var(--font-size-lg);
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--text-dark);
+}
+
+.loading-container .spinner-border {
+  border-color: var(--atom-green);
+  border-right-color: transparent;
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Search Results Highlighting */
+mark,
+.highlight {
+  background-color: rgba(95, 176, 75, 0.3);
+  color: var(--atom-green-light);
+  padding: 0.125rem 0.25rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Code Blocks */
+pre {
+  background-color: var(--dark-bg-secondary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  overflow-x: auto;
+}
+
+pre code {
+  background-color: transparent;
+  color: var(--text-dark);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 1.5rem;
+  }
+  
+  .container {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+  }
 }

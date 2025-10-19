@@ -5,6 +5,7 @@ import ArticleList from '../components/ArticleList';
 import CategoryFilter from '../components/CategoryFilter';
 import SearchBar from '../components/SearchBar';
 import { getAllArticles } from '../services/api';
+import './HomePage.css';
 
 const HomePage = () => {
   const { t } = useTranslation();
@@ -36,8 +37,8 @@ const HomePage = () => {
   }, [selectedCategory]);
 
   return (
-    <Container>
-      <div className="hero-section mb-4">
+    <Container className="home-page">
+      <div className="home-hero-section mb-4">
         <h1 className="display-4">{t('page.home.title')}</h1>
         <p className="lead mb-0">
           {t('page.home.subtitle')}

@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import { Navbar as BSNavbar, Container, Nav } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import './AdminNavbar.css';
 
 const AdminNavbar = () => {
   const { t } = useTranslation();
   
   return (
-    <BSNavbar bg="primary" variant="dark" expand="lg" className="navbar">
+    <BSNavbar bg="primary" variant="dark" expand="lg" className="navbar admin-navbar">
       <Container>
         <BSNavbar.Brand as={Link} to="/admin" className="navbar-brand">
           Klinkemipedia {t('navigation.admin')}
