@@ -58,12 +58,12 @@ const upload = multer({
   }
 });
 
-// Public routes
+// Public routes - specific routes before dynamic params
 router.get('/leaderboard', getLeaderboard);
-router.get('/:username', getUserProfile);
-router.get('/:username/activity', getUserActivity);
-router.get('/:username/followers', getUserFollowers);
-router.get('/:username/following', getUserFollowing);
+router.get('/profile/:username', getUserProfile);
+router.get('/profile/:username/activity', getUserActivity);
+router.get('/profile/:username/followers', getUserFollowers);
+router.get('/profile/:username/following', getUserFollowing);
 
 // Protected routes (require authentication)
 router.put('/profile', protect, updateProfile);

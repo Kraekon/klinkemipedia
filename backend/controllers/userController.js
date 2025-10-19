@@ -229,7 +229,7 @@ const deleteUser = async (req, res) => {
 };
 
 // @desc    Get user profile by username (public)
-// @route   GET /api/users/:username
+// @route   GET /api/users/profile/:username
 // @access  Public
 const getUserProfile = async (req, res) => {
   try {

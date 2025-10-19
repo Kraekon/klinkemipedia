@@ -35,11 +35,11 @@ const ProfilePage = () => {
   const fetchUserProfile = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/users/${username}`);
+      const response = await axios.get(`/api/users/profile/${username}`);
       setUser(response.data.data);
       
       // Fetch activity
-      const activityResponse = await axios.get(`/api/users/${username}/activity`);
+      const activityResponse = await axios.get(`/api/users/profile/${username}/activity`);
       setActivity(activityResponse.data.data);
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -50,7 +50,7 @@ const ProfilePage = () => {
 
   const fetchFollowers = async () => {
     try {
-      const response = await axios.get(`/api/users/${username}/followers`);
+      const response = await axios.get(`/api/users/profile/${username}/followers`);
       setFollowers(response.data.data);
     } catch (error) {
       console.error('Error fetching followers:', error);
@@ -59,7 +59,7 @@ const ProfilePage = () => {
 
   const fetchFollowing = async () => {
     try {
-      const response = await axios.get(`/api/users/${username}/following`);
+      const response = await axios.get(`/api/users/profile/${username}/following`);
       setFollowing(response.data.data);
     } catch (error) {
       console.error('Error fetching following:', error);
