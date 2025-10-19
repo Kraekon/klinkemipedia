@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Alert, Badge, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Alert, Badge } from 'react-bootstrap';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getCollection, deleteCollection, removeBookmarkFromCollection } from '../services/api';
@@ -15,23 +15,23 @@ const CollectionDetailPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchCollection = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await getCollection(id);
+        setCollection(response.data);
+      } catch (err) {
+        console.error('Error fetching collection:', err);
+        setError(err.response?.data?.message || 'Failed to load collection');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchCollection();
   }, [id]);
-
-  const fetchCollection = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await getCollection(id);
-      setCollection(response.data);
-    } catch (err) {
-      console.error('Error fetching collection:', err);
-      setError(err.response?.data?.message || 'Failed to load collection');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDeleteCollection = async () => {
     if (!window.confirm('Are you sure you want to delete this collection? Bookmarks will not be deleted.')) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Badge, InputGroup, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Alert, Badge, InputGroup, ButtonGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getBookmarks, deleteBookmark, updateBookmark, getCollections } from '../services/api';
@@ -24,36 +24,37 @@ const BookmarksPage = () => {
       setLoading(false);
       return;
     }
+    
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const params = {};
+        if (filterFavorite !== 'all') {
+          params.favorite = filterFavorite;
+        }
+        if (filterCollection) {
+          params.collection = filterCollection;
+        }
+
+        const [bookmarksResponse, collectionsResponse] = await Promise.all([
+          getBookmarks(params),
+          getCollections()
+        ]);
+
+        setBookmarks(bookmarksResponse.data || []);
+        setCollections(collectionsResponse.data || []);
+      } catch (err) {
+        console.error('Error fetching bookmarks:', err);
+        setError(err.response?.data?.message || 'Failed to load bookmarks');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchData();
   }, [user, filterFavorite, filterCollection]);
-
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const params = {};
-      if (filterFavorite !== 'all') {
-        params.favorite = filterFavorite;
-      }
-      if (filterCollection) {
-        params.collection = filterCollection;
-      }
-
-      const [bookmarksResponse, collectionsResponse] = await Promise.all([
-        getBookmarks(params),
-        getCollections()
-      ]);
-
-      setBookmarks(bookmarksResponse.data || []);
-      setCollections(collectionsResponse.data || []);
-    } catch (err) {
-      console.error('Error fetching bookmarks:', err);
-      setError(err.response?.data?.message || 'Failed to load bookmarks');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDeleteBookmark = async (bookmarkId) => {
     if (!window.confirm('Are you sure you want to remove this bookmark?')) {
@@ -71,7 +72,7 @@ const BookmarksPage = () => {
 
   const handleToggleFavorite = async (bookmark) => {
     try {
-      const response = await updateBookmark(bookmark._id, {
+      await updateBookmark(bookmark._id, {
         isFavorite: !bookmark.isFavorite
       });
       setBookmarks(bookmarks.map(b => 
