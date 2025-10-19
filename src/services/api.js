@@ -108,7 +108,38 @@ export const deleteTag = async (tag) => {
 
 // Get related articles
 export const getRelatedArticles = async (slug, limit = 5) => {
-  const response = await axios.get(`${API_BASE_URL}/articles/${slug}/related`, { params: { limit } });
+  const response = await axios.get(`${API_BASE_URL}/articles/related/${slug}`, { params: { limit } });
+  return response.data;
+};
+
+// Get popular articles
+export const getPopularArticles = async (period = 'week', limit = 10) => {
+  const response = await axios.get(`${API_BASE_URL}/articles/popular`, { 
+    params: { period, limit } 
+  });
+  return response.data;
+};
+
+// Search APIs
+export const search = async (params) => {
+  const response = await axios.get(`${API_BASE_URL}/search`, { params });
+  return response.data;
+};
+
+export const getSearchSuggestions = async (query) => {
+  const response = await axios.get(`${API_BASE_URL}/search/suggestions`, { 
+    params: { q: query } 
+  });
+  return response.data;
+};
+
+export const getSearchHistory = async () => {
+  const response = await axios.get(`${API_BASE_URL}/search/history`);
+  return response.data;
+};
+
+export const getPopularSearches = async () => {
+  const response = await axios.get(`${API_BASE_URL}/search/popular`);
   return response.data;
 };
 
