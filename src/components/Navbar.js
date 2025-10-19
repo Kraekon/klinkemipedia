@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Navbar as BSNavbar, Container, Nav, Form, FormControl, Button, InputGroup } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
@@ -27,35 +30,38 @@ const Navbar = () => {
         <BSNavbar.Toggle aria-controls="basic-navbar-nav" />
         <BSNavbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link as={Link} to="/">Articles</Nav.Link>
-            <Nav.Link as={Link} to="/">About</Nav.Link>
+            <Nav.Link as={Link} to="/">{t('navigation.home')}</Nav.Link>
+            <Nav.Link as={Link} to="/">{t('navigation.articles')}</Nav.Link>
+            <Nav.Link as={Link} to="/">{t('navigation.about')}</Nav.Link>
           </Nav>
           <Form className="d-flex" onSubmit={handleSearch}>
             <InputGroup>
               <FormControl
                 type="search"
-                placeholder="Search articles..."
+                placeholder={t('search.placeholder')}
                 className="me-0"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Search articles"
+                aria-label={t('search.placeholder')}
               />
               {searchQuery && (
                 <Button 
                   variant="outline-light" 
                   onClick={handleClearSearch}
-                  aria-label="Clear search"
+                  aria-label={t('search.clearSearch')}
                   style={{ borderLeft: 'none' }}
                 >
                   ✕
                 </Button>
               )}
-              <Button variant="outline-light" type="submit" aria-label="Submit search">
-                Search
+              <Button variant="outline-light" type="submit" aria-label={t('search.button')}>
+                {t('search.button')}
               </Button>
             </InputGroup>
           </Form>
+          <div className="ms-2">
+            <LanguageSwitcher variant="navbar" />
+          </div>
         </BSNavbar.Collapse>
       </Container>
     </BSNavbar>
