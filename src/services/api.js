@@ -132,3 +132,26 @@ export const deleteUser = async (id) => {
   });
   return response.data;
 };
+
+// Media Management APIs
+export const getAllMedia = async (params = {}) => {
+  const response = await axios.get(`${API_BASE_URL}/media`, { params });
+  return response.data;
+};
+
+export const deleteMedia = async (filename, force = false) => {
+  const response = await axios.delete(`${API_BASE_URL}/media/${filename}`, {
+    params: { force }
+  });
+  return response.data;
+};
+
+export const getMediaUsage = async (filename) => {
+  const response = await axios.get(`${API_BASE_URL}/media/${filename}/usage`);
+  return response.data;
+};
+
+export const getMediaStats = async () => {
+  const response = await axios.get(`${API_BASE_URL}/media/stats`);
+  return response.data;
+};
