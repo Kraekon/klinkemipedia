@@ -205,6 +205,8 @@ const EditProfilePage = () => {
               <div className="avatar-upload-section">
                 <div className="avatar-preview">
                   {avatarPreview ? (
+                    // avatarPreview is either from URL.createObjectURL (user's selected file)
+                    // or from user.avatar (server-provided URL). React escapes attributes by default.
                     <img src={avatarPreview} alt="Avatar preview" />
                   ) : (
                     <div className="avatar-placeholder">

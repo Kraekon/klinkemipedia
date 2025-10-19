@@ -58,12 +58,19 @@ const upload = multer({
   }
 });
 
+// Rate limiter for public user routes
+const publicUserLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per 15 minutes
+  message: 'Too many requests from this IP, please try again later'
+});
+
 // Public routes - specific routes before dynamic params
-router.get('/leaderboard', getLeaderboard);
-router.get('/profile/:username', getUserProfile);
-router.get('/profile/:username/activity', getUserActivity);
-router.get('/profile/:username/followers', getUserFollowers);
-router.get('/profile/:username/following', getUserFollowing);
+router.get('/leaderboard', publicUserLimiter, getLeaderboard);
+router.get('/profile/:username', publicUserLimiter, getUserProfile);
+router.get('/profile/:username/activity', publicUserLimiter, getUserActivity);
+router.get('/profile/:username/followers', publicUserLimiter, getUserFollowers);
+router.get('/profile/:username/following', publicUserLimiter, getUserFollowing);
 
 // Protected routes (require authentication)
 router.put('/profile', protect, updateProfile);

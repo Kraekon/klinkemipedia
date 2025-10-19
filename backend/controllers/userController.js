@@ -655,10 +655,14 @@ const getUserFollowing = async (req, res) => {
 // @access  Public
 const getLeaderboard = async (req, res) => {
   try {
-    const period = req.query.period || 'all-time'; // all-time, month, week
-    const category = req.query.category || 'reputation'; // reputation, articles, helpful
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
+    // Validate and sanitize inputs
+    const validPeriods = ['all-time', 'month', 'week'];
+    const validCategories = ['reputation', 'articles', 'helpful'];
+    
+    const period = validPeriods.includes(req.query.period) ? req.query.period : 'all-time';
+    const category = validCategories.includes(req.query.category) ? req.query.category : 'reputation';
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
     const skip = (page - 1) * limit;
 
     let query = {};
@@ -675,12 +679,13 @@ const getLeaderboard = async (req, res) => {
       query.createdAt = { $gte: oneWeekAgo };
     }
 
-    // Determine sort field
-    if (category === 'articles') {
-      sortField = 'stats.articlesWritten';
-    } else if (category === 'helpful') {
-      sortField = 'stats.upvotesReceived';
-    }
+    // Determine sort field with whitelist
+    const sortFields = {
+      'reputation': 'reputation',
+      'articles': 'stats.articlesWritten',
+      'helpful': 'stats.upvotesReceived'
+    };
+    sortField = sortFields[category] || 'reputation';
 
     const users = await User.find(query)
       .select('username avatar profile.specialty reputation badges stats')
