@@ -18,6 +18,37 @@ const ArticleSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please add content']
     },
+    contentType: {
+      type: String,
+      enum: ['html', 'markdown', 'plain'],
+      default: 'html'
+    },
+    contentMetadata: {
+      wordCount: {
+        type: Number,
+        default: 0
+      },
+      readingTime: {
+        type: Number, // in minutes
+        default: 0
+      },
+      hasImages: {
+        type: Boolean,
+        default: false
+      },
+      hasTables: {
+        type: Boolean,
+        default: false
+      },
+      hasCodeBlocks: {
+        type: Boolean,
+        default: false
+      },
+      hasLatex: {
+        type: Boolean,
+        default: false
+      }
+    },
     summary: {
       type: String,
       maxlength: [500, 'Summary cannot be more than 500 characters']
@@ -82,7 +113,10 @@ const ArticleSchema = new mongoose.Schema(
       alt: {
         type: String,
         required: true
-      }
+      },
+      width: Number,
+      height: Number,
+      size: Number // in bytes
     }],
     author: {
       type: String,
@@ -115,6 +149,31 @@ const ArticleSchema = new mongoose.Schema(
   }
 );
 
+// Pre-save hook to calculate content metadata
+ArticleSchema.pre('save', function(next) {
+  if (this.isModified('content')) {
+    // Calculate word count
+    const words = this.content.replace(/<[^>]*>/g, '').trim().split(/\s+/);
+    this.contentMetadata.wordCount = words.length;
+    
+    // Calculate reading time (average 200 words per minute)
+    this.contentMetadata.readingTime = Math.ceil(words.length / 200);
+    
+    // Check for images
+    this.contentMetadata.hasImages = /<img/i.test(this.content);
+    
+    // Check for tables
+    this.contentMetadata.hasTables = /<table/i.test(this.content);
+    
+    // Check for code blocks
+    this.contentMetadata.hasCodeBlocks = /<pre|<code/i.test(this.content);
+    
+    // Check for LaTeX
+    this.contentMetadata.hasLatex = /\$\$|\\\[|\\\(/i.test(this.content);
+  }
+  next();
+});
+
 // Text index for full-text search with weights
 ArticleSchema.index(
   { 
@@ -138,5 +197,6 @@ ArticleSchema.index({ status: 1 });
 ArticleSchema.index({ slug: 1 }, { unique: true });
 ArticleSchema.index({ views: -1 });
 ArticleSchema.index({ lastViewedAt: -1 });
+ArticleSchema.index({ 'contentMetadata.wordCount': 1 });
 
 module.exports = mongoose.model('Article', ArticleSchema);
