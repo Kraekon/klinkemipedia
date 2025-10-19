@@ -23,6 +23,7 @@ const TagArticlesPage = () => {
     if (tagname) {
       fetchArticles(1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagname]);
 
   const fetchArticles = async (page = 1) => {
