@@ -31,6 +31,14 @@ const commentReportLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const generalCommentLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 60, // Limit each IP to 60 requests per minute for general operations
+  message: 'Too many requests from this IP, please slow down',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Input validation helper
 const validateCommentContent = (content) => {
   if (!content || typeof content !== 'string') {
@@ -84,7 +92,7 @@ const updateArticleCommentCount = async (articleId) => {
 };
 
 // GET /api/articles/:slug/comments - Get all comments for an article
-router.get('/articles/:slug/comments', async (req, res) => {
+router.get('/articles/:slug/comments', generalCommentLimiter, async (req, res) => {
   try {
     const article = await Article.findOne({ slug: req.params.slug });
     if (!article) {
@@ -273,7 +281,7 @@ router.put('/comments/:id', commentCreateLimiter, protect, async (req, res) => {
 });
 
 // DELETE /api/comments/:id - Delete own comment (requires auth)
-router.delete('/comments/:id', protect, async (req, res) => {
+router.delete('/comments/:id', generalCommentLimiter, protect, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -606,9 +614,13 @@ router.post('/comments/:id/report', commentReportLimiter, protect, async (req, r
 // Admin routes
 
 // GET /api/admin/comments - Get all comments with filters (admin only)
-router.get('/admin/comments', protect, adminOnly, async (req, res) => {
+router.get('/admin/comments', generalCommentLimiter, protect, adminOnly, async (req, res) => {
   try {
-    const { status, page = 1, limit = 20 } = req.query;
+    const { status } = req.query;
+    
+    // Validate and sanitize pagination parameters
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
     const skip = (page - 1) * limit;
 
     // Validate status to prevent injection
@@ -649,7 +661,7 @@ router.get('/admin/comments', protect, adminOnly, async (req, res) => {
 });
 
 // PUT /api/admin/comments/:id/approve - Approve comment (admin only)
-router.put('/admin/comments/:id/approve', protect, adminOnly, async (req, res) => {
+router.put('/admin/comments/:id/approve', generalCommentLimiter, protect, adminOnly, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -680,7 +692,7 @@ router.put('/admin/comments/:id/approve', protect, adminOnly, async (req, res) =
 });
 
 // PUT /api/admin/comments/:id/reject - Reject comment (admin only)
-router.put('/admin/comments/:id/reject', protect, adminOnly, async (req, res) => {
+router.put('/admin/comments/:id/reject', generalCommentLimiter, protect, adminOnly, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -711,7 +723,7 @@ router.put('/admin/comments/:id/reject', protect, adminOnly, async (req, res) =>
 });
 
 // DELETE /api/admin/comments/:id - Delete comment permanently (admin only)
-router.delete('/admin/comments/:id', protect, adminOnly, async (req, res) => {
+router.delete('/admin/comments/:id', generalCommentLimiter, protect, adminOnly, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
