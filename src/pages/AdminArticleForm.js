@@ -4,6 +4,7 @@ import { Form, Button, Alert, Spinner, Badge, Toast, ToastContainer } from 'reac
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import ReactMarkdown from 'react-markdown';
+import MDEditor from '@uiw/react-md-editor';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { slugify } from '../utils/slugify';
 import './Admin.css';
@@ -44,7 +45,6 @@ const AdminArticleForm = () => {
   const [fetchingArticle, setFetchingArticle] = useState(isEditMode);
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
-  const [showPreview, setShowPreview] = useState(false);
   const [availableTags, setAvailableTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [relatedTestInput, setRelatedTestInput] = useState('');
@@ -346,43 +346,32 @@ const AdminArticleForm = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Content <span className="text-danger">*</span></Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={12}
-                value={formData.content}
-                onChange={(e) => handleInputChange('content', e.target.value)}
-                isInvalid={!!validationErrors.content}
-                placeholder="Article content (Markdown supported)"
-              />
-              <div className="char-count">
-                {formData.content.length} characters / {countWords(formData.content)} words
-              </div>
-              <Form.Text muted>
-                Supports Markdown formatting: **bold**, *italic*, # Headings, - Lists
-              </Form.Text>
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.content}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Button
-              variant="outline-primary"
-              onClick={() => setShowPreview(!showPreview)}
-            >
-              {showPreview ? 'Hide Preview' : 'Show Preview'}
-            </Button>
-
-            {showPreview && (
-  <div className="preview-mode">
-    <h2>{formData.title || 'Untitled Article'}</h2>
-    {formData.category && <Badge bg="primary">{formData.category}</Badge>}
-    {formData.summary && <p className="mt-3"><em>{formData.summary}</em></p>}
-    <div className="mt-4">
-      <ReactMarkdown>{formData.content || 'No content yet...'}</ReactMarkdown>
-    </div>
+  <Form.Label>Content <span className="text-danger">*</span></Form.Label>
+  <div data-color-mode="light">
+    <MDEditor
+      value={formData.content}
+      onChange={(value) => handleInputChange('content', value || '')}
+      preview="live"
+      height={500}
+      textareaProps={{
+        placeholder: 'Article content (Markdown supported with live preview)'
+      }}
+    />
   </div>
-)}
+  <div className="char-count mt-2">
+    {formData.content.length} characters / {countWords(formData.content)} words
+  </div>
+  {validationErrors.content && (
+    <div className="text-danger small mt-1">
+      {validationErrors.content}
+    </div>
+  )}
+  <Form.Text muted>
+    Use the toolbar for formatting or type Markdown directly
+  </Form.Text>
+</Form.Group>
+
+            
           </div>
 
           {/* Reference Ranges */}
@@ -404,26 +393,34 @@ const AdminArticleForm = () => {
             <h3>Clinical Information</h3>
 
             <Form.Group className="mb-3">
-              <Form.Label>Clinical Significance</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                value={formData.clinicalSignificance}
-                onChange={(e) => handleInputChange('clinicalSignificance', e.target.value)}
-                placeholder="Describe what abnormal values mean"
-              />
-            </Form.Group>
+  <Form.Label>Clinical Significance</Form.Label>
+  <div data-color-mode="light">
+    <MDEditor
+      value={formData.clinicalSignificance}
+      onChange={(value) => handleInputChange('clinicalSignificance', value || '')}
+      preview="edit"
+      height={300}
+      textareaProps={{
+        placeholder: 'Describe what abnormal values mean (Markdown supported)'
+      }}
+    />
+  </div>
+</Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Interpretation</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                value={formData.interpretation}
-                onChange={(e) => handleInputChange('interpretation', e.target.value)}
-                placeholder="How to interpret results"
-              />
-            </Form.Group>
+  <Form.Label>Interpretation</Form.Label>
+  <div data-color-mode="light">
+    <MDEditor
+      value={formData.interpretation}
+      onChange={(value) => handleInputChange('interpretation', value || '')}
+      preview="edit"
+      height={300}
+      textareaProps={{
+        placeholder: 'How to interpret results (Markdown supported)'
+      }}
+    />
+  </div>
+</Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Related Tests</Form.Label>
