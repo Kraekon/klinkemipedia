@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Badge, Table, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import { getImageUrl } from '../utils/imageUrl';
 import TagBadge from './TagBadge';
+import VersionHistory from './VersionHistory';
 
 const ArticleDetail = ({ article }) => {
+  const { t } = useTranslation();
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
   return (
     <div>
-      <Button as={Link} to="/" variant="outline-primary" className="mb-3">
-        ← Back to Articles
-      </Button>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <Button as={Link} to="/" variant="outline-primary">
+          ← {t('common.back')} to {t('navigation.articles')}
+        </Button>
+        <Button 
+          variant="outline-secondary" 
+          size="sm"
+          onClick={() => setShowVersionHistory(true)}
+        >
+          📜 {t('revisions.viewHistory')}
+        </Button>
+      </div>
       
       <Card>
         <Card.Body>
@@ -128,6 +141,16 @@ const ArticleDetail = ({ article }) => {
           </div>
         </Card.Body>
       </Card>
+
+      <VersionHistory
+        show={showVersionHistory}
+        onHide={() => setShowVersionHistory(false)}
+        slug={article.slug}
+        onRestore={() => {
+          // Refresh the article after restore
+          window.location.reload();
+        }}
+      />
     </div>
   );
 };
