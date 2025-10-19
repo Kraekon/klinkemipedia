@@ -20,8 +20,15 @@ const collectionLimiter = rateLimit({
   message: 'Too many collection requests, please try again later'
 });
 
+// Rate limiter for public routes (more permissive)
+const publicCollectionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // 200 requests per 15 minutes
+  message: 'Too many requests, please try again later'
+});
+
 // Public routes
-router.get('/public', getPublicCollections);
+router.get('/public', publicCollectionLimiter, getPublicCollections);
 
 // Protected routes
 router.use(collectionLimiter);

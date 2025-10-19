@@ -271,6 +271,15 @@ const addBookmarkToCollection = async (req, res) => {
       });
     }
 
+    // Validate bookmarkId format
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(bookmarkId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid bookmark ID format'
+      });
+    }
+
     const collection = await Collection.findById(req.params.id);
 
     if (!collection) {

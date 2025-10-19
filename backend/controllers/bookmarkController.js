@@ -14,14 +14,22 @@ const getUserBookmarks = async (req, res) => {
     // Build filter
     const filter = { user: req.user._id };
     
-    // Filter by favorite
+    // Filter by favorite - validate boolean
     if (req.query.favorite === 'true') {
       filter.isFavorite = true;
     }
     
-    // Filter by collection
+    // Filter by collection - validate ObjectId format
     if (req.query.collection) {
-      filter.collections = req.query.collection;
+      const mongoose = require('mongoose');
+      if (mongoose.Types.ObjectId.isValid(req.query.collection)) {
+        filter.collections = req.query.collection;
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid collection ID format'
+        });
+      }
     }
 
     const bookmarks = await Bookmark.find(filter)
@@ -96,6 +104,15 @@ const createBookmark = async (req, res) => {
   try {
     const { articleId, notes, collections, isFavorite } = req.body;
 
+    // Validate articleId format
+    const mongoose = require('mongoose');
+    if (!articleId || !mongoose.Types.ObjectId.isValid(articleId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid article ID format'
+      });
+    }
+
     // Validate article exists
     const article = await Article.findById(articleId);
     if (!article) {
@@ -120,6 +137,16 @@ const createBookmark = async (req, res) => {
 
     // Validate collections belong to user
     if (collections && collections.length > 0) {
+      // Validate all collection IDs are valid ObjectIds
+      const mongoose = require('mongoose');
+      const invalidIds = collections.filter(id => !mongoose.Types.ObjectId.isValid(id));
+      if (invalidIds.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid collection ID format'
+        });
+      }
+
       const userCollections = await Collection.find({
         _id: { $in: collections },
         user: req.user._id
@@ -199,6 +226,16 @@ const updateBookmark = async (req, res) => {
 
     // Validate collections belong to user
     if (collections && collections.length > 0) {
+      // Validate all collection IDs are valid ObjectIds
+      const mongoose = require('mongoose');
+      const invalidIds = collections.filter(id => !mongoose.Types.ObjectId.isValid(id));
+      if (invalidIds.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid collection ID format'
+        });
+      }
+
       const userCollections = await Collection.find({
         _id: { $in: collections },
         user: req.user._id
