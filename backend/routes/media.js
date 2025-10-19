@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
     const sort = req.query.sort || 'date';
     const order = req.query.order || 'desc';
     const filter = req.query.filter || 'all';
+    const search = req.query.search || '';
     
     const skip = (page - 1) * limit;
 
@@ -23,6 +24,14 @@ router.get('/', async (req, res) => {
       query.usageCount = { $gt: 0 };
     } else if (filter === 'unused') {
       query.usageCount = 0;
+    }
+
+    // Add search support
+    if (search) {
+      query.$or = [
+        { filename: { $regex: search, $options: 'i' } },
+        { originalName: { $regex: search, $options: 'i' } }
+      ];
     }
 
     // Build sort object
