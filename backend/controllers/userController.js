@@ -228,10 +228,500 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// @desc    Get user profile by username (public)
+// @route   GET /api/users/:username
+// @access  Public
+const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username })
+      .select('-password -email')
+      .populate('followers', 'username avatar')
+      .populate('following', 'username avatar');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    console.error('Error in getUserProfile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching user profile',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Update own profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateProfile = async (req, res) => {
+  try {
+    const allowedUpdates = ['bio', 'location', 'website'];
+    const updates = {};
+
+    // Filter allowed fields
+    Object.keys(req.body).forEach(key => {
+      if (allowedUpdates.includes(key)) {
+        updates[key] = req.body[key];
+      }
+      // Handle profile nested fields
+      if (key === 'profile' && typeof req.body.profile === 'object') {
+        updates.profile = {};
+        const allowedProfileFields = ['firstName', 'lastName', 'specialty', 'institution'];
+        allowedProfileFields.forEach(field => {
+          if (req.body.profile[field] !== undefined) {
+            updates.profile[field] = req.body.profile[field];
+          }
+        });
+      }
+    });
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      updates,
+      {
+        new: true,
+        runValidators: true
+      }
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: user
+    });
+  } catch (error) {
+    console.error('Error in updateProfile:', error);
+    
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: messages
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error while updating profile',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Upload avatar
+// @route   POST /api/users/avatar
+// @access  Private
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar: avatarUrl },
+      { new: true }
+    ).select('-password');
+
+    res.json({
+      success: true,
+      message: 'Avatar uploaded successfully',
+      data: {
+        avatar: avatarUrl,
+        user
+      }
+    });
+  } catch (error) {
+    console.error('Error in uploadAvatar:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while uploading avatar',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Change password
+// @route   PUT /api/users/password
+// @access  Private
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide current and new passwords'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters'
+      });
+    }
+
+    // Get user with password
+    const user = await User.findById(req.user._id).select('+password');
+
+    // Check current password
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    console.error('Error in changePassword:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while changing password',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Follow user
+// @route   POST /api/users/:id/follow
+// @access  Private
+const followUser = async (req, res) => {
+  try {
+    const targetUserId = req.params.id;
+    const currentUserId = req.user._id;
+
+    // Can't follow yourself
+    if (targetUserId === currentUserId.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: 'You cannot follow yourself'
+      });
+    }
+
+    const targetUser = await User.findById(targetUserId);
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+
+    // Check if already following
+    if (currentUser.following.includes(targetUserId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'You are already following this user'
+      });
+    }
+
+    // Add to following/followers
+    currentUser.following.push(targetUserId);
+    targetUser.followers.push(currentUserId);
+
+    await currentUser.save();
+    await targetUser.save();
+
+    // Award reputation for receiving follower
+    const { awardReputation, createNotification } = require('../utils/reputation');
+    await awardReputation(targetUserId, 5, 'Received a new follower');
+
+    // Create notification
+    await createNotification({
+      userId: targetUserId,
+      type: 'new_follower',
+      title: 'New Follower',
+      message: `${currentUser.username} started following you`,
+      link: `/profile/${currentUser.username}`
+    });
+
+    res.json({
+      success: true,
+      message: `You are now following ${targetUser.username}`,
+      data: {
+        following: true
+      }
+    });
+  } catch (error) {
+    console.error('Error in followUser:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while following user',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Unfollow user
+// @route   DELETE /api/users/:id/follow
+// @access  Private
+const unfollowUser = async (req, res) => {
+  try {
+    const targetUserId = req.params.id;
+    const currentUserId = req.user._id;
+
+    const targetUser = await User.findById(targetUserId);
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+
+    // Check if not following
+    if (!currentUser.following.includes(targetUserId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'You are not following this user'
+      });
+    }
+
+    // Remove from following/followers
+    currentUser.following = currentUser.following.filter(
+      id => id.toString() !== targetUserId
+    );
+    targetUser.followers = targetUser.followers.filter(
+      id => id.toString() !== currentUserId.toString()
+    );
+
+    await currentUser.save();
+    await targetUser.save();
+
+    res.json({
+      success: true,
+      message: `You unfollowed ${targetUser.username}`,
+      data: {
+        following: false
+      }
+    });
+  } catch (error) {
+    console.error('Error in unfollowUser:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while unfollowing user',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get user activity (articles and comments)
+// @route   GET /api/users/:username/activity
+// @access  Public
+const getUserActivity = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    // Get user's articles
+    const Article = require('../models/Article');
+    const articles = await Article.find({ author: user._id })
+      .select('title slug createdAt views category')
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip);
+
+    // Get user's comments
+    const Comment = require('../models/Comment');
+    const comments = await Comment.find({ userId: user._id })
+      .populate('articleId', 'title slug')
+      .select('content articleId createdAt votes')
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip);
+
+    res.json({
+      success: true,
+      data: {
+        articles,
+        comments
+      }
+    });
+  } catch (error) {
+    console.error('Error in getUserActivity:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching user activity',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get user followers
+// @route   GET /api/users/:username/followers
+// @access  Public
+const getUserFollowers = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username })
+      .populate('followers', 'username avatar profile.specialty reputation badges');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      count: user.followers.length,
+      data: user.followers
+    });
+  } catch (error) {
+    console.error('Error in getUserFollowers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching followers',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get users following
+// @route   GET /api/users/:username/following
+// @access  Public
+const getUserFollowing = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username })
+      .populate('following', 'username avatar profile.specialty reputation badges');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      count: user.following.length,
+      data: user.following
+    });
+  } catch (error) {
+    console.error('Error in getUserFollowing:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching following',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get leaderboard
+// @route   GET /api/users/leaderboard
+// @access  Public
+const getLeaderboard = async (req, res) => {
+  try {
+    const period = req.query.period || 'all-time'; // all-time, month, week
+    const category = req.query.category || 'reputation'; // reputation, articles, helpful
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    let query = {};
+    let sortField = 'reputation';
+
+    // Filter by period
+    if (period === 'month') {
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+      query.createdAt = { $gte: oneMonthAgo };
+    } else if (period === 'week') {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      query.createdAt = { $gte: oneWeekAgo };
+    }
+
+    // Determine sort field
+    if (category === 'articles') {
+      sortField = 'stats.articlesWritten';
+    } else if (category === 'helpful') {
+      sortField = 'stats.upvotesReceived';
+    }
+
+    const users = await User.find(query)
+      .select('username avatar profile.specialty reputation badges stats')
+      .sort({ [sortField]: -1 })
+      .limit(limit)
+      .skip(skip);
+
+    const total = await User.countDocuments(query);
+
+    res.json({
+      success: true,
+      count: users.length,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      data: users
+    });
+  } catch (error) {
+    console.error('Error in getLeaderboard:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching leaderboard',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getUserProfile,
+  updateProfile,
+  uploadAvatar,
+  changePassword,
+  followUser,
+  unfollowUser,
+  getUserActivity,
+  getUserFollowers,
+  getUserFollowing,
+  getLeaderboard
 };
