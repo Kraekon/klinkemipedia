@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Row, Col, Badge, Spinner, Alert } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { getRelatedArticles } from '../services/api';
 
 const RelatedArticles = ({ currentArticleSlug }) => {
+  const { t } = useTranslation();
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +34,7 @@ const RelatedArticles = ({ currentArticleSlug }) => {
     return (
       <div className="text-center py-3">
         <Spinner animation="border" size="sm" variant="primary" />
-        <p className="mt-2 text-muted">Loading related articles...</p>
+        <p className="mt-2 text-muted">{t('common.loading')}</p>
       </div>
     );
   }
@@ -40,7 +42,7 @@ const RelatedArticles = ({ currentArticleSlug }) => {
   if (error) {
     return (
       <Alert variant="warning" className="mb-0">
-        Unable to load related articles
+        {t('article.noRelatedArticles')}
       </Alert>
     );
   }
@@ -51,7 +53,7 @@ const RelatedArticles = ({ currentArticleSlug }) => {
 
   return (
     <div className="related-articles-section mt-5">
-      <h3 className="mb-4">Related Articles</h3>
+      <h3 className="mb-4">{t('article.relatedArticles')}</h3>
       <Row>
         {relatedArticles.map((article) => (
           <Col key={article._id} md={6} lg={3} className="mb-4">
@@ -74,7 +76,7 @@ const RelatedArticles = ({ currentArticleSlug }) => {
                   </Card.Text>
                 )}
                 <div className="text-muted small">
-                  <span className="me-3">👁 {article.views || 0} views</span>
+                  <span className="me-3">👁 {article.views || 0} {t('article.views').toLowerCase()}</span>
                   {article.tags && article.tags.length > 0 && (
                     <div className="mt-2">
                       {article.tags.slice(0, 2).map((tag, idx) => (

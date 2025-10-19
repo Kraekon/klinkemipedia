@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Alert, Badge, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import ArticleList from '../components/ArticleList';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { searchArticles } from '../services/api';
 
 const SearchPage = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
@@ -49,47 +51,47 @@ const SearchPage = () => {
         <h2 className="mb-0">
           {query ? (
             <>
-              Search results for: <Badge bg="primary">{query}</Badge>
+              {t('search.results')}: <Badge bg="primary">{query}</Badge>
             </>
           ) : (
-            'Search Results'
+            t('search.results')
           )}
         </h2>
         {query && (
           <Button variant="outline-secondary" size="sm" onClick={handleClearSearch}>
-            Clear Search
+            {t('search.clearSearch')}
           </Button>
         )}
       </div>
 
       {!query && !loading && (
         <Alert variant="info" className="text-center">
-          <Alert.Heading>No search query provided</Alert.Heading>
-          <p className="mb-0">Please enter a search term to find articles.</p>
+          <Alert.Heading>{t('messages.info.noData')}</Alert.Heading>
+          <p className="mb-0">{t('search.placeholder')}</p>
         </Alert>
       )}
 
       {loading && query && (
-        <LoadingSpinner message={`Searching for "${query}"...`} />
+        <LoadingSpinner message={t('search.searchFor', { query })} />
       )}
 
       {!loading && query && !error && articles.length > 0 && (
         <Alert variant="success" className="mb-3">
-          <strong>{articles.length}</strong> {articles.length === 1 ? 'article' : 'articles'} found
+          <strong>{articles.length}</strong> {t('search.resultsCount', { count: articles.length })}
         </Alert>
       )}
 
       {!loading && query && !error && articles.length === 0 && (
         <Alert variant="warning" className="text-center">
-          <Alert.Heading>No results found</Alert.Heading>
-          <p>We couldn't find any articles matching "{query}".</p>
-          <p className="mb-0">Try different keywords or browse all articles on the <Alert.Link href="/">home page</Alert.Link>.</p>
+          <Alert.Heading>{t('article.noArticlesFound')}</Alert.Heading>
+          <p>{t('search.noResults', { query })}</p>
+          <p className="mb-0"><Alert.Link href="/">{t('navigation.home')}</Alert.Link></p>
         </Alert>
       )}
 
       {error && (
         <Alert variant="danger" className="text-center">
-          <Alert.Heading>Search Error</Alert.Heading>
+          <Alert.Heading>{t('messages.error.somethingWrong')}</Alert.Heading>
           <p className="mb-0">{error}</p>
         </Alert>
       )}

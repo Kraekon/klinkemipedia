@@ -1,8 +1,11 @@
 import React from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const ArticleCard = ({ article }) => {
+  const { t } = useTranslation();
+  
   return (
     <Card className="h-100">
       <Card.Body className="d-flex flex-column">
@@ -26,7 +29,7 @@ const ArticleCard = ({ article }) => {
         )}
         <div className="d-flex justify-content-between align-items-center">
           <small className="text-muted">
-            {article.views !== undefined && `${article.views} views`}
+            {article.views !== undefined && `${article.views} ${t('article.views').toLowerCase()}`}
           </small>
           <Button 
             as={Link} 
@@ -34,7 +37,7 @@ const ArticleCard = ({ article }) => {
             variant="primary" 
             size="sm"
           >
-            Read More
+            {t('article.readMore')}
           </Button>
         </div>
       </Card.Body>
