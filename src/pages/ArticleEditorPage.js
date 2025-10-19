@@ -164,7 +164,9 @@ const ArticleEditorPage = () => {
 
   // Extract a summary from HTML content
   const extractSummary = (htmlContent) => {
-    const plainText = htmlContent.replace(/<[^>]*>/g, '').trim();
+    // Using DOMParser for safer HTML stripping
+    const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
+    const plainText = (doc.body.textContent || '').trim();
     const words = plainText.split(/\s+/).slice(0, 50).join(' ');
     return words + (plainText.split(/\s+/).length > 50 ? '...' : '');
   };

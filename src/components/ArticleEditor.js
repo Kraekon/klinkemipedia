@@ -48,7 +48,9 @@ const ArticleEditor = ({
   // Calculate statistics
   const updateStatistics = useCallback((text) => {
     // Remove HTML tags for accurate counting
-    const plainText = text.replace(/<[^>]*>/g, '').trim();
+    // Using DOMParser for safer HTML stripping
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    const plainText = (doc.body.textContent || '').trim();
     
     const words = plainText.split(/\s+/).filter(word => word.length > 0);
     const wordCount = words.length;

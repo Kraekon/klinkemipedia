@@ -82,7 +82,9 @@ const MyDrafts = () => {
   };
 
   const extractPlainText = (html) => {
-    return html.replace(/<[^>]*>/g, '').trim();
+    // Using DOMParser for safer HTML stripping
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return (doc.body.textContent || '').trim();
   };
 
   const getPreview = (content) => {
