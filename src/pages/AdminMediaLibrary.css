@@ -1,67 +1,79 @@
+/* ============================================
+   ADMIN MEDIA LIBRARY - ATOM THEME
+   ============================================ */
+
 .admin-media-library {
   min-height: 80vh;
+  background-color: var(--dark-bg-primary);
+  padding: var(--spacing-xl);
 }
 
 .stats-bar {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background-color: var(--dark-bg-secondary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-card {
   text-align: center;
-  padding: 1rem;
+  padding: var(--spacing-md);
 }
 
 .stat-value {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #0d6efd;
-  margin-bottom: 0.25rem;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--atom-green);
+  margin-bottom: var(--spacing-xs);
+  text-shadow: 0 0 10px rgba(95, 176, 75, 0.3);
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  color: #6c757d;
+  font-size: var(--font-size-sm);
+  color: var(--text-dark-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .controls-bar {
-  background-color: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background-color: var(--dark-bg-secondary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
 }
 
 .controls-bar label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-dark-emphasis);
 }
 
 .media-grid {
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
 }
 
 .empty-state {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 3rem 2rem;
+  background-color: var(--dark-bg-tertiary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3xl) var(--spacing-xl);
 }
 
 .empty-state h3 {
-  color: #333;
-  margin-bottom: 1rem;
+  color: var(--text-dark-emphasis);
+  margin-bottom: var(--spacing-md);
 }
 
 .pagination-controls {
-  margin-top: 2rem;
-  padding-bottom: 2rem;
+  margin-top: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
 }
 
 .pagination-controls span {
-  font-weight: 500;
-  color: #333;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-dark-emphasis);
 }
 
 /* Responsive adjustments */
