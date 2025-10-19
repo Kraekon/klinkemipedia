@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const imageStorage = require('../utils/imageStorage');
+const sizeOf = require('image-size');
 const {
   getAllArticles,
   getArticleBySlug,
@@ -43,12 +44,36 @@ router.post('/upload', upload.single('image'), async (req, res) => {
     // Process uploaded file through storage abstraction
     const fileInfo = await imageStorage.upload(req.file);
     
+    // Extract image dimensions
+    const path = require('path');
+    const imagePath = path.join(__dirname, '..', 'public', 'uploads', req.file.filename);
+    let dimensions = { width: null, height: null };
+    try {
+      dimensions = sizeOf(imagePath);
+    } catch (err) {
+      console.warn('Failed to extract image dimensions:', err.message);
+    }
+
+    // Save media metadata to database
+    const Media = require('../models/Media');
+    const mediaDoc = await Media.create({
+      filename: fileInfo.filename,
+      originalName: fileInfo.originalName,
+      mimeType: fileInfo.mimetype,
+      size: fileInfo.size,
+      width: dimensions.width,
+      height: dimensions.height,
+      url: fileInfo.url,
+      uploadedBy: req.body.uploadedBy || req.headers['x-uploaded-by'] || 'admin'
+    });
+    
     res.json({
       success: true,
       imageUrl: fileInfo.url,
       alt: req.file.originalname.replace(/\.[^/.]+$/, ''), // Remove extension for alt text
       filename: fileInfo.filename,
-      size: fileInfo.size
+      size: fileInfo.size,
+      media: mediaDoc
     });
   } catch (error) {
     console.error('Image upload error:', error);
@@ -87,6 +112,7 @@ router.route('/:slug')
     try {
       const Article = require('../models/Article');
       const ArticleRevision = require('../models/ArticleRevision');
+      const Media = require('../models/Media');
       
       // Find the current article before updating
       const currentArticle = await Article.findOne({ slug: req.params.slug });
@@ -106,6 +132,12 @@ router.route('/:slug')
         req.body,
         { new: true, runValidators: true }
       );
+      
+      // Update media usage counts
+      const { updateMediaUsageCounts } = require('../controllers/articleController');
+      if (updateMediaUsageCounts) {
+        await updateMediaUsageCounts();
+      }
       
       res.json({ success: true, data: updatedArticle });
     } catch (error) {

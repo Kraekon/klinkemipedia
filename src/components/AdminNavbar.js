@@ -14,6 +14,7 @@ const AdminNavbar = () => {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/admin">Dashboard</Nav.Link>
             <Nav.Link as={Link} to="/admin/new">New Article</Nav.Link>
+            <Nav.Link as={Link} to="/admin/media">📁 Media Library</Nav.Link>
             <Nav.Link as={Link} to="/admin/users">Users</Nav.Link>
             <Nav.Link as={Link} to="/">View Site</Nav.Link>
           </Nav>

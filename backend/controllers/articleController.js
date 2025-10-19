@@ -1,4 +1,68 @@
 const Article = require('../models/Article');
+const Media = require('../models/Media');
+
+// Helper function to extract image URLs from article content
+const extractImageUrls = (article) => {
+  const urls = new Set();
+  
+  // Extract from content
+  if (article.content) {
+    const contentMatches = article.content.match(/\/uploads\/[^\s"')]+/g);
+    if (contentMatches) contentMatches.forEach(url => urls.add(url));
+  }
+  
+  // Extract from clinicalSignificance
+  if (article.clinicalSignificance) {
+    const csMatches = article.clinicalSignificance.match(/\/uploads\/[^\s"')]+/g);
+    if (csMatches) csMatches.forEach(url => urls.add(url));
+  }
+  
+  // Extract from interpretation
+  if (article.interpretation) {
+    const intMatches = article.interpretation.match(/\/uploads\/[^\s"')]+/g);
+    if (intMatches) intMatches.forEach(url => urls.add(url));
+  }
+  
+  // Extract from images array
+  if (article.images && Array.isArray(article.images)) {
+    article.images.forEach(img => {
+      if (img.url) urls.add(img.url);
+    });
+  }
+  
+  return Array.from(urls);
+};
+
+// Helper function to update media usage counts
+const updateMediaUsageCounts = async () => {
+  try {
+    // Get all articles
+    const articles = await Article.find({}).select('content clinicalSignificance interpretation images');
+    
+    // Get all media
+    const allMedia = await Media.find({});
+    
+    // Count usage for each media file
+    const usageCounts = {};
+    
+    articles.forEach(article => {
+      const imageUrls = extractImageUrls(article);
+      imageUrls.forEach(url => {
+        usageCounts[url] = (usageCounts[url] || 0) + 1;
+      });
+    });
+    
+    // Update each media document
+    const updatePromises = allMedia.map(media => {
+      const count = usageCounts[media.url] || 0;
+      return Media.updateOne({ _id: media._id }, { usageCount: count });
+    });
+    
+    await Promise.all(updatePromises);
+  } catch (error) {
+    console.error('Error updating media usage counts:', error);
+  }
+};
 
 // Helper function to generate slug from title
 const generateSlug = (title) => {
@@ -114,6 +178,9 @@ const createArticle = async (req, res) => {
     }
 
     const article = await Article.create(req.body);
+    
+    // Update media usage counts
+    await updateMediaUsageCounts();
 
     res.status(201).json({
       success: true,
@@ -166,6 +233,9 @@ const updateArticle = async (req, res) => {
         message: 'Article not found'
       });
     }
+    
+    // Update media usage counts
+    await updateMediaUsageCounts();
 
     res.json({
       success: true,
@@ -431,5 +501,6 @@ module.exports = {
   deleteArticle,
   getArticlesByCategory,
   searchArticles,
-  getRelatedArticles
+  getRelatedArticles,
+  updateMediaUsageCounts
 };
