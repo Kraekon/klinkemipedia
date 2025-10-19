@@ -163,6 +163,18 @@ const getArticleBySlug = async (req, res) => {
 // @access  Private (TODO: Add authentication)
 const createArticle = async (req, res) => {
   try {
+    // Validate tags - max 10 tags
+    if (req.body.tags && Array.isArray(req.body.tags)) {
+      if (req.body.tags.length > 10) {
+        return res.status(400).json({
+          success: false,
+          message: 'Maximum 10 tags allowed per article'
+        });
+      }
+      // Normalize tags to lowercase and trim
+      req.body.tags = req.body.tags.map(tag => tag.toLowerCase().trim()).filter(tag => tag);
+    }
+
     // Generate slug from title if not provided
     if (!req.body.slug && req.body.title) {
       req.body.slug = generateSlug(req.body.title);
@@ -213,6 +225,18 @@ const createArticle = async (req, res) => {
 // @access  Private (TODO: Add authentication)
 const updateArticle = async (req, res) => {
   try {
+    // Validate tags - max 10 tags
+    if (req.body.tags && Array.isArray(req.body.tags)) {
+      if (req.body.tags.length > 10) {
+        return res.status(400).json({
+          success: false,
+          message: 'Maximum 10 tags allowed per article'
+        });
+      }
+      // Normalize tags to lowercase and trim
+      req.body.tags = req.body.tags.map(tag => tag.toLowerCase().trim()).filter(tag => tag);
+    }
+
     // If title is being updated, regenerate slug
     if (req.body.title && !req.body.slug) {
       req.body.slug = generateSlug(req.body.title);

@@ -38,6 +38,7 @@ const ArticleSchema = new mongoose.Schema(
     },
     tags: [{
       type: String,
+      lowercase: true,
       trim: true
     }],
     referenceRanges: [{

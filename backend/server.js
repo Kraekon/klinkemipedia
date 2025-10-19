@@ -44,6 +44,9 @@ app.get('/api/test', (req, res) => {
 // Mount article routes
 app.use('/api/articles', require('./routes/articles'));
 
+// Mount tags routes
+app.use('/api/tags', require('./routes/tags'));
+
 // Mount media routes
 app.use('/api/media', require('./routes/media'));
 

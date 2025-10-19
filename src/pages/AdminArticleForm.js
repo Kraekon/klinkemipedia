@@ -6,6 +6,7 @@ import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import ImageUploader from '../components/ImageUploader';
 import VersionHistory from '../components/VersionHistory';
+import TagInput from '../components/TagInput';
 import MDEditor from '@uiw/react-md-editor';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { slugify } from '../utils/slugify';
@@ -48,7 +49,6 @@ const AdminArticleForm = () => {
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
   const [availableTags, setAvailableTags] = useState([]);
-  const [tagInput, setTagInput] = useState('');
   const [relatedTestInput, setRelatedTestInput] = useState('');
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -111,23 +111,6 @@ const AdminArticleForm = () => {
     if (validationErrors[field]) {
       setValidationErrors(prev => ({ ...prev, [field]: null }));
     }
-  };
-
-  const handleTagInputKeyDown = (e) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
-      e.preventDefault();
-      if (!formData.tags.includes(tagInput.trim())) {
-        setFormData(prev => ({ ...prev, tags: [...prev.tags, tagInput.trim()] }));
-      }
-      setTagInput('');
-    }
-  };
-
-  const removeTag = (tagToRemove) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
   };
 
   const handleRelatedTestInputKeyDown = (e) => {
@@ -535,32 +518,12 @@ const AdminArticleForm = () => {
           <div className="form-section">
             <h3>Metadata</h3>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Tags</Form.Label>
-              <div className="tag-input-container">
-                {formData.tags.map((tag, index) => (
-                  <span key={index} className="tag-chip">
-                    {tag}
-                    <button type="button" onClick={() => removeTag(tag)}>
-                      ✕
-                    </button>
-                  </span>
-                ))}
-                <input
-                  type="text"
-                  className="tag-input-field"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleTagInputKeyDown}
-                  placeholder="Type a tag and press Enter"
-                />
-              </div>
-              {availableTags.length > 0 && (
-                <Form.Text muted>
-                  Suggestions: {availableTags.slice(0, 5).join(', ')}
-                </Form.Text>
-              )}
-            </Form.Group>
+            <TagInput
+              tags={formData.tags}
+              onChange={(newTags) => handleInputChange('tags', newTags)}
+              maxTags={10}
+              availableTags={availableTags}
+            />
 
             <Form.Group className="mb-3">
               <Form.Label>References</Form.Label>

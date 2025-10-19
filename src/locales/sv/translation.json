@@ -36,7 +36,8 @@
     "mediaAnalytics": "Medieanalys",
     "users": "Användare",
     "viewSite": "Visa webbplats",
-    "logout": "Logga ut"
+    "logout": "Logga ut",
+    "tags": "Taggar"
   },
   "language": {
     "label": "Språk",
@@ -295,5 +296,35 @@
     "previous": "Föregående",
     "continue": "Fortsätt",
     "finish": "Slutför"
+  },
+  "tags": {
+    "tags": "Taggar",
+    "addTag": "Lägg till tagg",
+    "popularTags": "Populära taggar",
+    "articlesTaggedWith": "Artiklar taggade med",
+    "browseByTag": "Bläddra efter tagg",
+    "noTags": "Inga taggar",
+    "tagCloud": "Taggmoln",
+    "allTags": "Alla taggar",
+    "tagManagement": "Tagghantering",
+    "mergeTags": "Slå samman taggar",
+    "deleteTag": "Radera tagg",
+    "tagCount": "{{count}} artikel",
+    "tagCount_plural": "{{count}} artiklar",
+    "enterTag": "Ange tagg...",
+    "maxTags": "Max {{max}} taggar",
+    "tagAdded": "Taggen har lagts till",
+    "tagRemoved": "Taggen har tagits bort",
+    "tagsMerged": "Taggarna har slagits samman",
+    "tagDeleted": "Taggen har raderats",
+    "selectSourceTags": "Välj källtaggar",
+    "selectTargetTag": "Välj måltagg",
+    "sourceTagsHelp": "Välj de taggar som ska slås samman",
+    "targetTagHelp": "Välj den tagg som ska behållas",
+    "confirmMergeTags": "Är du säker på att du vill slå samman dessa taggar?",
+    "confirmDeleteTag": "Är du säker på att du vill radera denna tagg?",
+    "deleteTagDetail": "Taggen \"{{tag}}\" kommer att tas bort från alla artiklar. Denna åtgärd kan inte ångras.",
+    "noArticlesWithTag": "Inga artiklar med denna tagg",
+    "clickToFilter": "Klicka för att filtrera artiklar"
   }
 }

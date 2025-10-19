@@ -23,6 +23,7 @@ A comprehensive clinical chemistry reference website built with React and Expres
 - ❌ **Error Handling**: User-friendly error messages
 - 🎯 **Clean Code**: Well-organized component structure
 - 🌍 **Internationalization (i18n)**: Multi-language support (Swedish and English)
+- 🏷️ **Advanced Tagging System**: Comprehensive tag management with autocomplete, cloud visualization, and filtering
 
 ### Backend Features
 - 📡 **RESTful API**: Clean and documented API endpoints
@@ -30,9 +31,20 @@ A comprehensive clinical chemistry reference website built with React and Expres
 - 📝 **Full CRUD Operations**: Create, Read, Update, Delete articles
 - 🔎 **Text Search**: MongoDB text search with indexing
 - 📂 **Category Filtering**: Filter articles by category
-- 🏷️ **Tag Support**: Multiple tags per article
+- 🏷️ **Tag Support**: Multiple tags per article with advanced management
+- 🔀 **Tag Management API**: Merge and delete tags with bulk operations
 - 👀 **View Tracking**: Automatic view count increment
 - ✅ **Validation**: Mongoose schema validation
+
+### Tag System Features (Phase 2)
+- 🏷️ **Tag Browsing**: Visual tag cloud and list views
+- 🔍 **Tag Filtering**: Click any tag to filter articles
+- ✨ **Autocomplete**: Smart tag suggestions when editing
+- 🎯 **Max 10 Tags**: Enforced limit per article
+- 🔤 **Normalization**: Automatic lowercase and trim
+- 👨‍💼 **Admin Tools**: Merge and delete tags
+- 📊 **Usage Statistics**: Tag counts and analytics
+- 🌐 **Bilingual**: Full Swedish and English support
 
 ## Prerequisites
 
@@ -311,6 +323,59 @@ Query parameters:
 - `q` (string, required): Search query
 - `page` (number): Page number (default: 1)
 - `limit` (number): Items per page (default: 10)
+
+#### Tag Endpoints
+
+##### Get All Tags
+```
+GET /api/tags
+```
+Returns all tags with article counts (only published articles).
+
+Response:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "tag": "glucose",
+      "count": 15
+    },
+    {
+      "tag": "liver",
+      "count": 8
+    }
+  ]
+}
+```
+
+##### Get Articles by Tag
+```
+GET /api/tags/:tag/articles
+```
+Get articles with a specific tag (paginated).
+
+Query parameters:
+- `page` (number): Page number (default: 1)
+- `limit` (number): Items per page (default: 10)
+
+##### Merge Tags (Admin)
+```
+PUT /api/tags/merge
+Content-Type: application/json
+
+{
+  "sourceTags": ["old-tag-1", "old-tag-2"],
+  "targetTag": "new-tag"
+}
+```
+Merges multiple tags into one. All articles with source tags will be updated to use the target tag.
+
+##### Delete Tag (Admin)
+```
+DELETE /api/tags/:tag
+```
+Removes a tag from all articles.
 
 ### Article Schema
 

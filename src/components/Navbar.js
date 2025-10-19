@@ -32,6 +32,7 @@ const Navbar = () => {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">{t('navigation.home')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.articles')}</Nav.Link>
+            <Nav.Link as={Link} to="/tags">{t('navigation.tags')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.about')}</Nav.Link>
           </Nav>
           <Form className="d-flex" onSubmit={handleSearch}>
