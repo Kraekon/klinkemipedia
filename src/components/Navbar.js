@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Navbar as BSNavbar, Container, Nav, Form, FormControl, Button, InputGroup } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import './Navbar.css';
 
 const Navbar = () => {
   const { t } = useTranslation();

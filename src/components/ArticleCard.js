@@ -3,13 +3,14 @@ import { Card, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TagBadge from './TagBadge';
+import './ArticleCard.css';
 
 const ArticleCard = ({ article }) => {
   const { t } = useTranslation();
   
   return (
-    <Card className="h-100">
-      <Card.Body className="d-flex flex-column">
+    <Card className="article-card h-100">
+      <Card.Body>
         <Card.Title>{article.title}</Card.Title>
         {article.category && (
           <div className="mb-2">
@@ -20,13 +21,13 @@ const ArticleCard = ({ article }) => {
           {article.summary || article.content?.substring(0, 150) + '...'}
         </Card.Text>
         {article.tags && article.tags.length > 0 && (
-          <div className="mb-3">
+          <div className="article-card-tags">
             {article.tags.map((tag, index) => (
               <TagBadge key={index} tag={tag} clickable={true} />
             ))}
           </div>
         )}
-        <div className="d-flex justify-content-between align-items-center">
+        <div className="article-card-footer">
           <small className="text-muted">
             {article.views !== undefined && `${article.views} ${t('article.views').toLowerCase()}`}
           </small>

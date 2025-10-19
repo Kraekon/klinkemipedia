@@ -1,0 +1,107 @@
+/* ============================================
+   TAG BADGE - ATOM THEME
+   ============================================ */
+
+.tag-badge {
+  background-color: var(--atom-green) !important;
+  color: white !important;
+  border-radius: var(--radius-full);
+  padding: 0.375em 0.75em;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  transition: var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  border: none;
+  text-decoration: none !important;
+}
+
+.tag-badge:hover {
+  background-color: var(--atom-green-hover) !important;
+  color: white !important;
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+  text-decoration: none !important;
+}
+
+.tag-badge.clickable {
+  cursor: pointer;
+}
+
+.tag-badge.removable {
+  cursor: pointer;
+}
+
+.tag-badge .remove-icon {
+  font-size: 1.2em;
+  line-height: 1;
+  margin-left: var(--spacing-xs);
+  opacity: 0.8;
+  transition: var(--transition-fast);
+}
+
+.tag-badge .remove-icon:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* Variant styles */
+.tag-badge.variant-secondary {
+  background-color: var(--dark-bg-elevated) !important;
+  color: var(--text-dark-emphasis) !important;
+  border: 1px solid var(--border-dark);
+}
+
+.tag-badge.variant-secondary:hover {
+  background-color: var(--dark-bg-tertiary) !important;
+  border-color: var(--atom-green);
+  color: var(--atom-green) !important;
+}
+
+.tag-badge.variant-success {
+  background-color: var(--success) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.tag-badge.variant-danger {
+  background-color: var(--danger) !important;
+  color: white !important;
+}
+
+.tag-badge.variant-warning {
+  background-color: var(--warning) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.tag-badge.variant-info {
+  background-color: var(--info) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+/* Size variations */
+.tag-badge.size-sm {
+  padding: 0.25em 0.5em;
+  font-size: var(--font-size-xs);
+}
+
+.tag-badge.size-lg {
+  padding: 0.5em 1em;
+  font-size: var(--font-size-base);
+}
+
+/* Animation for adding/removing tags */
+@keyframes tagAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tag-badge {
+  animation: tagAppear 0.2s ease-out;
+}

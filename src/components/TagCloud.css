@@ -1,29 +1,66 @@
+/* ============================================
+   TAG CLOUD - ATOM THEME
+   ============================================ */
+
 .tag-cloud {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1.5rem;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
   align-items: center;
   justify-content: center;
+  background-color: var(--dark-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-dark);
 }
 
 .tag-cloud-item {
-  color: #0d6efd;
+  color: var(--atom-green);
   text-decoration: none;
-  padding: 0.25rem 0.5rem;
-  transition: all 0.2s ease;
+  padding: 0.25rem 0.75rem;
+  transition: var(--transition-base);
   line-height: 1.5;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
 }
 
 .tag-cloud-item:hover {
-  color: #0a58ca;
+  color: var(--atom-green-light);
   transform: scale(1.1);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 0 10px rgba(95, 176, 75, 0.5);
+  border-color: var(--atom-green);
+  background-color: rgba(95, 176, 75, 0.1);
+}
+
+/* Size variations for tag popularity */
+.tag-cloud-item.size-xs {
+  font-size: var(--font-size-xs);
+}
+
+.tag-cloud-item.size-sm {
+  font-size: var(--font-size-sm);
+}
+
+.tag-cloud-item.size-md {
+  font-size: var(--font-size-base);
+}
+
+.tag-cloud-item.size-lg {
+  font-size: var(--font-size-lg);
+}
+
+.tag-cloud-item.size-xl {
+  font-size: var(--font-size-xl);
 }
 
 @media (max-width: 768px) {
   .tag-cloud {
-    gap: 0.75rem;
-    padding: 1rem;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+  
+  .tag-cloud-item {
+    padding: 0.2rem 0.5rem;
   }
 }

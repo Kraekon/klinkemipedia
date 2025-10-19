@@ -2,15 +2,18 @@ import React from 'react';
 import { Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import './TagBadge.css';
 
-const TagBadge = ({ tag, clickable = true, onRemove, variant = 'secondary', className = '' }) => {
+const TagBadge = ({ tag, clickable = true, onRemove, variant = 'primary', className = '' }) => {
   const { t } = useTranslation();
+
+  const badgeClasses = `tag-badge me-1 mb-1 ${onRemove ? 'removable' : ''} ${clickable ? 'clickable' : ''} variant-${variant} ${className}`;
 
   if (!clickable && !onRemove) {
     return (
       <Badge 
         bg={variant} 
-        className={`me-1 mb-1 ${className}`}
+        className={badgeClasses}
       >
         {tag}
       </Badge>
@@ -21,14 +24,12 @@ const TagBadge = ({ tag, clickable = true, onRemove, variant = 'secondary', clas
     return (
       <Badge 
         bg={variant} 
-        className={`me-1 mb-1 ${className}`}
-        style={{ cursor: 'pointer' }}
+        className={badgeClasses}
       >
         {tag}
         <span 
           onClick={onRemove}
-          className="ms-1"
-          style={{ cursor: 'pointer' }}
+          className="remove-icon"
           title={t('tags.tagRemoved')}
         >
           ×
@@ -42,8 +43,7 @@ const TagBadge = ({ tag, clickable = true, onRemove, variant = 'secondary', clas
       as={Link}
       to={`/tag/${encodeURIComponent(tag)}`}
       bg={variant} 
-      className={`me-1 mb-1 text-decoration-none ${className}`}
-      style={{ cursor: 'pointer' }}
+      className={badgeClasses}
       title={t('tags.clickToFilter')}
     >
       {tag}

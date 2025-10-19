@@ -6,13 +6,14 @@ import ReactMarkdown from 'react-markdown';
 import { getImageUrl } from '../utils/imageUrl';
 import TagBadge from './TagBadge';
 import VersionHistory from './VersionHistory';
+import './ArticleDetail.css';
 
 const ArticleDetail = ({ article }) => {
   const { t } = useTranslation();
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+    <div className="article-detail-container">
+      <div className="article-detail-header">
         <Button as={Link} to="/" variant="outline-primary">
           ← {t('common.back')} to {t('navigation.articles')}
         </Button>
@@ -25,11 +26,11 @@ const ArticleDetail = ({ article }) => {
         </Button>
       </div>
       
-      <Card>
+      <Card className="article-detail-card">
         <Card.Body>
           <h1 className="mb-3">{article.title}</h1>
           
-          <div className="mb-3">
+          <div className="article-tags">
             {article.category && (
               <Badge bg="primary" className="me-2">{article.category}</Badge>
             )}
@@ -39,12 +40,10 @@ const ArticleDetail = ({ article }) => {
           </div>
 
           {article.summary && (
-            <Card className="mb-4 bg-light">
-              <Card.Body>
-                <h5>Summary</h5>
-                <p className="mb-0">{article.summary}</p>
-              </Card.Body>
-            </Card>
+            <div className="article-summary-box">
+              <h5>Summary</h5>
+              <p className="mb-0">{article.summary}</p>
+            </div>
           )}
 
           <div className="mb-4">
@@ -126,7 +125,7 @@ const ArticleDetail = ({ article }) => {
             </div>
           )}
 
-          <div className="text-muted small">
+          <div className="article-meta">
             <p className="mb-1">Views: {article.views || 0}</p>
             {article.createdAt && (
               <p className="mb-1">

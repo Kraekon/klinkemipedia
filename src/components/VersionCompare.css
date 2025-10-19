@@ -1,55 +1,73 @@
+/* ============================================
+   VERSION COMPARE - ATOM THEME
+   ============================================ */
+
 .compare-header {
-  border-bottom: 2px solid #dee2e6;
-  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--atom-green);
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .compare-header h2 {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-dark-emphasis);
 }
 
 .legend {
-  margin-top: 1rem;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--dark-bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-dark);
 }
 
 .comparison-content {
-  margin-top: 2rem;
+  margin-top: var(--spacing-xl);
 }
 
 .compare-field {
-  margin-bottom: 2rem;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  background-color: var(--dark-bg-tertiary);
+  border: 1px solid var(--border-dark);
 }
 
 .compare-field.different {
-  background-color: #fff3cd;
-  border-color: #ffc107;
+  background-color: rgba(255, 184, 108, 0.1);
+  border-color: var(--warning);
+  border-left: 4px solid var(--warning);
 }
 
 .compare-field h6 {
-  margin-bottom: 1rem;
-  color: #495057;
-  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  color: var(--atom-green);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-lg);
 }
 
 .version-column {
-  padding: 1rem;
+  padding: var(--spacing-md);
 }
 
 .version-column.left {
-  border-right: 2px solid #dee2e6;
+  border-right: 2px solid var(--border-dark);
 }
 
 .version-label {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark-emphasis);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .field-content {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 4px;
+  background-color: var(--dark-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-dark);
   min-height: 60px;
   overflow-x: auto;
 }
@@ -58,14 +76,16 @@
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-size: 0.85rem;
-  font-family: 'Courier New', monospace;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-code);
+  color: var(--text-dark);
 }
 
 .compare-actions {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  border-top: 1px solid #dee2e6;
-  padding-top: 1rem;
+  gap: var(--spacing-md);
+  border-top: 1px solid var(--border-dark);
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-lg);
 }

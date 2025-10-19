@@ -1,38 +1,52 @@
+/* ============================================
+   VERSION HISTORY - ATOM THEME
+   ============================================ */
+
 .revision-view {
-  padding: 1rem;
+  padding: var(--spacing-md);
+  background-color: var(--dark-bg-secondary);
 }
 
 .revision-header {
-  border-bottom: 2px solid #dee2e6;
-  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--atom-green);
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .revision-header h5 {
-  margin-bottom: 0.5rem;
-  color: #333;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-dark-emphasis);
+  font-weight: var(--font-weight-bold);
 }
 
 .revision-content h6 {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: #495057;
-  font-weight: 600;
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+  color: var(--atom-green);
+  font-weight: var(--font-weight-semibold);
 }
 
 .revision-content p {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-dark);
 }
 
 .content-preview {
-  background-color: #f8f9fa;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
+  background-color: var(--dark-bg-tertiary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  font-family: var(--font-family-code);
+  font-size: var(--font-size-sm);
+  color: var(--text-dark);
+  overflow-x: auto;
 }
 
 .revision-actions {
   display: flex;
   justify-content: flex-start;
-  gap: 1rem;
-  border-top: 1px solid #dee2e6;
-  padding-top: 1rem;
+  gap: var(--spacing-md);
+  border-top: 1px solid var(--border-dark);
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-lg);
 }

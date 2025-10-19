@@ -1,0 +1,141 @@
+/* ============================================
+   NAVBAR - ATOM THEME
+   ============================================ */
+
+.navbar {
+  background-color: var(--dark-bg-tertiary) !important;
+  box-shadow: var(--shadow-md);
+  border-bottom: 2px solid var(--atom-green);
+  padding: var(--spacing-md) 0;
+}
+
+.navbar-brand {
+  color: var(--atom-green) !important;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  transition: var(--transition-base);
+  text-shadow: 0 0 10px rgba(95, 176, 75, 0.3);
+}
+
+.navbar-brand:hover {
+  color: var(--atom-green-light) !important;
+  text-shadow: var(--shadow-glow-green);
+  transform: scale(1.02);
+}
+
+.navbar .nav-link {
+  color: var(--text-dark) !important;
+  transition: var(--transition-base);
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  position: relative;
+  font-weight: var(--font-weight-medium);
+  margin: 0 var(--spacing-xs);
+}
+
+.navbar .nav-link:hover {
+  color: var(--atom-green) !important;
+}
+
+.navbar .nav-link.active {
+  color: var(--atom-green) !important;
+}
+
+.navbar .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: var(--spacing-md);
+  right: var(--spacing-md);
+  height: 2px;
+  background-color: var(--atom-green);
+  box-shadow: 0 0 8px var(--atom-green);
+}
+
+.navbar-toggler {
+  border-color: var(--border-dark);
+  padding: var(--spacing-sm);
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%235FB04B' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Search Bar in Navbar */
+.navbar .form-control {
+  background-color: var(--dark-bg-primary);
+  border: 1px solid var(--border-dark);
+  color: var(--text-dark-emphasis);
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.navbar .form-control:focus {
+  background-color: var(--dark-bg-elevated);
+  border-color: var(--atom-green);
+  color: var(--text-dark-emphasis);
+  box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
+}
+
+.navbar .form-control::placeholder {
+  color: var(--text-dark-muted);
+}
+
+.navbar .btn-outline-light {
+  border-color: var(--border-dark);
+  color: var(--text-dark-emphasis);
+  background-color: transparent;
+}
+
+.navbar .btn-outline-light:hover {
+  background-color: var(--atom-green);
+  border-color: var(--atom-green);
+  color: white;
+}
+
+.navbar .input-group {
+  max-width: 400px;
+}
+
+/* Mobile Navigation */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background-color: var(--dark-bg-tertiary);
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-dark);
+  }
+  
+  .navbar .nav-link {
+    padding: var(--spacing-md) !important;
+  }
+  
+  .navbar .nav-link.active::after {
+    left: 0;
+    right: auto;
+    width: 3px;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+  }
+  
+  .navbar .input-group {
+    max-width: 100%;
+    margin-top: var(--spacing-md);
+  }
+}
+
+/* Language Switcher in Navbar */
+.navbar .language-switcher {
+  margin-left: var(--spacing-md);
+}
+
+@media (max-width: 991px) {
+  .navbar .language-switcher {
+    margin-left: 0;
+    margin-top: var(--spacing-md);
+  }
+}
