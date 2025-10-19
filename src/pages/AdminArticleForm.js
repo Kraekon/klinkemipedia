@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Form, Button, Alert, Spinner, Badge, Toast, ToastContainer } from 'react-bootstrap';
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
+import ReactMarkdown from 'react-markdown';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { slugify } from '../utils/slugify';
 import './Admin.css';
@@ -373,15 +374,15 @@ const AdminArticleForm = () => {
             </Button>
 
             {showPreview && (
-              <div className="preview-mode">
-                <h2>{formData.title || 'Untitled Article'}</h2>
-                {formData.category && <Badge bg="primary">{formData.category}</Badge>}
-                {formData.summary && <p className="mt-3"><em>{formData.summary}</em></p>}
-                <div className="mt-4" style={{ whiteSpace: 'pre-wrap' }}>
-                  {formData.content || 'No content yet...'}
-                </div>
-              </div>
-            )}
+  <div className="preview-mode">
+    <h2>{formData.title || 'Untitled Article'}</h2>
+    {formData.category && <Badge bg="primary">{formData.category}</Badge>}
+    {formData.summary && <p className="mt-3"><em>{formData.summary}</em></p>}
+    <div className="mt-4">
+      <ReactMarkdown>{formData.content || 'No content yet...'}</ReactMarkdown>
+    </div>
+  </div>
+)}
           </div>
 
           {/* Reference Ranges */}

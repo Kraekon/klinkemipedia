@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Badge, Table, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 const ArticleDetail = ({ article }) => {
   return (
@@ -32,9 +33,11 @@ const ArticleDetail = ({ article }) => {
           )}
 
           <div className="mb-4">
-            <h5>Content</h5>
-            <p style={{ whiteSpace: 'pre-line' }}>{article.content}</p>
-          </div>
+  <h5>Content</h5>
+  <div className="article-content">
+    <ReactMarkdown>{article.content}</ReactMarkdown>
+  </div>
+</div>
 
           {article.referenceRanges && article.referenceRanges.length > 0 && (
             <div className="mb-4">
@@ -63,11 +66,13 @@ const ArticleDetail = ({ article }) => {
           )}
 
           {article.clinicalSignificance && (
-            <div className="mb-4">
-              <h5>Clinical Significance</h5>
-              <p style={{ whiteSpace: 'pre-line' }}>{article.clinicalSignificance}</p>
-            </div>
-          )}
+  <div className="mb-4">
+    <h5>Clinical Significance</h5>
+    <div className="clinical-significance">
+      <ReactMarkdown>{article.clinicalSignificance}</ReactMarkdown>
+    </div>
+  </div>
+)}
 
           {article.relatedTests && article.relatedTests.length > 0 && (
             <div className="mb-4">
