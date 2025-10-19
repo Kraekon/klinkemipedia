@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const imageStorage = require('../utils/imageStorage');
 const {
   getAllArticles,
   getArticleBySlug,
@@ -10,6 +12,52 @@ const {
   searchArticles,
   getRelatedArticles
 } = require('../controllers/articleController');
+
+// Configure multer for image uploads
+const upload = multer({
+  storage: imageStorage.getMulterStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB max file size
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only image files
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP images are allowed.'), false);
+    }
+  }
+});
+
+// Image upload endpoint (must be before :slug route to avoid conflicts)
+router.post('/upload', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No image file provided'
+      });
+    }
+
+    // Process uploaded file through storage abstraction
+    const fileInfo = await imageStorage.upload(req.file);
+    
+    res.json({
+      success: true,
+      imageUrl: fileInfo.url,
+      alt: req.file.originalname.replace(/\.[^/.]+$/, ''), // Remove extension for alt text
+      filename: fileInfo.filename,
+      size: fileInfo.size
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to upload image'
+    });
+  }
+});
 
 // Search route (must be before :slug route to avoid conflicts)
 router.get('/search', searchArticles);

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Alert, Spinner, Badge, Toast, ToastContainer } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal } from 'react-bootstrap';
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
-import ReactMarkdown from 'react-markdown';
+import ImageUploader from '../components/ImageUploader';
 import MDEditor from '@uiw/react-md-editor';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { slugify } from '../utils/slugify';
@@ -50,6 +50,7 @@ const AdminArticleForm = () => {
   const [relatedTestInput, setRelatedTestInput] = useState('');
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showImageUploadModal, setShowImageUploadModal] = useState(false);
 
   useEffect(() => {
     fetchAvailableTags();
@@ -203,6 +204,24 @@ const AdminArticleForm = () => {
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
+  };
+
+  const handleImageUploadSuccess = (imageData) => {
+    // Insert markdown image syntax at cursor position
+    const markdownImage = `![${imageData.alt}](${imageData.url})`;
+    
+    // Insert into content at current cursor position or at the end
+    const currentContent = formData.content || '';
+    const newContent = currentContent ? `${currentContent}\n\n${markdownImage}` : markdownImage;
+    
+    handleInputChange('content', newContent);
+    setShowImageUploadModal(false);
+    setSuccessMessage('Image uploaded successfully!');
+    setShowSuccessToast(true);
+  };
+
+  const handleImageUploadError = (errorMessage) => {
+    setError(errorMessage);
   };
 
   const handleSubmit = async (publishNow = false) => {
@@ -371,7 +390,15 @@ const AdminArticleForm = () => {
   </Form.Text>
 </Form.Group>
 
-            
+            <div className="mb-3">
+              <Button 
+                variant="outline-primary" 
+                onClick={() => setShowImageUploadModal(true)}
+                size="sm"
+              >
+                📷 Upload Image
+              </Button>
+            </div>
           </div>
 
           {/* Reference Ranges */}
@@ -545,6 +572,24 @@ const AdminArticleForm = () => {
             </Button>
           </div>
         </div>
+
+        {/* Image Upload Modal */}
+        <Modal 
+          show={showImageUploadModal} 
+          onHide={() => setShowImageUploadModal(false)}
+          size="lg"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Upload Image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <ImageUploader
+              onUploadSuccess={handleImageUploadSuccess}
+              onUploadError={handleImageUploadError}
+            />
+          </Modal.Body>
+        </Modal>
       </div>
     </>
   );

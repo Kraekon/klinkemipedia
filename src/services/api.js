@@ -48,6 +48,20 @@ export const getRelatedArticles = async (slug, limit = 5) => {
   return response.data;
 };
 
+// Upload image
+export const uploadImage = async (file, onUploadProgress) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await axios.post(`${API_BASE_URL}/articles/upload`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    onUploadProgress
+  });
+  return response.data;
+};
+
 // User Management APIs
 const getAdminHeaders = () => {
   // In production, this should use JWT tokens stored in localStorage/cookies

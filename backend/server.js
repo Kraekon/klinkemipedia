@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { validate: validateEnvironment, getEnv } = require('./config/environment');
 
 // Validate environment configuration before starting
@@ -21,6 +22,9 @@ connectDB();
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Request logging middleware
 app.use((req, res, next) => {
