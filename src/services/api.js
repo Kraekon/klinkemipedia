@@ -193,7 +193,7 @@ const getAdminHeaders = () => {
 };
 
 export const getAllUsers = async (params = {}) => {
-  const response = await axios.get(`${API_BASE_URL}/users`, {
+  const response = await axios.get(`${API_BASE_URL}/users/admin`, {
     params,
     headers: getAdminHeaders()
   });
@@ -208,7 +208,7 @@ export const getUserById = async (id) => {
 };
 
 export const createUser = async (userData) => {
-  const response = await axios.post(`${API_BASE_URL}/users`, userData, {
+  const response = await axios.post(`${API_BASE_URL}/users/admin`, userData, {
     headers: getAdminHeaders()
   });
   return response.data;

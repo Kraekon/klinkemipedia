@@ -38,6 +38,13 @@ const UserMenu = () => {
       
       <NavDropdown.Divider />
       
+      {/* ADD THIS: Profile Link */}
+      <NavDropdown.Item onClick={() => navigate(`/profile/${user.username}`)}>
+        {t('profile.title')}
+      </NavDropdown.Item>
+      
+      <NavDropdown.Divider />
+      
       {user.role === 'admin' && (
         <>
           <NavDropdown.Item onClick={() => navigate('/admin')}>

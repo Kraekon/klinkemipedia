@@ -1,10 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 
-/**
- * EnvironmentValidator - Validates environment variables on startup
- * Ensures .env file is in the correct location and all required variables are present
- */
 class EnvironmentValidator {
   constructor() {
     this.errors = [];
@@ -13,11 +9,7 @@ class EnvironmentValidator {
     this.envPath = path.join(this.projectRoot, '.env');
   }
 
-  /**
-   * Load .env file from the correct location (project root)
-   */
   loadEnvironment() {
-    // Check if .env file exists in project root
     if (!fs.existsSync(this.envPath)) {
       this.errors.push({
         message: `.env file not found at: ${this.envPath}`,
@@ -26,23 +18,17 @@ class EnvironmentValidator {
       return false;
     }
 
-    // Load the .env file from the correct location
     require('dotenv').config({ path: this.envPath });
     return true;
   }
 
-  /**
-   * Validate required environment variables
-   */
   validateVariables() {
-    // Check MONGODB_URI
     if (!process.env.MONGODB_URI) {
       this.errors.push({
         message: 'MONGODB_URI is not set',
         fix: 'Add MONGODB_URI to your .env file. See .env.example for the format.'
       });
     } else {
-      // Validate MongoDB URI format
       const mongoUriPattern = /^mongodb(\+srv)?:\/\/.+/;
       if (!mongoUriPattern.test(process.env.MONGODB_URI)) {
         this.errors.push({
@@ -52,19 +38,15 @@ class EnvironmentValidator {
       }
     }
 
-    // Force PORT to 5001
-    const currentPort = process.env.PORT;
-    if (currentPort && currentPort !== '5001') {
+    // Use PORT from .env or default to 5000
+    if (!process.env.PORT) {
       this.warnings.push({
-        message: `PORT is set to ${currentPort}, but should be 5001`,
-        fix: 'Forcing PORT to 5001'
+        message: 'PORT not set, defaulting to 5000',
+        fix: 'Add PORT=5000 to your .env file'
       });
-      process.env.PORT = '5001';
-    } else if (!currentPort) {
       process.env.PORT = '5001';
     }
 
-    // Check NODE_ENV (optional, but good to have)
     if (!process.env.NODE_ENV) {
       this.warnings.push({
         message: 'NODE_ENV not set, defaulting to development',
@@ -74,9 +56,6 @@ class EnvironmentValidator {
     }
   }
 
-  /**
-   * Print validation results
-   */
   printResults() {
     console.log('\n🔍 Environment Configuration Check:');
     console.log('─────────────────────────────────────');
@@ -92,7 +71,6 @@ class EnvironmentValidator {
       return true;
     }
 
-    // Print errors
     if (this.errors.length > 0) {
       this.errors.forEach(error => {
         console.log(`❌ ${error.message}`);
@@ -100,7 +78,6 @@ class EnvironmentValidator {
       });
     }
 
-    // Print warnings
     if (this.warnings.length > 0) {
       this.warnings.forEach(warning => {
         console.log(`⚠️  ${warning.message}`);
@@ -118,9 +95,6 @@ class EnvironmentValidator {
     return true;
   }
 
-  /**
-   * Main validation function
-   */
   validate() {
     const envLoaded = this.loadEnvironment();
     
@@ -134,17 +108,11 @@ class EnvironmentValidator {
   }
 }
 
-/**
- * Validate environment and return success status
- */
 function validate() {
   const validator = new EnvironmentValidator();
   return validator.validate();
 }
 
-/**
- * Get environment variable with default value
- */
 function getEnv(key, defaultValue) {
   return process.env[key] || defaultValue;
 }
