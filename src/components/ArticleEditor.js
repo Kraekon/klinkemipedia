@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Form, Button, Badge, Spinner, Alert } from 'react-bootstrap';
 import { uploadMedia, saveDraft, updateDraft } from '../services/api';
 import './ArticleEditor.css';
@@ -139,33 +140,68 @@ const ArticleEditor = ({
     setHasUnsavedChanges(true);
   };
 
-  // Handle image upload
-  const handleImageUpload = async (blobInfo, progress) => {
-    return new Promise((resolve, reject) => {
-      const file = blobInfo.blob();
-      
-      uploadMedia(file, (progressEvent) => {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        progress(percentCompleted);
-      })
-        .then(response => {
+  // Handle image upload for Quill
+  const imageHandler = useCallback(() => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (file) {
+        try {
+          const response = await uploadMedia(file);
           if (response.success) {
-            // Return the full URL for TinyMCE
             const imageUrl = response.data.url.startsWith('http') 
               ? response.data.url 
               : `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}${response.data.url}`;
-            resolve(imageUrl);
+            
+            // Insert the image into the editor
+            const quill = editorRef.current.getEditor();
+            const range = quill.getSelection();
+            quill.insertEmbed(range.index, 'image', imageUrl);
           } else {
-            reject(response.message || 'Upload failed');
+            setUploadError(response.message || 'Upload failed');
+            setTimeout(() => setUploadError(null), 3000);
           }
-        })
-        .catch(error => {
+        } catch (error) {
           setUploadError(error.message || 'Upload failed');
           setTimeout(() => setUploadError(null), 3000);
-          reject(error.message || 'Upload failed');
-        });
-    });
+        }
+      }
+    };
+  }, []);
+
+  // Quill modules configuration
+  const modules = {
+    toolbar: {
+      container: [
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        ['link', 'image'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'align': [] }],
+        ['blockquote', 'code-block'],
+        ['clean']
+      ],
+      handlers: {
+        image: imageHandler
+      }
+    }
   };
+
+  const formats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet', 'indent',
+    'link', 'image',
+    'color', 'background',
+    'align',
+    'blockquote', 'code-block'
+  ];
 
   // Handle manual save
   const handleSaveDraft = async () => {
@@ -319,32 +355,15 @@ const ArticleEditor = ({
       ) : (
         <div className="mb-3">
           <Form.Label>Content *</Form.Label>
-          <Editor
-            apiKey="no-api-key"
-            onInit={(evt, editor) => editorRef.current = editor}
+          <ReactQuill
+            ref={editorRef}
+            theme="snow"
             value={content}
-            onEditorChange={handleEditorChange}
-            init={{
-              height: 500,
-              menubar: true,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | image media link | preview code | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-              images_upload_handler: handleImageUpload,
-              automatic_uploads: true,
-              file_picker_types: 'image',
-              paste_data_images: true,
-              images_reuse_filename: false,
-              promotion: false,
-              branding: false
-            }}
+            onChange={handleEditorChange}
+            modules={modules}
+            formats={formats}
+            placeholder="Start writing your article..."
+            style={{ height: '400px', marginBottom: '50px' }}
           />
         </div>
       )}

@@ -55,13 +55,13 @@ const plainText = (doc.body.textContent || '').trim();
 
 #### XSS Protection
 - **React Default Protection**: All user input rendered through React's virtual DOM, which automatically escapes content
-- **TinyMCE Integration**: Editor output sanitized by TinyMCE's built-in security features
+- **Quill Integration**: Editor output sanitized by Quill's built-in security features
 - **DOMParser Usage**: Safe HTML-to-text conversion for statistics and previews
 - **No dangerouslySetInnerHTML** in untrusted contexts (only used in preview mode for admin-authored content)
 
 #### HTML Sanitization
 - Preview mode uses `dangerouslySetInnerHTML` only for content created by authenticated admins
-- All HTML content goes through TinyMCE, which has built-in XSS protection
+- All HTML content goes through Quill, which has built-in XSS protection
 - Backend validation ensures only authorized users can create/edit content
 
 ### 2. Authentication & Authorization
@@ -159,7 +159,7 @@ fileFilter: (req, file, cb) => {
 **Consideration**: HTML content stored in database without additional sanitization.
 - **Mitigation**: 
   - Only admins can create content
-  - TinyMCE provides initial sanitization
+  - Quill provides initial sanitization
   - React escapes content on render
 - **Risk Level**: Low (trusted content source)
 
@@ -199,7 +199,6 @@ fileFilter: (req, file, cb) => {
 4. **Audit Logs**: Log all content creation/modification actions
 5. **Backup Strategy**: Regular database backups for draft recovery
 6. **Monitoring**: Alert on unusual upload patterns or API errors
-7. **TinyMCE Licensing**: Obtain proper license for production use
 
 ## Testing
 

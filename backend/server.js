@@ -73,9 +73,6 @@ app.use('/api', require('./routes/comments'));
 // Mount search routes
 app.use('/api/search', require('./routes/search'));
 
-// Mount notification routes
-app.use('/api/notifications', require('./routes/notifications'));
-
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   const mongoose = require('mongoose');

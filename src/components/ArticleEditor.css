@@ -38,6 +38,32 @@
   border-top: 1px solid #dee2e6;
 }
 
+/* Quill editor styling */
+.quill {
+  background-color: white;
+}
+
+.ql-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+}
+
+.ql-editor {
+  min-height: 400px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.ql-toolbar {
+  background-color: #f8f9fa;
+  border-color: #dee2e6 !important;
+}
+
+.ql-container {
+  border-color: #dee2e6 !important;
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .editor-status-bar {
@@ -63,6 +89,10 @@
   .editor-actions button {
     width: 100%;
   }
+
+  .ql-toolbar {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -72,5 +102,9 @@
 
   .editor-stats .badge {
     font-size: 0.75rem;
+  }
+
+  .ql-editor {
+    min-height: 300px;
   }
 }
