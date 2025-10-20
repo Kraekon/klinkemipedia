@@ -52,9 +52,6 @@ app.get('/api/test', (req, res) => {
 // Mount article routes
 app.use('/api/articles', require('./routes/articles'));
 
-// Mount drafts routes
-app.use('/api/drafts', require('./routes/drafts'));
-
 // Mount auth routes
 app.use('/api/auth', require('./routes/auth'));
 
