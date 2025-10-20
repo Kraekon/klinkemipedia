@@ -1,143 +1,41 @@
-/* ============================================
-   HOME PAGE - ATOM THEME
-   ============================================ */
+/* Home Page Styles */
 
 .home-page {
   min-height: calc(100vh - 80px);
 }
 
 .home-hero-section {
-  background: linear-gradient(135deg, #2C313A 0%, #282C34 50%, #1d4d2e 100%);
-  color: var(--text-dark-emphasis);
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
   padding: 3rem 2rem;
-  border-radius: var(--radius-lg);
+  border-radius: 0.5rem;
   margin-bottom: 2rem;
-  border: 1px solid var(--border-dark);
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-}
-
-.home-hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(95, 176, 75, 0.1) 100%);
-  pointer-events: none;
-}
-
-.home-hero-section * {
-  position: relative;
-  z-index: 1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .home-hero-section .display-4 {
-  color: var(--text-dark-emphasis);
-  font-weight: var(--font-weight-bold);
+  font-weight: bold;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 1rem;
 }
 
 .home-hero-section .lead {
-  color: var(--text-dark);
-  font-size: var(--font-size-lg);
+  font-size: 1.125rem;
   line-height: 1.6;
 }
 
 /* Articles Grid */
 .articles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-xl);
-}
-
-/* Loading State */
-.home-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  gap: var(--spacing-lg);
-}
-
-.home-loading .spinner-border {
-  width: 3rem;
-  height: 3rem;
-  border-width: 4px;
-}
-
-/* Error State */
-.home-error {
-  padding: var(--spacing-xl);
-  text-align: center;
-}
-
-.home-error .alert {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* Empty State */
-.home-empty {
-  text-align: center;
-  padding: var(--spacing-3xl) var(--spacing-lg);
-}
-
-.home-empty h3 {
-  color: var(--text-dark-emphasis);
-  margin-bottom: var(--spacing-md);
-}
-
-.home-empty p {
-  color: var(--text-dark);
-  font-size: var(--font-size-lg);
-}
-
-/* Sidebar Widgets */
-.sidebar-widgets {
-  position: sticky;
-  top: 20px;
-}
-
-.sidebar-widgets > * {
-  margin-bottom: var(--spacing-lg);
+  margin-top: 2rem;
 }
 
 /* Responsive adjustments */
-@media (max-width: 991px) {
-  .sidebar-widgets {
-    position: relative;
-    top: 0;
-    margin-top: var(--spacing-xl);
-  }
-}
-
 @media (max-width: 768px) {
   .home-hero-section {
     padding: 2rem 1.5rem;
   }
   
   .home-hero-section .display-4 {
-    font-size: var(--font-size-3xl);
-  }
-  
-  .home-hero-section .lead {
-    font-size: var(--font-size-base);
-  }
-  
-  .articles-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .articles-grid {
-    grid-template-columns: repeat(2, 1fr);
+    font-size: 2rem;
   }
 }
