@@ -26,6 +26,10 @@
 /backend/public/uploads/avatars/*
 !/backend/public/uploads/avatars/.gitkeep
 
+# Media library uploads
+/uploads/images/*
+!/uploads/images/.gitkeep
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
