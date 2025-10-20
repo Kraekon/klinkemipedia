@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal, Nav } from 'react-bootstrap';
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import ImageUploader from '../components/ImageUploader';
 import VersionHistory from '../components/VersionHistory';
 import TagInput from '../components/TagInput';
 import TiptapEditor from '../components/TiptapEditor';
+import PreviewPanel from '../components/PreviewPanel';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { slugify } from '../utils/slugify';
+import { useDebounce } from '../utils/useDebounce';
 import './Admin.css';
 
 const CATEGORIES = [
@@ -54,6 +56,13 @@ const AdminArticleForm = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
+  const [activeTab, setActiveTab] = useState('edit'); // 'edit', 'preview', 'seo'
+  
+  // Debounced values for preview
+  const debouncedTitle = useDebounce(formData.title, 300);
+  const debouncedSummary = useDebounce(formData.summary, 300);
+  const debouncedContent = useDebounce(formData.content, 300);
 
   useEffect(() => {
     fetchAvailableTags();
@@ -277,14 +286,24 @@ const AdminArticleForm = () => {
       <div className="admin-container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="mb-0">{isEditMode ? 'Edit Article' : 'Create New Article'}</h2>
-          {isEditMode && (
+          <div className="d-flex gap-2">
+            {/* Desktop: Toggle Preview Button */}
             <Button 
-              variant="outline-secondary" 
-              onClick={() => setShowVersionHistory(true)}
+              variant="outline-primary"
+              onClick={() => setShowPreview(!showPreview)}
+              className="d-none d-lg-block"
             >
-              📜 Version History
+              {showPreview ? '👁️ Hide Preview' : '👁️ Show Preview'}
             </Button>
-          )}
+            {isEditMode && (
+              <Button 
+                variant="outline-secondary" 
+                onClick={() => setShowVersionHistory(true)}
+              >
+                📜 Version History
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Success Toast Notification */}
@@ -309,7 +328,30 @@ const AdminArticleForm = () => {
           </Alert>
         )}
 
-        <div className="article-form">
+        {/* Mobile/Tablet: Tab Navigation */}
+        <Nav variant="tabs" className="mb-3 d-lg-none">
+          <Nav.Item>
+            <Nav.Link active={activeTab === 'edit'} onClick={() => setActiveTab('edit')}>
+              ✏️ Edit
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link active={activeTab === 'preview'} onClick={() => setActiveTab('preview')}>
+              👁️ Preview
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link active={activeTab === 'seo'} onClick={() => setActiveTab('seo')}>
+              🔍 SEO
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+
+        {/* Desktop: Split View / Mobile: Tab Content */}
+        <div className={`editor-layout ${showPreview ? 'with-preview' : 'no-preview'}`}>
+          {/* Editor Panel */}
+          <div className={`editor-panel ${activeTab === 'edit' ? 'd-block' : 'd-none d-lg-block'}`}>
+            <div className="article-form">
           {/* Basic Information */}
           <div className="form-section">
             <h3>Basic Information</h3>
@@ -553,6 +595,63 @@ const AdminArticleForm = () => {
             >
               {loading ? 'Publishing...' : 'Publish'}
             </Button>
+          </div>
+        </div>
+          </div>
+
+          {/* Preview Panel - Desktop only, shown based on showPreview state */}
+          {showPreview && (
+            <div className="preview-panel-container d-none d-lg-block">
+              <PreviewPanel
+                title={debouncedTitle}
+                summary={debouncedSummary}
+                content={debouncedContent}
+                category={formData.category}
+                tags={formData.tags}
+                referenceRanges={formData.referenceRanges}
+              />
+            </div>
+          )}
+
+          {/* Preview Panel - Mobile/Tablet tab */}
+          <div className={`preview-tab-container d-lg-none ${activeTab === 'preview' ? 'd-block' : 'd-none'}`}>
+            <PreviewPanel
+              title={debouncedTitle}
+              summary={debouncedSummary}
+              content={debouncedContent}
+              category={formData.category}
+              tags={formData.tags}
+              referenceRanges={formData.referenceRanges}
+            />
+          </div>
+
+          {/* SEO Tab - Mobile/Tablet */}
+          <div className={`seo-tab-container d-lg-none ${activeTab === 'seo' ? 'd-block' : 'd-none'}`}>
+            <div className="seo-info-panel">
+              <h5>SEO Information</h5>
+              <div className="seo-field">
+                <strong>Title:</strong>
+                <p>{formData.title || 'No title yet'}</p>
+                <small className="text-muted">{formData.title.length}/200 characters</small>
+              </div>
+              <div className="seo-field">
+                <strong>Summary (Meta Description):</strong>
+                <p>{formData.summary || 'No summary yet'}</p>
+                <small className="text-muted">{formData.summary.length}/500 characters (Recommended: 150-160)</small>
+              </div>
+              <div className="seo-field">
+                <strong>Slug (URL):</strong>
+                <code>{formData.slug || 'No slug yet'}</code>
+              </div>
+              <div className="seo-field">
+                <strong>Category:</strong>
+                <p>{formData.category || 'No category selected'}</p>
+              </div>
+              <div className="seo-field">
+                <strong>Tags:</strong>
+                <p>{formData.tags.length > 0 ? formData.tags.join(', ') : 'No tags yet'}</p>
+              </div>
+            </div>
           </div>
         </div>
 

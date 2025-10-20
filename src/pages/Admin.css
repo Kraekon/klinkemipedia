@@ -1,6 +1,6 @@
 .admin-container {
   padding: 2rem;
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
   background-color: #fff;
   min-height: 100vh;
@@ -20,8 +20,135 @@
   border-radius: 0.5rem;
   box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
   border: 1px solid #dee2e6;
-  max-width: 1200px;
-  margin: 0 auto;
+}
+
+/* ============================================
+   EDITOR LAYOUT - Hybrid Preview System
+   ============================================ */
+
+.editor-layout {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  min-height: calc(100vh - 200px);
+  position: relative;
+}
+
+/* Desktop Split View (≥1024px) */
+@media (min-width: 1024px) {
+  .editor-layout.with-preview {
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  
+  .editor-layout.no-preview {
+    grid-template-columns: 1fr;
+  }
+  
+  .editor-panel {
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    padding-right: 0.75rem;
+  }
+  
+  .preview-panel-container {
+    position: sticky;
+    top: 1rem;
+    height: calc(100vh - 200px);
+    overflow: hidden;
+  }
+
+  /* Resizable handle */
+  .editor-layout.with-preview .editor-panel {
+    border-right: 4px solid #dee2e6;
+    cursor: ew-resize;
+    position: relative;
+  }
+
+  .editor-layout.with-preview .editor-panel::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: ew-resize;
+    z-index: 10;
+  }
+
+  .editor-layout.with-preview .editor-panel:hover::after,
+  .editor-layout.with-preview .editor-panel:active::after {
+    background-color: rgba(40, 167, 69, 0.2);
+  }
+}
+
+/* Mobile/Tablet (<1024px) - Tab based view */
+@media (max-width: 1023px) {
+  .editor-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-tab-container,
+  .seo-tab-container {
+    min-height: calc(100vh - 300px);
+  }
+}
+
+/* SEO Info Panel */
+.seo-info-panel {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
+  border: 1px solid #dee2e6;
+}
+
+.seo-info-panel h5 {
+  color: #28a745;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.seo-field {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.seo-field:last-child {
+  border-bottom: none;
+}
+
+.seo-field strong {
+  display: block;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.seo-field p {
+  margin: 0.5rem 0;
+  color: #212529;
+  line-height: 1.6;
+}
+
+.seo-field code {
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  color: #6fdc6f;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.seo-field small {
+  display: block;
+  margin-top: 0.25rem;
 }
 
 .form-section {
