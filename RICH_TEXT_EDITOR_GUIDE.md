@@ -2,16 +2,16 @@
 
 ## Overview
 
-This implementation adds a feature-rich TinyMCE-based article editor to Klinkemipedia with auto-save functionality, draft management, and media upload capabilities.
+This implementation adds a feature-rich Quill-based article editor to Klinkemipedia with auto-save functionality, draft management, and media upload capabilities.
 
 ## Features Implemented
 
-### 1. TinyMCE Rich Text Editor
+### 1. Quill Rich Text Editor
 - **Component**: `ArticleEditor.js`
 - **Features**:
-  - Full-featured WYSIWYG editor with TinyMCE
-  - Comprehensive plugin support (lists, links, images, tables, code, etc.)
-  - Image upload with drag-and-drop support
+  - Full-featured WYSIWYG editor with React Quill
+  - Comprehensive formatting support (headers, bold, italic, lists, links, images, code blocks, etc.)
+  - Image upload with custom handler
   - Live preview mode toggle
   - Mobile-responsive design
 
@@ -32,10 +32,9 @@ This implementation adds a feature-rich TinyMCE-based article editor to Klinkemi
 ### 4. Media Upload Integration
 - **Endpoint**: `/api/media/upload`
 - **Features**:
-  - Direct image upload from TinyMCE
-  - Drag-and-drop image support
+  - Direct image upload from Quill editor
+  - Custom image handler for file selection
   - Automatic image optimization (via backend Sharp library)
-  - Progress tracking during uploads
   - Error handling with user feedback
 
 ### 5. Draft Management
@@ -52,7 +51,7 @@ This implementation adds a feature-rich TinyMCE-based article editor to Klinkemi
   - Title (required)
   - Category (dropdown, required)
   - Tags (comma-separated input)
-  - Content (TinyMCE editor, required)
+  - Content (Quill editor, required)
 - **Actions**:
   - Save Draft (manual save trigger)
   - Publish (creates/updates article)
@@ -140,7 +139,7 @@ src/
 ### 1. HTML Sanitization
 - Uses `DOMParser` for safe HTML-to-text conversion
 - Prevents XSS attacks through proper React rendering
-- TinyMCE content is trusted (admin-only access)
+- Quill content is trusted (admin-only access)
 
 ### 2. Authentication
 - All editor routes protected with `ProtectedRoute` HOC
@@ -163,7 +162,7 @@ src/
 ### Creating a New Article
 1. Navigate to `/admin/editor/new` or click "Rich Editor" in admin navbar
 2. Fill in title, category, and tags
-3. Write content in the TinyMCE editor
+3. Write content in the Quill editor
 4. Auto-save activates after 2 seconds of inactivity
 5. Click "Publish Article" when ready
 
@@ -174,10 +173,9 @@ src/
 4. Publish or discard when done
 
 ### Uploading Images
-1. In the TinyMCE editor, click the "Image" button in the toolbar
-2. Choose to upload an image
-3. Drag-and-drop or select file
-4. Image automatically uploads and inserts into content
+1. In the Quill editor, click the "Image" button in the toolbar
+2. Select an image file from your device
+3. Image automatically uploads and inserts into content
 
 ### Using Preview Mode
 1. Click the "👁️ Preview Mode" button while editing
@@ -220,11 +218,11 @@ npm test -- ArticleEditor
 ## Dependencies Added
 
 ### Package
-- `@tinymce/tinymce-react`: ^4.x (latest compatible version)
+- `react-quill`: Latest version (BSD-3 license, fully free)
 
 ### Installation
 ```bash
-npm install --legacy-peer-deps @tinymce/tinymce-react
+npm install react-quill
 ```
 
 ## Build Status
@@ -236,7 +234,7 @@ npm install --legacy-peer-deps @tinymce/tinymce-react
 
 ## Performance Considerations
 
-1. **Bundle Size**: TinyMCE adds ~600KB to bundle (acceptable for admin panel)
+1. **Bundle Size**: Quill adds ~50KB to bundle (lightweight and efficient)
 2. **Auto-Save Debouncing**: 2-second delay prevents excessive API calls
 3. **Image Optimization**: Backend uses Sharp for automatic compression
 4. **Lazy Loading**: Consider code-splitting for production optimization
@@ -266,9 +264,9 @@ npm install --legacy-peer-deps @tinymce/tinymce-react
 
 ## Maintenance
 
-### Updating TinyMCE
+### Updating Quill
 ```bash
-npm update @tinymce/tinymce-react
+npm update react-quill
 ```
 
 ### Monitoring Draft Storage
@@ -278,8 +276,8 @@ npm update @tinymce/tinymce-react
 
 ## Troubleshooting
 
-### Issue: TinyMCE not loading
-**Solution**: Check that `apiKey` is set (currently using "no-api-key" for self-hosted)
+### Issue: Quill editor not loading
+**Solution**: Check that `react-quill` and its CSS are properly imported
 
 ### Issue: Images not uploading
 **Solution**: Verify backend media API is running and Sharp is installed
@@ -297,8 +295,8 @@ For issues or questions:
 2. Verify backend API is running
 3. Check network requests in DevTools
 4. Review CodeQL security alerts
-5. Consult TinyMCE documentation: https://www.tiny.cloud/docs/
+5. Consult Quill documentation: https://quilljs.com/docs/
 
 ## License
 
-This implementation follows the same license as the Klinkemipedia project.
+This implementation follows the same license as the Klinkemipedia project. React Quill uses BSD-3 license and is fully free and open-source.
