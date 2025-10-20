@@ -67,6 +67,9 @@ app.use('/api/users', require('./routes/users'));
 // Mount comment routes
 app.use('/api', require('./routes/comments'));
 
+// Mount category routes
+app.use('/api/categories', require('./routes/categories'));
+
 // Mount search routes
 app.use('/api/search', require('./routes/search'));
 

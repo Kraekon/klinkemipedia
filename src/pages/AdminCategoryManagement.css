@@ -1,0 +1,15 @@
+.admin-category-management {
+  max-width: 1200px;
+}
+
+.color-preview {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: 2px solid #dee2e6;
+  display: inline-block;
+}
+
+.admin-category-management .table td {
+  vertical-align: middle;
+}

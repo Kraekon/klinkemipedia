@@ -4,7 +4,6 @@ import { Navbar as BSNavbar, Container, Nav, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import UserMenu from './UserMenu';
-import SearchBar from './SearchBar';
 import { useAuth } from '../contexts/AuthContext';
 import './Navbar.css';
 
@@ -26,9 +25,6 @@ const Navbar = () => {
             <Nav.Link as={Link} to="/tags">{t('navigation.tags')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.about')}</Nav.Link>
           </Nav>
-          <div className="navbar-search-container d-none d-lg-block">
-            <SearchBar compact />
-          </div>
           <div className="ms-2">
             <LanguageSwitcher variant="navbar" />
           </div>

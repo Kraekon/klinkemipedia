@@ -89,7 +89,7 @@ const TagInput = ({ tags = [], onChange, maxTags = 10, availableTags = [] }) => 
   return (
     <div className="tag-input-container">
       <Form.Group className="mb-3">
-        <Form.Label>{t('tags.tags')}</Form.Label>
+        <Form.Label>{t('article.tags')}</Form.Label>
         <div className="tag-input-wrapper">
           <div className="tag-input-tags">
             {tags.map((tag, index) => (
@@ -114,7 +114,7 @@ const TagInput = ({ tags = [], onChange, maxTags = 10, availableTags = [] }) => 
             <Form.Control
               ref={inputRef}
               type="text"
-              placeholder={tags.length < maxTags ? t('tags.enterTag') : t('tags.maxTags', { max: maxTags })}
+              placeholder={tags.length < maxTags ? t('article.tags.enterTag') : t('article.tags.maxTags', { max: maxTags })}
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
@@ -142,7 +142,7 @@ const TagInput = ({ tags = [], onChange, maxTags = 10, availableTags = [] }) => 
           </div>
         </div>
         <Form.Text className="text-muted">
-          {t('tags.maxTags', { max: maxTags })} ({tags.length}/{maxTags})
+          {t('article.tags.maxTags', { max: maxTags })} ({tags.length}/{maxTags})
         </Form.Text>
       </Form.Group>
     </div>

@@ -255,7 +255,7 @@ router.get('/', protect, async (req, res) => {
 });
 
 // GET /api/media/:filename/usage - Get usage information for a specific image
-router.get('/:filename/usage', protect, async (req, res) => {
+router.get('/:filename(*)/usage', protect, async (req, res) => {
   try {
     const filename = req.params.filename;
     
@@ -286,7 +286,7 @@ router.get('/:filename/usage', protect, async (req, res) => {
 });
 
 // DELETE /api/media/:filename - Delete an image
-router.delete('/:filename', protect, async (req, res) => {
+router.delete('/:filename(*)', protect, async (req, res) => {
   try {
     const filename = req.params.filename;
     const force = req.query.force === 'true';

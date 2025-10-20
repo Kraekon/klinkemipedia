@@ -1,17 +1,8 @@
-/* ============================================
-   CATEGORY FILTER - ATOM THEME
-   ============================================ */
-
 .category-filter {
-  background: #f8f9fa;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
-  border: 1px solid #dee2e6;
+  margin-bottom: 1.5rem;
 }
 
 .category-filter h5 {
-  color: #28a745;
   font-weight: 600;
   margin-bottom: 1rem;
   font-size: 1.125rem;
@@ -29,36 +20,22 @@
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
-  border: 2px solid transparent;
   border-radius: 50rem;
-  background-color: #dee2e6;
-  color: #000;
+  border: 2px solid transparent !important;
 }
 
 .category-badge:hover {
   transform: translateY(-2px);
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
-  border-color: #28a745;
-  color: #28a745;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
 }
 
 .category-badge.active {
-  background-color: #28a745 !important;
-  color: white !important;
-  border-color: #28a745;
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
-}
-
-.category-badge.active:hover {
-  background-color: #218838 !important;
-  border-color: #218838;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+  border-style: solid !important;
 }
 
 @media (max-width: 768px) {
-  .category-filter {
-    padding: 1rem;
-  }
-
   .category-badges {
     gap: 0.25rem;
   }

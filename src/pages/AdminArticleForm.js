@@ -1,31 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal, Nav } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal, Nav, Badge } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import AdminNavbar from '../components/AdminNavbar';
-import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import ImageUploader from '../components/ImageUploader';
 import VersionHistory from '../components/VersionHistory';
 import TagInput from '../components/TagInput';
 import TiptapEditor from '../components/TiptapEditor';
 import PreviewPanel from '../components/PreviewPanel';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
+import { getAllCategories, createCategory } from '../services/categoryApi';
 import { slugify } from '../utils/slugify';
 import { useDebounce } from '../utils/useDebounce';
 import './Admin.css';
 
-const CATEGORIES = [
-  'Electrolytes',
-  'Liver Function',
-  'Kidney Function',
-  'Cardiac Markers',
-  'Hormones',
-  'Enzymes',
-  'Hematology',
-  'Lipid Panel',
-  'Other'
-];
-
 const AdminArticleForm = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
   const isEditMode = !!slug;
@@ -36,9 +26,6 @@ const AdminArticleForm = () => {
     category: '',
     summary: '',
     content: '',
-    referenceRanges: [{ parameter: '', range: '', unit: '', ageGroup: 'All', notes: '' }],
-    clinicalSignificance: '',
-    interpretation: '',
     relatedTests: [],
     tags: [],
     references: [''],
@@ -46,6 +33,7 @@ const AdminArticleForm = () => {
     changeDescription: ''
   });
 
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetchingArticle, setFetchingArticle] = useState(isEditMode);
   const [error, setError] = useState(null);
@@ -56,30 +44,46 @@ const AdminArticleForm = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [showPreview, setShowPreview] = useState(true);
-  const [activeTab, setActiveTab] = useState('edit'); // 'edit', 'preview', 'seo'
+  const [showPreview, setShowPreview] = useState(false);
+  const [activeTab, setActiveTab] = useState('edit');
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryData, setNewCategoryData] = useState({
+    name: '',
+    description: '',
+    color: '#0d6efd'
+  });
   
   // Debounced values for preview
   const debouncedTitle = useDebounce(formData.title, 300);
   const debouncedSummary = useDebounce(formData.summary, 300);
   const debouncedContent = useDebounce(formData.content, 300);
 
-  useEffect(() => {
-    fetchAvailableTags();
-    if (isEditMode) {
-      fetchArticle();
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await getAllCategories();
+      setCategories(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, isEditMode]);
+  }, []);
 
-  const fetchAvailableTags = async () => {
+  const fetchAvailableTags = useCallback(async () => {
     try {
       const response = await getAllTags();
       setAvailableTags(response.data || []);
     } catch (err) {
       console.error('Error fetching tags:', err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchCategories();
+    fetchAvailableTags();
+    if (isEditMode) {
+      fetchArticle();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, isEditMode, fetchCategories, fetchAvailableTags]);
 
   const fetchArticle = async () => {
     try {
@@ -92,18 +96,15 @@ const AdminArticleForm = () => {
         category: article.category || '',
         summary: article.summary || '',
         content: article.content || '',
-        referenceRanges: article.referenceRanges?.length > 0 ? article.referenceRanges : [{ parameter: '', range: '', unit: '', ageGroup: 'All', notes: '' }],
-        clinicalSignificance: article.clinicalSignificance || '',
-        interpretation: article.interpretation || '',
         relatedTests: article.relatedTests || [],
         tags: article.tags || [],
         references: article.references?.length > 0 ? article.references : [''],
         status: article.status || 'draft',
-        changeDescription: '' // Reset after each load
+        changeDescription: ''
       });
     } catch (err) {
       console.error('Error fetching article:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load article');
+      setError(err.response?.data?.message || err.message || t('article.loadFailed'));
     } finally {
       setFetchingArticle(false);
     }
@@ -140,7 +141,6 @@ const AdminArticleForm = () => {
     }));
   };
 
-  // Helper function to count words
   const countWords = (text) => {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
@@ -168,34 +168,23 @@ const AdminArticleForm = () => {
     const errors = {};
 
     if (!formData.title.trim()) {
-      errors.title = 'Title is required';
+      errors.title = t('article.validation.titleRequired');
     } else if (formData.title.length > 200) {
-      errors.title = 'Title cannot exceed 200 characters';
+      errors.title = t('article.validation.titleTooLong');
     }
 
     if (!formData.category) {
-      errors.category = 'Category is required';
+      errors.category = t('article.validation.categoryRequired');
     }
 
     if (!formData.summary.trim()) {
-      errors.summary = 'Summary is required';
+      errors.summary = t('article.validation.summaryRequired');
     } else if (formData.summary.length > 500) {
-      errors.summary = 'Summary cannot exceed 500 characters';
+      errors.summary = t('article.validation.summaryTooLong');
     }
 
     if (!formData.content.trim()) {
-      errors.content = 'Content is required';
-    }
-
-    if (formData.referenceRanges.length === 0) {
-      errors.referenceRanges = 'At least one reference range is required';
-    } else {
-      const hasInvalidRange = formData.referenceRanges.some(
-        range => !range.parameter?.trim() || !range.range?.trim() || !range.unit?.trim()
-      );
-      if (hasInvalidRange) {
-        errors.referenceRanges = 'All reference ranges must have parameter, range, and unit';
-      }
+      errors.content = t('article.validation.contentRequired');
     }
 
     setValidationErrors(errors);
@@ -203,16 +192,13 @@ const AdminArticleForm = () => {
   };
 
   const handleImageUploadSuccess = (imageData) => {
-    // Insert HTML image tag at cursor position
     const htmlImage = `<img src="${imageData.url}" alt="${imageData.alt || ''}" style="max-width: 100%; height: auto;" />`;
-    
-    // Insert into content at current cursor position or at the end
     const currentContent = formData.content || '';
     const newContent = currentContent ? `${currentContent}\n${htmlImage}` : htmlImage;
     
     handleInputChange('content', newContent);
     setShowImageUploadModal(false);
-    setSuccessMessage('Image uploaded successfully!');
+    setSuccessMessage(t('article.imageUploadSuccess'));
     setShowSuccessToast(true);
   };
 
@@ -221,15 +207,29 @@ const AdminArticleForm = () => {
   };
 
   const handleRevisionRestore = () => {
-    // Refresh the article data after restore
     if (isEditMode) {
       fetchArticle();
     }
   };
 
+  const handleCreateCategory = async () => {
+    if (!newCategoryData.name.trim()) return;
+    try {
+      await createCategory(newCategoryData);
+      await fetchCategories();
+      setFormData(prev => ({ ...prev, category: newCategoryData.name }));
+      setShowCategoryModal(false);
+      setNewCategoryData({ name: '', description: '', color: '#0d6efd' });
+      setSuccessMessage(t('categories.createdSuccess'));
+      setShowSuccessToast(true);
+    } catch (err) {
+      setError(err.response?.data?.message || t('categories.saveFailed'));
+    }
+  };
+
   const handleSubmit = async (publishNow = false) => {
     if (!validateForm()) {
-      setError('Please fix the validation errors before submitting');
+      setError(t('article.fixValidationErrors'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -241,27 +241,25 @@ const AdminArticleForm = () => {
       const submitData = {
         ...formData,
         status: publishNow ? 'published' : formData.status,
-        // Filter out empty references
         references: formData.references.filter(ref => ref.trim())
       };
 
       if (isEditMode) {
         await updateArticle(slug, submitData);
-        setSuccessMessage(`Article "${formData.title}" updated successfully!`);
+        setSuccessMessage(t('article.updateSuccess'));
       } else {
         await createArticle(submitData);
-        setSuccessMessage(`Article "${formData.title}" created successfully!`);
+        setSuccessMessage(t('article.createSuccess'));
       }
       
       setShowSuccessToast(true);
       
-      // Navigate back to admin page after a short delay
       setTimeout(() => {
         navigate('/admin');
       }, 1500);
     } catch (err) {
       console.error('Error saving article:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to save article');
+      setError(err.response?.data?.message || err.message || t('article.saveFailed'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
@@ -274,7 +272,7 @@ const AdminArticleForm = () => {
         <AdminNavbar />
         <div className="admin-container text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Loading article...</p>
+          <p className="mt-3">{t('article.loading')}</p>
         </div>
       </>
     );
@@ -285,28 +283,26 @@ const AdminArticleForm = () => {
       <AdminNavbar />
       <div className="admin-container">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">{isEditMode ? 'Edit Article' : 'Create New Article'}</h2>
+          <h2 className="mb-0">{isEditMode ? t('article.editTitle') : t('article.createTitle')}</h2>
           <div className="d-flex gap-2">
-            {/* Desktop: Toggle Preview Button */}
             <Button 
               variant="outline-primary"
               onClick={() => setShowPreview(!showPreview)}
               className="d-none d-lg-block"
             >
-              {showPreview ? '👁️ Hide Preview' : '👁️ Show Preview'}
+              {showPreview ? `👁️ ${t('article.hidePreview')}` : `👁️ ${t('article.showPreview')}`}
             </Button>
             {isEditMode && (
               <Button 
                 variant="outline-secondary" 
                 onClick={() => setShowVersionHistory(true)}
               >
-                📜 Version History
+                📜 {t('article.versionHistory')}
               </Button>
             )}
           </div>
         </div>
 
-        {/* Success Toast Notification */}
         <ToastContainer position="top-end" className="p-3" style={{ position: 'fixed', zIndex: 9999 }}>
           <Toast 
             show={showSuccessToast} 
@@ -316,7 +312,7 @@ const AdminArticleForm = () => {
             bg="success"
           >
             <Toast.Header>
-              <strong className="me-auto">Success</strong>
+              <strong className="me-auto">{t('article.success')}</strong>
             </Toast.Header>
             <Toast.Body className="text-white">{successMessage}</Toast.Body>
           </Toast>
@@ -328,63 +324,66 @@ const AdminArticleForm = () => {
           </Alert>
         )}
 
-        {/* Mobile/Tablet: Tab Navigation */}
         <Nav variant="tabs" className="mb-3 d-lg-none">
           <Nav.Item>
             <Nav.Link active={activeTab === 'edit'} onClick={() => setActiveTab('edit')}>
-              ✏️ Edit
+              ✏️ {t('article.edit')}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link active={activeTab === 'preview'} onClick={() => setActiveTab('preview')}>
-              👁️ Preview
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link active={activeTab === 'seo'} onClick={() => setActiveTab('seo')}>
-              🔍 SEO
+              👁️ {t('article.preview')}
             </Nav.Link>
           </Nav.Item>
         </Nav>
 
-        {/* Desktop: Split View / Mobile: Tab Content */}
         <div className={`editor-layout ${showPreview ? 'with-preview' : 'no-preview'}`}>
-          {/* Editor Panel */}
           <div className={`editor-panel ${activeTab === 'edit' ? 'd-block' : 'd-none d-lg-block'}`}>
             <div className="article-form">
+          
           {/* Basic Information */}
           <div className="form-section">
-            <h3>Basic Information</h3>
+            <h3>{t('article.basicInfo')}</h3>
             
             <Form.Group className="mb-3">
-              <Form.Label>Title <span className="text-danger">*</span></Form.Label>
+              <Form.Label>{t('article.title')} <span className="text-danger">*</span></Form.Label>
               <Form.Control
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 isInvalid={!!validationErrors.title}
-                placeholder="e.g., Sodium (Na+)"
+                placeholder={t('article.titlePlaceholder')}
               />
               <Form.Control.Feedback type="invalid">
                 {validationErrors.title}
               </Form.Control.Feedback>
               {formData.slug && (
                 <div className="slug-preview">
-                  Slug: <code>{formData.slug}</code>
+                  {t('article.slug')}: <code>{formData.slug}</code>
                 </div>
               )}
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Category <span className="text-danger">*</span></Form.Label>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <Form.Label className="mb-0">{t('article.category')} <span className="text-danger">*</span></Form.Label>
+                <Button 
+                  variant="link" 
+                  size="sm" 
+                  onClick={() => setShowCategoryModal(true)}
+                  className="p-0"
+                >
+                  + {t('article.addCategory')}
+                </Button>
+              </div>
               <Form.Select
                 value={formData.category}
                 onChange={(e) => handleInputChange('category', e.target.value)}
                 isInvalid={!!validationErrors.category}
               >
-                <option value="">Select a category</option>
-                {CATEGORIES.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                <option value="">{t('article.selectCategory')}</option>
+                {categories.map(cat => (
+                  <option key={cat._id} value={cat.name}>{cat.name}</option>
                 ))}
               </Form.Select>
               <Form.Control.Feedback type="invalid">
@@ -393,17 +392,17 @@ const AdminArticleForm = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Summary <span className="text-danger">*</span></Form.Label>
+              <Form.Label>{t('article.summary')} <span className="text-danger">*</span></Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 value={formData.summary}
                 onChange={(e) => handleInputChange('summary', e.target.value)}
                 isInvalid={!!validationErrors.summary}
-                placeholder="Brief summary of the article (100-300 characters recommended)"
+                placeholder={t('article.summaryPlaceholder')}
               />
               <div className="char-count">
-                {formData.summary.length} characters / {countWords(formData.summary)} words
+                {formData.summary.length} {t('article.characters')} / {countWords(formData.summary)} {t('article.words')}
               </div>
               <Form.Control.Feedback type="invalid">
                 {validationErrors.summary}
@@ -411,23 +410,20 @@ const AdminArticleForm = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Content <span className="text-danger">*</span></Form.Label>
+              <Form.Label>{t('article.content')} <span className="text-danger">*</span></Form.Label>
               <TiptapEditor
                 value={formData.content}
                 onChange={(value) => handleInputChange('content', value || '')}
-                placeholder="Write your article content here..."
+                placeholder={t('article.contentPlaceholder')}
               />
               <div className="char-count mt-2">
-                {formData.content.length} characters / {countWords(formData.content)} words
+                {formData.content.length} {t('article.characters')} / {countWords(formData.content)} {t('article.words')}
               </div>
               {validationErrors.content && (
                 <div className="text-danger small mt-1">
                   {validationErrors.content}
                 </div>
               )}
-              <Form.Text muted>
-                Use the toolbar for rich text formatting
-              </Form.Text>
             </Form.Group>
 
             <div className="mb-3">
@@ -436,49 +432,17 @@ const AdminArticleForm = () => {
                 onClick={() => setShowImageUploadModal(true)}
                 size="sm"
               >
-                📷 Upload Image
+                📷 {t('article.uploadImage')}
               </Button>
             </div>
           </div>
 
-          {/* Reference Ranges */}
+          {/* Related Tests */}
           <div className="form-section">
-            <h3>Reference Ranges <span className="text-danger">*</span></h3>
-            <ReferenceRangeEditor
-              value={formData.referenceRanges}
-              onChange={(ranges) => handleInputChange('referenceRanges', ranges)}
-            />
-            {validationErrors.referenceRanges && (
-              <div className="text-danger small mt-2">
-                {validationErrors.referenceRanges}
-              </div>
-            )}
-          </div>
-
-          {/* Clinical Information */}
-          <div className="form-section">
-            <h3>Clinical Information</h3>
+            <h3>{t('article.relatedTests')}</h3>
 
             <Form.Group className="mb-3">
-              <Form.Label>Clinical Significance</Form.Label>
-              <TiptapEditor
-                value={formData.clinicalSignificance}
-                onChange={(value) => handleInputChange('clinicalSignificance', value || '')}
-                placeholder="Describe what abnormal values mean..."
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Interpretation</Form.Label>
-              <TiptapEditor
-                value={formData.interpretation}
-                onChange={(value) => handleInputChange('interpretation', value || '')}
-                placeholder="How to interpret results..."
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Related Tests</Form.Label>
+              <Form.Label>{t('article.relatedTestsLabel')}</Form.Label>
               <div className="related-tests-input">
                 {formData.relatedTests.map((test, index) => (
                   <span key={index} className="test-chip">
@@ -495,18 +459,16 @@ const AdminArticleForm = () => {
                 value={relatedTestInput}
                 onChange={(e) => setRelatedTestInput(e.target.value)}
                 onKeyDown={handleRelatedTestInputKeyDown}
-                placeholder="Type a test name and press Enter"
+                placeholder={t('article.relatedTestsPlaceholder')}
               />
               <Form.Text muted>
-                Press Enter to add a related test
+                {t('article.relatedTestsHelp')}
               </Form.Text>
             </Form.Group>
           </div>
 
-          {/* Metadata */}
+          {/* Tags and References */}
           <div className="form-section">
-            <h3>Metadata</h3>
-
             <TagInput
               tags={formData.tags}
               onChange={(newTags) => handleInputChange('tags', newTags)}
@@ -515,7 +477,7 @@ const AdminArticleForm = () => {
             />
 
             <Form.Group className="mb-3">
-              <Form.Label>References</Form.Label>
+              <Form.Label>{t('article.references')}</Form.Label>
               <div className="references-list">
                 {formData.references.map((ref, index) => (
                   <div key={index} className="reference-item">
@@ -523,7 +485,7 @@ const AdminArticleForm = () => {
                       type="text"
                       value={ref}
                       onChange={(e) => handleReferenceChange(index, e.target.value)}
-                      placeholder={`Reference ${index + 1}`}
+                      placeholder={`${t('article.referencePlaceholder')} ${index + 1}`}
                     />
                     <Button
                       variant="danger"
@@ -537,34 +499,33 @@ const AdminArticleForm = () => {
                 ))}
               </div>
               <Button variant="outline-primary" size="sm" onClick={addReference} className="mt-2">
-                + Add Reference
+                + {t('article.addReference')}
               </Button>
             </Form.Group>
 
-            {/* Change Description (optional, for edit mode) */}
             {isEditMode && (
               <Form.Group className="mb-3">
-                <Form.Label>Change Description (Optional)</Form.Label>
+                <Form.Label>{t('article.changeDescription')}</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Describe what you changed in this version..."
+                  placeholder={t('article.changeDescriptionPlaceholder')}
                   value={formData.changeDescription}
                   onChange={(e) => handleInputChange('changeDescription', e.target.value)}
                   maxLength={200}
                 />
                 <Form.Text className="text-muted">
-                  Help others understand what changed in this revision (max 200 characters)
+                  {t('article.changeDescriptionHelp')}
                 </Form.Text>
               </Form.Group>
             )}
 
             <Form.Group className="mb-3">
-              <Form.Label>Status</Form.Label>
+              <Form.Label>{t('article.status')}</Form.Label>
               <div className="status-toggle">
                 <Form.Check
                   type="switch"
                   id="status-switch"
-                  label={formData.status === 'published' ? 'Published' : 'Draft'}
+                  label={formData.status === 'published' ? t('article.published') : t('article.draft')}
                   checked={formData.status === 'published'}
                   onChange={(e) => handleInputChange('status', e.target.checked ? 'published' : 'draft')}
                 />
@@ -579,27 +540,26 @@ const AdminArticleForm = () => {
               onClick={() => navigate('/admin')}
               disabled={loading}
             >
-              Cancel
+              {t('article.cancel')}
             </Button>
             <Button
               variant="outline-primary"
               onClick={() => handleSubmit(false)}
               disabled={loading}
             >
-              {loading ? 'Saving...' : 'Save as Draft'}
+              {loading ? t('article.saving') : t('article.saveAsDraft')}
             </Button>
             <Button
               variant="primary"
               onClick={() => handleSubmit(true)}
               disabled={loading}
             >
-              {loading ? 'Publishing...' : 'Publish'}
+              {loading ? t('article.publishing') : t('article.publish')}
             </Button>
           </div>
         </div>
           </div>
 
-          {/* Preview Panel - Desktop only, shown based on showPreview state */}
           {showPreview && (
             <div className="preview-panel-container d-none d-lg-block">
               <PreviewPanel
@@ -608,12 +568,10 @@ const AdminArticleForm = () => {
                 content={debouncedContent}
                 category={formData.category}
                 tags={formData.tags}
-                referenceRanges={formData.referenceRanges}
               />
             </div>
           )}
 
-          {/* Preview Panel - Mobile/Tablet tab */}
           <div className={`preview-tab-container d-lg-none ${activeTab === 'preview' ? 'd-block' : 'd-none'}`}>
             <PreviewPanel
               title={debouncedTitle}
@@ -621,37 +579,7 @@ const AdminArticleForm = () => {
               content={debouncedContent}
               category={formData.category}
               tags={formData.tags}
-              referenceRanges={formData.referenceRanges}
             />
-          </div>
-
-          {/* SEO Tab - Mobile/Tablet */}
-          <div className={`seo-tab-container d-lg-none ${activeTab === 'seo' ? 'd-block' : 'd-none'}`}>
-            <div className="seo-info-panel">
-              <h5>SEO Information</h5>
-              <div className="seo-field">
-                <strong>Title:</strong>
-                <p>{formData.title || 'No title yet'}</p>
-                <small className="text-muted">{formData.title.length}/200 characters</small>
-              </div>
-              <div className="seo-field">
-                <strong>Summary (Meta Description):</strong>
-                <p>{formData.summary || 'No summary yet'}</p>
-                <small className="text-muted">{formData.summary.length}/500 characters (Recommended: 150-160)</small>
-              </div>
-              <div className="seo-field">
-                <strong>Slug (URL):</strong>
-                <code>{formData.slug || 'No slug yet'}</code>
-              </div>
-              <div className="seo-field">
-                <strong>Category:</strong>
-                <p>{formData.category || 'No category selected'}</p>
-              </div>
-              <div className="seo-field">
-                <strong>Tags:</strong>
-                <p>{formData.tags.length > 0 ? formData.tags.join(', ') : 'No tags yet'}</p>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -663,7 +591,7 @@ const AdminArticleForm = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Upload Image</Modal.Title>
+            <Modal.Title>{t('article.uploadImage')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <ImageUploader
@@ -671,6 +599,83 @@ const AdminArticleForm = () => {
               onUploadError={handleImageUploadError}
             />
           </Modal.Body>
+        </Modal>
+
+        {/* Quick Add Category Modal */}
+        <Modal 
+          show={showCategoryModal} 
+          onHide={() => {
+            setShowCategoryModal(false);
+            setNewCategoryData({ name: '', description: '', color: '#0d6efd' });
+          }}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>{t('article.createCategory')}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('categories.name')} *</Form.Label>
+              <Form.Control
+                type="text"
+                value={newCategoryData.name}
+                onChange={(e) => setNewCategoryData({ ...newCategoryData, name: e.target.value })}
+                placeholder={t('categories.namePlaceholder')}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>{t('categories.description')}</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                value={newCategoryData.description}
+                onChange={(e) => setNewCategoryData({ ...newCategoryData, description: e.target.value })}
+                placeholder={t('categories.descriptionPlaceholder')}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>{t('categories.color')} *</Form.Label>
+              <div className="d-flex align-items-center gap-3">
+                <Form.Control
+                  type="color"
+                  value={newCategoryData.color}
+                  onChange={(e) => setNewCategoryData({ ...newCategoryData, color: e.target.value })}
+                  style={{ width: '60px', height: '38px', cursor: 'pointer' }}
+                />
+                <Form.Control
+                  type="text"
+                  value={newCategoryData.color}
+                  onChange={(e) => setNewCategoryData({ ...newCategoryData, color: e.target.value })}
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                  placeholder="#0d6efd"
+                  style={{ width: '100px' }}
+                />
+                <Badge style={{ backgroundColor: newCategoryData.color, color: '#fff', padding: '8px 16px' }}>
+                  {t('categories.preview')}
+                </Badge>
+              </div>
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button 
+              variant="secondary" 
+              onClick={() => {
+                setShowCategoryModal(false);
+                setNewCategoryData({ name: '', description: '', color: '#0d6efd' });
+              }}
+            >
+              {t('categories.cancel')}
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleCreateCategory}
+              disabled={!newCategoryData.name.trim()}
+            >
+              {t('categories.create')}
+            </Button>
+          </Modal.Footer>
         </Modal>
 
         {/* Version History Modal */}

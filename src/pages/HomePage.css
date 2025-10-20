@@ -4,22 +4,13 @@
   min-height: calc(100vh - 80px);
 }
 
-.home-hero-section {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: white;
-  padding: 3rem 2rem;
-  border-radius: 0.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.home-hero-section .display-4 {
+.display-4 {
   font-weight: bold;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   margin-bottom: 1rem;
 }
 
-.home-hero-section .lead {
+.lead {
   font-size: 1.125rem;
   line-height: 1.6;
 }
@@ -27,15 +18,4 @@
 /* Articles Grid */
 .articles-grid {
   margin-top: 2rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .home-hero-section {
-    padding: 2rem 1.5rem;
-  }
-  
-  .home-hero-section .display-4 {
-    font-size: 2rem;
-  }
 }

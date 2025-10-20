@@ -14,7 +14,6 @@ import './TiptapEditor.css';
 
 const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => {
   const [showImageModal, setShowImageModal] = useState(false);
-  const [showTableMenu, setShowTableMenu] = useState(false);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
 
@@ -24,6 +23,9 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
       Image,
       Table.configure({
         resizable: true,
+        HTMLAttributes: {
+          class: 'tiptap-table',
+        },
       }),
       TableRow,
       TableHeader,
@@ -167,100 +169,87 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
 
         <div className="toolbar-divider"></div>
 
-        {/* Table */}
-        <div className="dropdown-container">
-          <button
-            type="button"
-            onClick={() => setShowTableMenu(!showTableMenu)}
-            className={editor.isActive('table') ? 'is-active' : ''}
-            title="Table"
-          >
-            📊 Table
-          </button>
-          {showTableMenu && (
-            <div className="dropdown-menu">
-              <button
-                type="button"
-                onClick={() => {
-                  editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
-                  setShowTableMenu(false);
-                }}
-              >
-                Insert 3×3 Table
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().addColumnBefore().run()}
-                disabled={!editor.can().addColumnBefore()}
-              >
-                Add Column Before
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().addColumnAfter().run()}
-                disabled={!editor.can().addColumnAfter()}
-              >
-                Add Column After
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().deleteColumn().run()}
-                disabled={!editor.can().deleteColumn()}
-              >
-                Delete Column
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().addRowBefore().run()}
-                disabled={!editor.can().addRowBefore()}
-              >
-                Add Row Before
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().addRowAfter().run()}
-                disabled={!editor.can().addRowAfter()}
-              >
-                Add Row After
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().deleteRow().run()}
-                disabled={!editor.can().deleteRow()}
-              >
-                Delete Row
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().deleteTable().run()}
-                disabled={!editor.can().deleteTable()}
-              >
-                Delete Table
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().mergeCells().run()}
-                disabled={!editor.can().mergeCells()}
-              >
-                Merge Cells
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().splitCell().run()}
-                disabled={!editor.can().splitCell()}
-              >
-                Split Cell
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().toggleHeaderRow().run()}
-                disabled={!editor.can().toggleHeaderRow()}
-              >
-                Toggle Header Row
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Table Controls */}
+        <button
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          className={editor.isActive('table') ? 'is-active' : ''}
+          type="button"
+          title="Insert Table"
+        >
+          📊 Table
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().addColumnBefore().run()}
+          disabled={!editor.can().addColumnBefore()}
+          type="button"
+          title="Add Column Before"
+        >
+          ← Col
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().addColumnAfter().run()}
+          disabled={!editor.can().addColumnAfter()}
+          type="button"
+          title="Add Column After"
+        >
+          Col →
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().deleteColumn().run()}
+          disabled={!editor.can().deleteColumn()}
+          type="button"
+          title="Delete Column"
+        >
+          🗑️ Col
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().addRowBefore().run()}
+          disabled={!editor.can().addRowBefore()}
+          type="button"
+          title="Add Row Before"
+        >
+          ↑ Row
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().addRowAfter().run()}
+          disabled={!editor.can().addRowAfter()}
+          type="button"
+          title="Add Row After"
+        >
+          Row ↓
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().deleteRow().run()}
+          disabled={!editor.can().deleteRow()}
+          type="button"
+          title="Delete Row"
+        >
+          🗑️ Row
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().deleteTable().run()}
+          disabled={!editor.can().deleteTable()}
+          type="button"
+          title="Delete Table"
+        >
+          🗑️ Table
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().toggleHeaderRow().run()}
+          disabled={!editor.can().toggleHeaderRow()}
+          type="button"
+          title="Toggle Header Row"
+        >
+          Header
+        </button>
 
         <div className="toolbar-divider"></div>
 

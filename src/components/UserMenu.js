@@ -23,7 +23,7 @@ const UserMenu = () => {
     <NavDropdown
       title={
         <span className="user-menu-title">
-          <span className="user-icon">👤</span>
+          <i className="bi bi-person-circle user-icon"></i>
           <span className="username">{user.username}</span>
         </span>
       }
@@ -31,30 +31,19 @@ const UserMenu = () => {
       align="end"
       className="user-menu"
     >
-      <NavDropdown.Header className="user-info">
-        <div className="user-email">{user.email}</div>
-        <div className="user-role">{user.role}</div>
-      </NavDropdown.Header>
-      
-      <NavDropdown.Divider />
-      
-      {/* ADD THIS: Profile Link */}
       <NavDropdown.Item onClick={() => navigate(`/profile/${user.username}`)}>
         {t('profile.title')}
       </NavDropdown.Item>
       
-      <NavDropdown.Divider />
-      
       {user.role === 'admin' && (
-        <>
-          <NavDropdown.Item onClick={() => navigate('/admin')}>
-            {t('navigation.admin')}
-          </NavDropdown.Item>
-          <NavDropdown.Divider />
-        </>
+        <NavDropdown.Item onClick={() => navigate('/admin')}>
+          {t('navigation.admin')}
+        </NavDropdown.Item>
       )}
       
-      <NavDropdown.Item onClick={handleLogout} className="logout-item">
+      <NavDropdown.Divider />
+      
+      <NavDropdown.Item onClick={handleLogout}>
         {t('auth.logout')}
       </NavDropdown.Item>
     </NavDropdown>

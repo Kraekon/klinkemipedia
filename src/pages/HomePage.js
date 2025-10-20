@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
 import ArticleList from '../components/ArticleList';
 import CategoryFilter from '../components/CategoryFilter';
 import SearchBar from '../components/SearchBar';
@@ -9,7 +8,6 @@ import { getAllArticles } from '../services/api';
 import './HomePage.css';
 
 const HomePage = () => {
-  const { t } = useTranslation();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,13 +37,7 @@ const HomePage = () => {
 
   return (
     <Container className="home-page">
-      <div className="home-hero-section mb-4">
-        <h1 className="display-4">{t('page.home.title')}</h1>
-        <p className="lead mb-0">
-          {t('page.home.subtitle')}
-        </p>
-      </div>
-
+      
       <SearchBar />
 
       <Row>

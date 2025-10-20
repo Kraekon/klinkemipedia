@@ -21,6 +21,7 @@ import VersionCompare from './components/VersionCompare';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
+import AdminCategoryManagement from './pages/AdminCategoryManagement';
 import './App.css';
 
 const NotFoundPage = () => {
@@ -102,6 +103,11 @@ function App() {
                 <VersionCompare />
               </ProtectedRoute>
             } />
+            <Route path="/admin/categories" element={
+  <ProtectedRoute requireAdmin={true}>
+    <AdminCategoryManagement />
+  </ProtectedRoute>
+} />
 
             {/* Main site routes (with main navbar) */}
             <Route path="/*" element={
