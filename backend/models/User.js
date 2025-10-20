@@ -70,41 +70,6 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
-    reputation: {
-      type: Number,
-      default: 0,
-      min: 0
-    },
-    badges: [{
-      type: String
-    }],
-    stats: {
-      articlesWritten: {
-        type: Number,
-        default: 0,
-        min: 0
-      },
-      articlesEdited: {
-        type: Number,
-        default: 0,
-        min: 0
-      },
-      commentsPosted: {
-        type: Number,
-        default: 0,
-        min: 0
-      },
-      upvotesReceived: {
-        type: Number,
-        default: 0,
-        min: 0
-      },
-      downvotesReceived: {
-        type: Number,
-        default: 0,
-        min: 0
-      }
-    },
     followers: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
@@ -122,7 +87,6 @@ const UserSchema = new mongoose.Schema(
 // Index for faster queries
 UserSchema.index({ email: 1 });
 UserSchema.index({ username: 1 });
-UserSchema.index({ reputation: -1 }); // For leaderboard queries
 
 // Hash password before saving
 UserSchema.pre('save', async function (next) {

@@ -650,69 +650,6 @@ const getUserFollowing = async (req, res) => {
   }
 };
 
-// @desc    Get leaderboard
-// @route   GET /api/users/leaderboard
-// @access  Public
-const getLeaderboard = async (req, res) => {
-  try {
-    // Validate and sanitize inputs
-    const validPeriods = ['all-time', 'month', 'week'];
-    const validCategories = ['reputation', 'articles', 'helpful'];
-    
-    const period = validPeriods.includes(req.query.period) ? req.query.period : 'all-time';
-    const category = validCategories.includes(req.query.category) ? req.query.category : 'reputation';
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
-    const skip = (page - 1) * limit;
-
-    let query = {};
-    let sortField = 'reputation';
-
-    // Filter by period
-    if (period === 'month') {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-      query.createdAt = { $gte: oneMonthAgo };
-    } else if (period === 'week') {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      query.createdAt = { $gte: oneWeekAgo };
-    }
-
-    // Determine sort field with whitelist
-    const sortFields = {
-      'reputation': 'reputation',
-      'articles': 'stats.articlesWritten',
-      'helpful': 'stats.upvotesReceived'
-    };
-    sortField = sortFields[category] || 'reputation';
-
-    const users = await User.find(query)
-      .select('username avatar profile.specialty reputation badges stats')
-      .sort({ [sortField]: -1 })
-      .limit(limit)
-      .skip(skip);
-
-    const total = await User.countDocuments(query);
-
-    res.json({
-      success: true,
-      count: users.length,
-      total,
-      page,
-      pages: Math.ceil(total / limit),
-      data: users
-    });
-  } catch (error) {
-    console.error('Error in getLeaderboard:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching leaderboard',
-      error: error.message
-    });
-  }
-};
-
 module.exports = {
   getAllUsers,
   getUserById,
@@ -727,6 +664,5 @@ module.exports = {
   unfollowUser,
   getUserActivity,
   getUserFollowers,
-  getUserFollowing,
-  getLeaderboard
+  getUserFollowing
 };

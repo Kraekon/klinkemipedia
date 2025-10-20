@@ -25,13 +25,6 @@ const Navbar = () => {
             <Nav.Link as={Link} to="/">{t('navigation.home')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.articles')}</Nav.Link>
             <Nav.Link as={Link} to="/tags">{t('navigation.tags')}</Nav.Link>
-            {user && (
-              <>
-                <Nav.Link as={Link} to="/bookmarks">Bookmarks</Nav.Link>
-                <Nav.Link as={Link} to="/collections">Collections</Nav.Link>
-              </>
-            )}
-            <Nav.Link as={Link} to="/leaderboard">{t('leaderboard.title')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.about')}</Nav.Link>
           </Nav>
           <div className="navbar-search-container d-none d-lg-block">
