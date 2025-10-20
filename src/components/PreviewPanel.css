@@ -1,0 +1,40 @@
+/* ============================================
+   PREVIEW PANEL
+   ============================================ */
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fff;
+  border-left: 1px solid #dee2e6;
+}
+
+.preview-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.preview-panel-header h5 {
+  color: #28a745;
+  font-weight: 600;
+  margin: 0;
+}
+
+.preview-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Responsive - no border on mobile since it's tabbed */
+@media (max-width: 1023px) {
+  .preview-panel {
+    border-left: none;
+  }
+}
