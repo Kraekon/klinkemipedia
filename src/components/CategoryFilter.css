@@ -3,68 +3,68 @@
    ============================================ */
 
 .category-filter {
-  background: var(--dark-bg-secondary);
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-dark);
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  border: 1px solid #dee2e6;
 }
 
 .category-filter h5 {
-  color: var(--atom-green);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-md);
-  font-size: var(--font-size-lg);
+  color: #28a745;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
 }
 
 .category-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
 }
 
 .category-badge {
   cursor: pointer;
   padding: 0.5rem 1rem;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  transition: var(--transition-base);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
   border: 2px solid transparent;
-  border-radius: var(--radius-full);
-  background-color: var(--dark-bg-elevated);
-  color: var(--text-dark-emphasis);
+  border-radius: 50rem;
+  background-color: #dee2e6;
+  color: #000;
 }
 
 .category-badge:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--atom-green);
-  color: var(--atom-green);
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  border-color: #28a745;
+  color: #28a745;
 }
 
 .category-badge.active {
-  background-color: var(--atom-green) !important;
+  background-color: #28a745 !important;
   color: white !important;
-  border-color: var(--atom-green);
-  box-shadow: var(--shadow-md);
+  border-color: #28a745;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
 }
 
 .category-badge.active:hover {
-  background-color: var(--atom-green-hover) !important;
-  border-color: var(--atom-green-hover);
+  background-color: #218838 !important;
+  border-color: #218838;
 }
 
 @media (max-width: 768px) {
   .category-filter {
-    padding: var(--spacing-md);
+    padding: 1rem;
   }
 
   .category-badges {
-    gap: var(--spacing-xs);
+    gap: 0.25rem;
   }
 
   .category-badge {
     padding: 0.4rem 0.8rem;
-    font-size: var(--font-size-xs);
+    font-size: 0.75rem;
   }
 }

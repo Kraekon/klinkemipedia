@@ -8,45 +8,45 @@
 
 /* Filters Sidebar */
 .filters-sidebar {
-  background: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1.5rem;
   position: sticky;
   top: 20px;
 }
 
 .filter-section h6 {
   color: var(--text-dark-primary);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .filter-select {
-  background-color: var(--dark-bg-tertiary);
-  border-color: var(--border-dark);
+  background-color: #e9ecef;
+  border-color: #dee2e6;
   color: var(--text-dark-primary);
 }
 
 .filter-select:focus {
-  background-color: var(--dark-bg-elevated);
-  border-color: var(--atom-green);
+  background-color: #dee2e6;
+  border-color: #28a745;
   color: var(--text-dark-primary);
   box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
 }
 
 .tags-filter .form-check-input {
-  background-color: var(--dark-bg-tertiary);
-  border-color: var(--border-dark);
+  background-color: #e9ecef;
+  border-color: #dee2e6;
 }
 
 .tags-filter .form-check-input:checked {
-  background-color: var(--atom-green);
-  border-color: var(--atom-green);
+  background-color: #28a745;
+  border-color: #28a745;
 }
 
 .tags-filter .form-check-input:focus {
-  border-color: var(--atom-green);
+  border-color: #28a745;
   box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
 }
 
@@ -61,45 +61,45 @@
 
 /* Search Header */
 .search-header h2 {
-  color: var(--text-dark-emphasis);
-  font-weight: var(--font-weight-bold);
+  color: #000;
+  font-weight: 700;
 }
 
 .search-header p {
-  color: var(--text-dark-muted);
+  color: #6c757d;
   font-size: 0.875rem;
 }
 
 /* Result Cards */
 .result-card {
-  background: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  transition: var(--transition-base);
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease-in-out;
 }
 
 .result-card:hover {
-  border-color: var(--atom-green);
-  box-shadow: var(--shadow-lg);
+  border-color: #28a745;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
   transform: translateY(-2px);
 }
 
 .result-title {
-  color: var(--text-dark-emphasis);
+  color: #000;
   text-decoration: none;
   font-size: 1.25rem;
-  font-weight: var(--font-weight-semibold);
-  transition: var(--transition-base);
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
 }
 
 .result-title:hover {
-  color: var(--atom-green);
+  color: #28a745;
 }
 
 /* Highlighted text */
 .result-title mark,
 .result-excerpt mark {
   background-color: #FFE082;
-  color: var(--dark-bg-primary);
+  color: #fff;
   padding: 0 0.25rem;
   border-radius: 2px;
 }
@@ -117,29 +117,29 @@
 
 .result-meta {
   font-size: 0.875rem;
-  color: var(--text-dark-muted);
+  color: #6c757d;
 }
 
 /* Pagination */
 .pagination {
-  margin-top: var(--spacing-xl);
+  margin-top: 2rem;
 }
 
 .pagination .page-link {
-  background-color: var(--dark-bg-secondary);
-  border-color: var(--border-dark);
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
   color: var(--text-dark-primary);
 }
 
 .pagination .page-link:hover {
-  background-color: var(--dark-bg-tertiary);
-  border-color: var(--atom-green);
-  color: var(--atom-green);
+  background-color: #e9ecef;
+  border-color: #28a745;
+  color: #28a745;
 }
 
 .pagination .page-item.active .page-link {
-  background-color: var(--atom-green);
-  border-color: var(--atom-green);
+  background-color: #28a745;
+  border-color: #28a745;
   color: white;
 }
 
@@ -151,7 +151,7 @@
   }
 
   .filters-content {
-    margin-top: var(--spacing-md);
+    margin-top: 1rem;
   }
 }
 
