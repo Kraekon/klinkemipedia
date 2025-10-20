@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs').promises;
-const sharp = require('sharp');
 const { protect } = require('../middleware/auth');
 const Media = require('../models/Media');
 const Article = require('../models/Article');
+const imageStorage = require('../utils/imageStorage');
 
 /**
  * Media Library Routes
@@ -26,25 +25,9 @@ const Article = require('../models/Article');
  * - For additional protection, consider implementing CSRF tokens (see server.js)
  */
 
-// Configure multer for file upload
-const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const uploadDir = 'uploads/images';
-    try {
-      await fs.mkdir(uploadDir, { recursive: true });
-      cb(null, uploadDir);
-    } catch (error) {
-      cb(error);
-    }
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
+// Configure multer for file upload using Cloudinary storage
 const upload = multer({
-  storage: storage,
+  storage: imageStorage.getMulterStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
   },
@@ -61,11 +44,6 @@ const upload = multer({
   }
 });
 
-// Helper function to sanitize filename and prevent path traversal
-const sanitizeFilename = (filename) => {
-  return path.basename(filename);
-};
-
 // Helper function to scan article content for image usage
 // Note: This function queries MongoDB to find articles that reference the image.
 // The query is safe from injection as it uses MongoDB's query syntax with fixed parameters.
@@ -78,10 +56,14 @@ const findImageUsageInArticles = async (filename) => {
     const usedInArticles = [];
 
     for (const article of articles) {
-      // Check if image URL is in content or images array
-      const imageUrl = `/uploads/images/${filename}`;
-      const contentHasImage = article.content && article.content.includes(imageUrl);
-      const imagesArrayHasImage = article.images && article.images.some(img => img.url.includes(filename));
+      // Check if image URL or filename is in content or images array
+      const contentHasImage = article.content && (
+        article.content.includes(filename) || 
+        article.content.includes(`/${filename}`)
+      );
+      const imagesArrayHasImage = article.images && article.images.some(img => 
+        img.url && (img.url.includes(filename) || img.url === filename)
+      );
 
       if (contentHasImage || imagesArrayHasImage) {
         usedInArticles.push({
@@ -102,26 +84,6 @@ const findImageUsageInArticles = async (filename) => {
   }
 };
 
-// Helper function to get file stats
-const getFileStats = async (filename) => {
-  try {
-    const filePath = path.join('uploads/images', filename);
-    const stats = await fs.stat(filePath);
-    
-    // Get image dimensions using sharp
-    const metadata = await sharp(filePath).metadata();
-    
-    return {
-      size: stats.size,
-      width: metadata.width,
-      height: metadata.height,
-      mtime: stats.mtime
-    };
-  } catch (error) {
-    return null;
-  }
-};
-
 // Upload and optimize image
 router.post('/upload', protect, upload.single('image'), async (req, res) => {
   try {
@@ -132,34 +94,24 @@ router.post('/upload', protect, upload.single('image'), async (req, res) => {
       });
     }
 
-    const originalPath = req.file.path;
-    const optimizedFilename = 'optimized-' + req.file.filename;
-    const optimizedPath = path.join('uploads/images', optimizedFilename);
-
-    // Optimize image with sharp
-    const metadata = await sharp(originalPath)
-      .resize(1200, 1200, {
-        fit: 'inside',
-        withoutEnlargement: true
-      })
-      .jpeg({ quality: 85 })
-      .png({ compressionLevel: 8 })
-      .toFile(optimizedPath);
-
-    // Delete original unoptimized file
-    await fs.unlink(originalPath);
-
-    const imageUrl = `/uploads/images/${optimizedFilename}`;
+    // Get metadata from uploaded file
+    // Cloudinary handles optimization automatically via transformations
+    const imageUrl = req.file.path; // Cloudinary URL
+    const filename = req.file.filename; // Cloudinary public_id
+    
+    // Extract dimensions from Cloudinary response if available
+    const width = req.file.width || null;
+    const height = req.file.height || null;
 
     // Save to database
     try {
       const mediaDoc = new Media({
-        filename: optimizedFilename,
+        filename: filename,
         originalName: req.file.originalname,
         mimeType: req.file.mimetype,
-        size: metadata.size || req.file.size,
-        width: metadata.width,
-        height: metadata.height,
+        size: req.file.size,
+        width: width,
+        height: height,
         url: imageUrl,
         uploadedBy: req.user ? req.user._id : 'admin',
         usageCount: 0
@@ -173,12 +125,12 @@ router.post('/upload', protect, upload.single('image'), async (req, res) => {
     res.json({
       success: true,
       data: {
-        filename: optimizedFilename,
+        filename: filename,
         url: imageUrl,
         originalName: req.file.originalname,
-        size: metadata.size || req.file.size,
-        width: metadata.width,
-        height: metadata.height
+        size: req.file.size,
+        width: width,
+        height: height
       },
       message: 'Image uploaded and optimized successfully'
     });
@@ -207,65 +159,28 @@ router.get('/', protect, async (req, res) => {
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;
 
-    // Read files from disk
-    const uploadDir = 'uploads/images';
-    let files = [];
-    
-    try {
-      await fs.mkdir(uploadDir, { recursive: true });
-      const fileList = await fs.readdir(uploadDir);
-      files = fileList.filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file));
-    } catch (error) {
-      console.error('Error reading upload directory:', error);
-    }
-
-    // Get media from database and merge with filesystem
+    // Get media from database (Cloudinary stores all files there)
     const mediaFromDb = await Media.find({});
-    const mediaMap = new Map(mediaFromDb.map(m => [m.filename, m]));
 
-    // Build complete media list
+    // Build complete media list with usage information
     const mediaList = [];
-    for (const file of files) {
-      const dbRecord = mediaMap.get(file);
-      const fileStats = await getFileStats(file);
-      
-      if (!fileStats) continue;
-
-      let mediaItem;
-      if (dbRecord) {
-        // Merge database record with file stats
-        mediaItem = {
-          _id: dbRecord._id,
-          filename: dbRecord.filename,
-          originalName: dbRecord.originalName,
-          url: dbRecord.url,
-          size: fileStats.size,
-          width: fileStats.width,
-          height: fileStats.height,
-          mimeType: dbRecord.mimeType,
-          uploadedBy: dbRecord.uploadedBy,
-          uploadedAt: dbRecord.uploadedAt,
-          usageCount: 0 // Will be calculated
-        };
-      } else {
-        // File exists but not in database - create entry
-        mediaItem = {
-          _id: file,
-          filename: file,
-          originalName: file,
-          url: `/uploads/images/${file}`,
-          size: fileStats.size,
-          width: fileStats.width,
-          height: fileStats.height,
-          mimeType: `image/${path.extname(file).substring(1)}`,
-          uploadedBy: 'unknown',
-          uploadedAt: fileStats.mtime,
-          usageCount: 0
-        };
-      }
+    for (const dbRecord of mediaFromDb) {
+      const mediaItem = {
+        _id: dbRecord._id,
+        filename: dbRecord.filename,
+        originalName: dbRecord.originalName,
+        url: dbRecord.url,
+        size: dbRecord.size,
+        width: dbRecord.width,
+        height: dbRecord.height,
+        mimeType: dbRecord.mimeType,
+        uploadedBy: dbRecord.uploadedBy,
+        uploadedAt: dbRecord.uploadedAt,
+        usageCount: 0 // Will be calculated
+      };
 
       // Check usage in articles
-      const usage = await findImageUsageInArticles(file);
+      const usage = await findImageUsageInArticles(dbRecord.filename);
       mediaItem.usageCount = usage.usageCount;
 
       mediaList.push(mediaItem);
@@ -342,13 +257,11 @@ router.get('/', protect, async (req, res) => {
 // GET /api/media/:filename/usage - Get usage information for a specific image
 router.get('/:filename/usage', protect, async (req, res) => {
   try {
-    const filename = sanitizeFilename(req.params.filename);
+    const filename = req.params.filename;
     
-    // Check if file exists
-    const filePath = path.join('uploads/images', filename);
-    try {
-      await fs.access(filePath);
-    } catch (error) {
+    // Check if media exists in database
+    const media = await Media.findOne({ filename });
+    if (!media) {
       return res.status(404).json({
         success: false,
         message: 'Image not found'
@@ -375,14 +288,12 @@ router.get('/:filename/usage', protect, async (req, res) => {
 // DELETE /api/media/:filename - Delete an image
 router.delete('/:filename', protect, async (req, res) => {
   try {
-    const filename = sanitizeFilename(req.params.filename);
+    const filename = req.params.filename;
     const force = req.query.force === 'true';
 
-    // Check if file exists
-    const filePath = path.join('uploads/images', filename);
-    try {
-      await fs.access(filePath);
-    } catch (error) {
+    // Check if media exists in database
+    const media = await Media.findOne({ filename });
+    if (!media) {
       return res.status(404).json({
         success: false,
         message: 'Image not found'
@@ -401,23 +312,24 @@ router.delete('/:filename', protect, async (req, res) => {
       });
     }
 
-    // Delete file from disk
+    // Delete from Cloudinary
     try {
-      await fs.unlink(filePath);
+      await imageStorage.delete(filename);
     } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: 'Error deleting file from disk',
-        error: error.message
-      });
+      console.error('Error deleting from Cloudinary:', error);
+      // Continue to delete from database even if Cloudinary deletion fails
     }
 
-    // Delete from database if exists
+    // Delete from database
     try {
       await Media.deleteOne({ filename });
     } catch (error) {
       console.error('Error deleting from database:', error);
-      // Continue even if database deletion fails
+      return res.status(500).json({
+        success: false,
+        message: 'Error deleting from database',
+        error: error.message
+      });
     }
 
     res.json({

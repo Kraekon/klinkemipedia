@@ -112,10 +112,9 @@ class LocalFileStorage extends ImageStorage {
 }
 
 /**
- * Cloudinary Storage Implementation (for future use)
- * Uncomment and configure when ready to migrate to cloud storage
+ * Cloudinary Storage Implementation
+ * Handles cloud-based image storage with automatic optimization
  */
-/*
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
@@ -129,12 +128,17 @@ class CloudinaryImageStorage extends ImageStorage {
       api_secret: process.env.CLOUDINARY_API_SECRET
     });
     
+    this.cloudinary = cloudinary;
     this.storage = new CloudinaryStorage({
       cloudinary: cloudinary,
       params: {
         folder: 'klinkemipedia',
         allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-        transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
+        // Image optimization with Cloudinary transformations
+        transformation: [
+          { width: 1200, height: 1200, crop: 'limit' },
+          { quality: 'auto:good', fetch_format: 'auto' }
+        ]
       }
     });
   }
@@ -144,19 +148,25 @@ class CloudinaryImageStorage extends ImageStorage {
   }
 
   async upload(file) {
+    // Extract public_id from the filename for future deletion
+    const publicId = file.filename;
     return {
       url: file.path, // Cloudinary URL
-      filename: file.filename,
+      filename: publicId,
       originalName: file.originalname,
       size: file.size,
       mimetype: file.mimetype
     };
   }
 
-  async delete(filename) {
+  async delete(publicId) {
     try {
-      await cloudinary.uploader.destroy(filename);
-      return { success: true, message: 'File deleted successfully' };
+      // Extract the public_id without folder prefix if needed
+      const result = await this.cloudinary.uploader.destroy(publicId);
+      if (result.result === 'ok' || result.result === 'not found') {
+        return { success: true, message: 'File deleted successfully' };
+      }
+      return { success: false, message: 'Failed to delete file' };
     } catch (error) {
       throw error;
     }
@@ -166,14 +176,11 @@ class CloudinaryImageStorage extends ImageStorage {
     return filename; // Cloudinary returns full URL
   }
 }
-*/
 
 /**
  * Storage Factory
- * To switch to Cloudinary or S3, simply change this line:
- * const storage = new CloudinaryImageStorage();
- * const storage = new S3Storage();
+ * Uses Cloudinary for cloud-based image storage with automatic optimization
  */
-const storage = new LocalFileStorage();
+const storage = new CloudinaryImageStorage();
 
 module.exports = storage;
