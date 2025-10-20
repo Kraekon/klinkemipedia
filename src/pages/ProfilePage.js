@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Row, Col, Card, Nav, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Nav } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import UserCard from '../components/UserCard';

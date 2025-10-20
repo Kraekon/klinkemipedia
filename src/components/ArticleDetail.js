@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import { getImageUrl } from '../utils/imageUrl';
 import TagBadge from './TagBadge';
-import BookmarkButton from './BookmarkButton';
 import VersionHistory from './VersionHistory';
 import './ArticleDetail.css';
 
@@ -19,12 +18,6 @@ const ArticleDetail = ({ article }) => {
           ← {t('common.back')} to {t('navigation.articles')}
         </Button>
         <div className="d-flex gap-2">
-          <BookmarkButton 
-            articleId={article._id}
-            articleSlug={article.slug}
-            size="sm"
-            showLabel={true}
-          />
           <Button 
             variant="outline-secondary" 
             size="sm"
