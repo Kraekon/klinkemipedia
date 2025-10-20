@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal } from 'react-bootstrap';
-import { getImageUrl } from '../utils/imageUrl';
 import AdminNavbar from '../components/AdminNavbar';
 import ReferenceRangeEditor from '../components/ReferenceRangeEditor';
 import ImageUploader from '../components/ImageUploader';
 import VersionHistory from '../components/VersionHistory';
 import TagInput from '../components/TagInput';
-import MDEditor from '@uiw/react-md-editor';
+import TiptapEditor from '../components/TiptapEditor';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { slugify } from '../utils/slugify';
 import './Admin.css';
@@ -195,12 +194,12 @@ const AdminArticleForm = () => {
   };
 
   const handleImageUploadSuccess = (imageData) => {
-    // Insert markdown image syntax at cursor position
-    const markdownImage = `![${imageData.alt}](${imageData.url})`;
+    // Insert HTML image tag at cursor position
+    const htmlImage = `<img src="${imageData.url}" alt="${imageData.alt || ''}" style="max-width: 100%; height: auto;" />`;
     
     // Insert into content at current cursor position or at the end
     const currentContent = formData.content || '';
-    const newContent = currentContent ? `${currentContent}\n\n${markdownImage}` : markdownImage;
+    const newContent = currentContent ? `${currentContent}\n${htmlImage}` : htmlImage;
     
     handleInputChange('content', newContent);
     setShowImageUploadModal(false);
@@ -370,42 +369,24 @@ const AdminArticleForm = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-  <Form.Label>Content <span className="text-danger">*</span></Form.Label>
-  <div data-color-mode="light">
-    <MDEditor
-  value={formData.content}
-  onChange={(value) => handleInputChange('content', value || '')}
-  preview="live"
-  height={500}
-  textareaProps={{
-    placeholder: 'Article content (Markdown supported with live preview)'
-  }}
-  previewOptions={{
-    components: {
-      img: ({node, ...props}) => (
-        <img
-          {...props}
-          src={getImageUrl(props.src)}
-          alt={props.alt}
-          style={{ maxWidth: '100%', height: 'auto' }}
-        />
-      )
-    }
-  }}
-/>
-  </div>
-  <div className="char-count mt-2">
-    {formData.content.length} characters / {countWords(formData.content)} words
-  </div>
-  {validationErrors.content && (
-    <div className="text-danger small mt-1">
-      {validationErrors.content}
-    </div>
-  )}
-  <Form.Text muted>
-    Use the toolbar for formatting or type Markdown directly
-  </Form.Text>
-</Form.Group>
+              <Form.Label>Content <span className="text-danger">*</span></Form.Label>
+              <TiptapEditor
+                value={formData.content}
+                onChange={(value) => handleInputChange('content', value || '')}
+                placeholder="Write your article content here..."
+              />
+              <div className="char-count mt-2">
+                {formData.content.length} characters / {countWords(formData.content)} words
+              </div>
+              {validationErrors.content && (
+                <div className="text-danger small mt-1">
+                  {validationErrors.content}
+                </div>
+              )}
+              <Form.Text muted>
+                Use the toolbar for rich text formatting
+              </Form.Text>
+            </Form.Group>
 
             <div className="mb-3">
               <Button 
@@ -437,58 +418,22 @@ const AdminArticleForm = () => {
             <h3>Clinical Information</h3>
 
             <Form.Group className="mb-3">
-  <Form.Label>Clinical Significance</Form.Label>
-  <div data-color-mode="light">
-    <MDEditor
-  value={formData.clinicalSignificance}
-  onChange={(value) => handleInputChange('clinicalSignificance', value || '')}
-  preview="edit"
-  height={300}
-  textareaProps={{
-    placeholder: 'Describe what abnormal values mean (Markdown supported)'
-  }}
-  previewOptions={{
-    components: {
-      img: ({node, ...props}) => (
-        <img
-          {...props}
-          src={getImageUrl(props.src)}
-          alt={props.alt}
-          style={{ maxWidth: '100%', height: 'auto' }}
-        />
-      )
-    }
-  }}
-/>
-  </div>
-</Form.Group>
+              <Form.Label>Clinical Significance</Form.Label>
+              <TiptapEditor
+                value={formData.clinicalSignificance}
+                onChange={(value) => handleInputChange('clinicalSignificance', value || '')}
+                placeholder="Describe what abnormal values mean..."
+              />
+            </Form.Group>
 
             <Form.Group className="mb-3">
-  <Form.Label>Interpretation</Form.Label>
-  <div data-color-mode="light">
-    <MDEditor
-  value={formData.interpretation}
-  onChange={(value) => handleInputChange('interpretation', value || '')}
-  preview="edit"
-  height={300}
-  textareaProps={{
-    placeholder: 'How to interpret results (Markdown supported)'
-  }}
-  previewOptions={{
-    components: {
-      img: ({node, ...props}) => (
-        <img
-          {...props}
-          src={getImageUrl(props.src)}
-          alt={props.alt}
-          style={{ maxWidth: '100%', height: 'auto' }}
-        />
-      )
-    }
-  }}
-/>
-  </div>
-</Form.Group>
+              <Form.Label>Interpretation</Form.Label>
+              <TiptapEditor
+                value={formData.interpretation}
+                onChange={(value) => handleInputChange('interpretation', value || '')}
+                placeholder="How to interpret results..."
+              />
+            </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Related Tests</Form.Label>
