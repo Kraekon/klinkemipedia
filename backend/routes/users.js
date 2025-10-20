@@ -16,8 +16,7 @@ const {
   unfollowUser,
   getUserActivity,
   getUserFollowers,
-  getUserFollowing,
-  getLeaderboard
+  getUserFollowing
 } = require('../controllers/userController');
 const { adminAuth, protect } = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
@@ -66,7 +65,6 @@ const publicUserLimiter = rateLimit({
 });
 
 // Public routes - specific routes before dynamic params
-router.get('/leaderboard', publicUserLimiter, getLeaderboard);
 router.get('/profile/:username', publicUserLimiter, getUserProfile);
 router.get('/profile/:username/activity', publicUserLimiter, getUserActivity);
 router.get('/profile/:username/followers', publicUserLimiter, getUserFollowers);

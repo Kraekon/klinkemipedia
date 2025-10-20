@@ -3,26 +3,26 @@
    ============================================ */
 
 .popular-articles-card {
-  background: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-md);
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
   overflow: hidden;
 }
 
 .popular-articles-card .card-header {
-  background: var(--dark-bg-tertiary);
-  border-bottom: 1px solid var(--border-dark);
-  padding: var(--spacing-md);
+  background: #e9ecef;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
 }
 
 .popular-articles-card .card-header h5 {
-  color: var(--text-dark-emphasis);
-  font-weight: var(--font-weight-semibold);
+  color: #000;
+  font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
 .popular-articles-card .card-header small {
-  color: var(--text-dark-muted);
+  color: #6c757d;
   font-size: 0.875rem;
 }
 
@@ -32,14 +32,14 @@
 }
 
 .popular-article-item {
-  background: var(--dark-bg-secondary);
-  border-color: var(--border-dark);
-  padding: var(--spacing-md);
-  transition: var(--transition-base);
+  background: #f8f9fa;
+  border-color: #dee2e6;
+  padding: 1rem;
+  transition: all 0.2s ease-in-out;
 }
 
 .popular-article-item:hover {
-  background: var(--dark-bg-tertiary);
+  background: #e9ecef;
 }
 
 .article-rank {
@@ -48,12 +48,12 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: var(--atom-green);
+  background: #28a745;
   color: white;
-  font-weight: var(--font-weight-bold);
+  font-weight: 700;
   font-size: 0.875rem;
   border-radius: 50%;
-  margin-right: var(--spacing-sm);
+  margin-right: 0.5rem;
   flex-shrink: 0;
 }
 
@@ -70,25 +70,25 @@
 }
 
 .article-title {
-  color: var(--text-dark-emphasis);
+  color: #000;
   text-decoration: none;
-  font-weight: var(--font-weight-medium);
+  font-weight: 500;
   font-size: 0.95rem;
   line-height: 1.4;
   display: block;
   margin-bottom: 0.5rem;
-  transition: var(--transition-base);
+  transition: all 0.2s ease-in-out;
 }
 
 .article-title:hover {
-  color: var(--atom-green);
+  color: #28a745;
 }
 
 .article-meta {
   display: flex;
   align-items: center;
   font-size: 0.8rem;
-  color: var(--text-dark-muted);
+  color: #6c757d;
 }
 
 .article-meta .badge {
@@ -98,7 +98,7 @@
 .views-count,
 .comments-count {
   font-size: 0.8rem;
-  color: var(--text-dark-muted);
+  color: #6c757d;
 }
 
 /* Scrollbar styling */
@@ -107,16 +107,16 @@
 }
 
 .popular-articles-list::-webkit-scrollbar-track {
-  background: var(--dark-bg-primary);
+  background: #fff;
 }
 
 .popular-articles-list::-webkit-scrollbar-thumb {
-  background: var(--border-dark);
+  background: #dee2e6;
   border-radius: 3px;
 }
 
 .popular-articles-list::-webkit-scrollbar-thumb:hover {
-  background: var(--atom-green);
+  background: #28a745;
 }
 
 /* Responsive */

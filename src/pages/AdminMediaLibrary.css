@@ -4,76 +4,76 @@
 
 .admin-media-library {
   min-height: 80vh;
-  background-color: var(--dark-bg-primary);
-  padding: var(--spacing-xl);
+  background-color: #fff;
+  padding: 2rem;
 }
 
 .stats-bar {
-  background-color: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  box-shadow: var(--shadow-md);
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
 }
 
 .stat-card {
   text-align: center;
-  padding: var(--spacing-md);
+  padding: 1rem;
 }
 
 .stat-value {
   font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--atom-green);
-  margin-bottom: var(--spacing-xs);
+  font-weight: 700;
+  color: #28a745;
+  margin-bottom: 0.25rem;
   text-shadow: 0 0 10px rgba(95, 176, 75, 0.3);
 }
 
 .stat-label {
-  font-size: var(--font-size-sm);
-  color: var(--text-dark-muted);
+  font-size: 0.875rem;
+  color: #6c757d;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .controls-bar {
-  background-color: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  box-shadow: var(--shadow-md);
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
 }
 
 .controls-bar label {
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-sm);
-  color: var(--text-dark-emphasis);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #000;
 }
 
 .media-grid {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 2rem;
 }
 
 .empty-state {
-  background-color: var(--dark-bg-tertiary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-3xl) var(--spacing-xl);
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 4rem 2rem;
 }
 
 .empty-state h3 {
-  color: var(--text-dark-emphasis);
-  margin-bottom: var(--spacing-md);
+  color: #000;
+  margin-bottom: 1rem;
 }
 
 .pagination-controls {
-  margin-top: var(--spacing-xl);
-  padding-bottom: var(--spacing-xl);
+  margin-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .pagination-controls span {
-  font-weight: var(--font-weight-medium);
-  color: var(--text-dark-emphasis);
+  font-weight: 500;
+  color: #000;
 }
 
 /* Responsive adjustments */

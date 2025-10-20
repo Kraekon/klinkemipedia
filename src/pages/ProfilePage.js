@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Row, Col, Card, Nav, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Nav } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import UserCard from '../components/UserCard';
@@ -76,32 +76,7 @@ const ProfilePage = () => {
             <Card.Body>
               {activeTab === 'overview' && (
                 <div className="profile-overview">
-                  <h5>{t('profile.stats')}</h5>
-                  <Row className="text-center my-3">
-                    <Col>
-                      <h3>{user.stats?.articlesWritten || 0}</h3>
-                      <small>{t('profile.articlesWritten')}</small>
-                    </Col>
-                    <Col>
-                      <h3>{user.stats?.articlesEdited || 0}</h3>
-                      <small>{t('profile.articlesEdited')}</small>
-                    </Col>
-                    <Col>
-                      <h3>{user.stats?.commentsPosted || 0}</h3>
-                      <small>{t('profile.comments')}</small>
-                    </Col>
-                  </Row>
-                  
-                  {user.badges && user.badges.length > 0 && (
-                    <div className="mt-4">
-                      <h5>{t('profile.badges')}</h5>
-                      <div className="d-flex flex-wrap gap-2">
-                        {user.badges.map((badge, index) => (
-                          <Badge key={index} bg="primary">{badge}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <p>{t('profile.bio')}: {user.bio || t('profile.noBio')}</p>
                 </div>
               )}
               

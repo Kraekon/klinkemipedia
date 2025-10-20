@@ -1,116 +1,42 @@
-/* ============================================
-   APP-SPECIFIC ATOM THEME STYLES
-   ============================================ */
-
 /* App Container */
 .App {
   min-height: 100vh;
-  background-color: var(--dark-bg-primary);
 }
 
-/* Hero Section - Atom Green Gradient */
+/* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #2C313A 0%, #282C34 50%, #1d4d2e 100%);
-  color: var(--text-dark-emphasis);
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
   padding: 3rem 2rem;
-  border-radius: var(--radius-lg);
+  border-radius: 0.5rem;
   margin-bottom: 2rem;
-  border: 1px solid var(--border-dark);
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(95, 176, 75, 0.1) 100%);
-  pointer-events: none;
-}
-
-.hero-section * {
-  position: relative;
-  z-index: 1;
 }
 
 .hero-section h1 {
-  color: var(--text-dark-emphasis);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.hero-section .lead {
-  color: var(--text-dark);
-  font-size: var(--font-size-lg);
-}
-
-.hero-section .display-4 {
-  color: var(--text-dark-emphasis);
-  font-weight: var(--font-weight-bold);
-}
-
-/* Article Cards - Enhanced Dark Theme */
+/* Article Cards */
 .card {
-  background-color: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   height: 100%;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--atom-green);
-}
-
-.card-title {
-  color: var(--text-dark-emphasis);
-  font-weight: var(--font-weight-semibold);
-}
-
-.card-text {
-  color: var(--text-dark);
-}
-
-/* Badges with Atom Green Theme */
-.badge {
-  font-size: var(--font-size-sm);
-  padding: 0.4em 0.75em;
-  border-radius: var(--radius-full);
-  font-weight: var(--font-weight-medium);
-}
-
-/* Reference Ranges Table */
-.reference-ranges-table {
-  font-family: var(--font-family-code);
-  background-color: var(--dark-bg-secondary);
-  border-radius: var(--radius-md);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 /* Container Improvements */
 .container {
-  padding-top: var(--spacing-lg);
-  padding-bottom: var(--spacing-lg);
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 /* Empty State Styling */
 .empty-state {
   text-align: center;
-  padding: var(--spacing-3xl) var(--spacing-lg);
-  color: var(--text-dark-muted);
-}
-
-.empty-state h3 {
-  color: var(--text-dark-emphasis);
-  margin-bottom: var(--spacing-lg);
-}
-
-.empty-state p {
-  color: var(--text-dark);
-  font-size: var(--font-size-lg);
+  padding: 4rem 1.5rem;
 }
 
 /* Loading State */
@@ -120,37 +46,11 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  color: var(--text-dark);
 }
 
 .loading-container .spinner-border {
-  border-color: var(--atom-green);
-  border-right-color: transparent;
   width: 3rem;
   height: 3rem;
-}
-
-/* Search Results Highlighting */
-mark,
-.highlight {
-  background-color: rgba(95, 176, 75, 0.3);
-  color: var(--atom-green-light);
-  padding: 0.125rem 0.25rem;
-  border-radius: var(--radius-sm);
-}
-
-/* Code Blocks */
-pre {
-  background-color: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  overflow-x: auto;
-}
-
-pre code {
-  background-color: transparent;
-  color: var(--text-dark);
 }
 
 /* Responsive Adjustments */
@@ -160,7 +60,7 @@ pre code {
   }
   
   .container {
-    padding-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
 }

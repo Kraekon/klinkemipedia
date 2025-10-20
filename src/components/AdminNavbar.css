@@ -1,78 +1,59 @@
-/* ============================================
-   ADMIN NAVBAR - ATOM THEME
-   ============================================ */
+/* Admin Navbar Styles */
 
 .admin-navbar {
-  background-color: var(--dark-bg-tertiary) !important;
-  box-shadow: var(--shadow-md);
-  border-bottom: 2px solid var(--atom-green);
-  padding: var(--spacing-md) 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid #007bff;
+  padding: 1rem 0;
 }
 
 .admin-navbar .navbar-brand {
-  color: var(--atom-green) !important;
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  transition: var(--transition-base);
-  text-shadow: 0 0 10px rgba(95, 176, 75, 0.3);
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
 }
 
 .admin-navbar .navbar-brand:hover {
-  color: var(--atom-green-light) !important;
-  text-shadow: var(--shadow-glow-green);
   transform: scale(1.02);
 }
 
 .admin-navbar .nav-link {
-  color: var(--text-dark) !important;
-  transition: var(--transition-base);
-  padding: var(--spacing-sm) var(--spacing-md) !important;
+  transition: all 0.2s ease-in-out;
+  padding: 0.5rem 1rem !important;
   position: relative;
-  font-weight: var(--font-weight-medium);
-  margin: 0 var(--spacing-xs);
-}
-
-.admin-navbar .nav-link:hover {
-  color: var(--atom-green) !important;
-}
-
-.admin-navbar .nav-link.active {
-  color: var(--atom-green) !important;
+  font-weight: 500;
+  margin: 0 0.25rem;
 }
 
 .admin-navbar .nav-link.active::after {
   content: '';
   position: absolute;
   bottom: -2px;
-  left: var(--spacing-md);
-  right: var(--spacing-md);
+  left: 1rem;
+  right: 1rem;
   height: 2px;
-  background-color: var(--atom-green);
-  box-shadow: 0 0 8px var(--atom-green);
+  background-color: currentColor;
 }
 
 /* Admin-specific styles */
 .admin-navbar .nav-link {
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
 }
 
 /* Emoji icons in admin nav */
 .admin-navbar .nav-link span {
-  margin-right: var(--spacing-xs);
+  margin-right: 0.25rem;
 }
 
 /* Mobile Admin Navigation */
 @media (max-width: 991px) {
   .admin-navbar .navbar-collapse {
-    background-color: var(--dark-bg-tertiary);
-    margin-top: var(--spacing-md);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-dark);
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
   }
   
   .admin-navbar .nav-link {
-    padding: var(--spacing-md) !important;
+    padding: 1rem !important;
   }
   
   .admin-navbar .nav-link.active::after {

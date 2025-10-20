@@ -4,11 +4,11 @@
 
 .search-bar-container {
   position: relative;
-  background: var(--dark-bg-secondary);
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-dark);
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  border: 1px solid #dee2e6;
 }
 
 .search-bar-container.compact {
@@ -19,53 +19,53 @@
 }
 
 .search-icon {
-  background-color: var(--dark-bg-tertiary);
-  border: 1px solid var(--border-dark);
-  color: var(--atom-green);
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  color: #28a745;
   font-size: 1.2rem;
 }
 
 .search-input {
-  background-color: var(--dark-bg-tertiary);
-  border: 1px solid var(--border-dark);
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
   border-left: none;
   border-right: none;
-  color: var(--text-dark-emphasis);
+  color: #000;
   padding: 0.75rem 1rem;
-  transition: var(--transition-base);
+  transition: all 0.2s ease-in-out;
 }
 
 .search-input::placeholder {
-  color: var(--text-dark-muted);
+  color: #6c757d;
 }
 
 .search-input:focus {
-  background-color: var(--dark-bg-elevated);
-  border-color: var(--atom-green);
-  color: var(--text-dark-emphasis);
+  background-color: #dee2e6;
+  border-color: #28a745;
+  color: #000;
   box-shadow: none;
 }
 
 .search-button {
-  background-color: var(--atom-green);
-  border-color: var(--atom-green);
+  background-color: #28a745;
+  border-color: #28a745;
   color: white;
   padding: 0.75rem 1.5rem;
-  font-weight: var(--font-weight-medium);
-  transition: var(--transition-base);
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
 }
 
 .search-button:hover {
-  background-color: var(--atom-green-hover);
-  border-color: var(--atom-green-hover);
-  box-shadow: var(--shadow-md);
+  background-color: #218838;
+  border-color: #218838;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
   transform: translateY(-1px);
 }
 
 .search-button:focus {
   box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
-  background-color: var(--atom-green-hover);
-  border-color: var(--atom-green-hover);
+  background-color: #218838;
+  border-color: #218838;
 }
 
 /* Dropdown Styles */
@@ -75,10 +75,10 @@
   left: 0;
   right: 0;
   margin-top: 0.5rem;
-  background: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
   max-height: 400px;
   overflow-y: auto;
   z-index: 1000;
@@ -87,21 +87,21 @@
 .dropdown-header {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-dark-muted);
-  background: var(--dark-bg-tertiary);
-  border-bottom: 1px solid var(--border-dark);
+  font-weight: 600;
+  color: #6c757d;
+  background: #e9ecef;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .suggestion-item,
 .popular-search-item {
-  background: var(--dark-bg-secondary);
+  background: #f8f9fa;
   color: var(--text-dark-primary);
   border: none;
-  border-bottom: 1px solid var(--border-dark);
+  border-bottom: 1px solid #dee2e6;
   padding: 0.75rem 1rem;
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: all 0.2s ease-in-out;
 }
 
 .suggestion-item:last-child,
@@ -113,8 +113,8 @@
 .popular-search-item:hover,
 .suggestion-item.active,
 .popular-search-item.active {
-  background: var(--dark-bg-tertiary);
-  color: var(--atom-green);
+  background: #e9ecef;
+  color: #28a745;
 }
 
 .search-icon-small {
@@ -130,10 +130,10 @@
   right: 0;
   margin-top: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--dark-bg-secondary);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-md);
-  color: var(--text-dark-muted);
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  color: #6c757d;
   font-size: 0.875rem;
   text-align: center;
   z-index: 999;
@@ -141,7 +141,7 @@
 
 @media (max-width: 768px) {
   .search-bar-container:not(.compact) {
-    padding: var(--spacing-md);
+    padding: 1rem;
   }
 
   .search-button {

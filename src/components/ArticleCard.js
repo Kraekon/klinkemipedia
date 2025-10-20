@@ -3,7 +3,6 @@ import { Card, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TagBadge from './TagBadge';
-import BookmarkButton from './BookmarkButton';
 import './ArticleCard.css';
 
 const ArticleCard = ({ article }) => {
@@ -32,22 +31,14 @@ const ArticleCard = ({ article }) => {
           <small className="text-muted">
             {article.views !== undefined && `${article.views} ${t('article.views').toLowerCase()}`}
           </small>
-          <div className="d-flex gap-2">
-            <BookmarkButton 
-              articleId={article._id}
-              articleSlug={article.slug}
-              size="sm"
-              showLabel={false}
-            />
-            <Button 
-              as={Link} 
-              to={`/article/${article.slug}`} 
-              variant="primary" 
-              size="sm"
-            >
-              {t('article.readMore')}
-            </Button>
-          </div>
+          <Button 
+            as={Link} 
+            to={`/article/${article.slug}`} 
+            variant="primary" 
+            size="sm"
+          >
+            {t('article.readMore')}
+          </Button>
         </div>
       </Card.Body>
     </Card>

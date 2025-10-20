@@ -5,59 +5,59 @@
 .tag-cloud {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-md);
-  padding: var(--spacing-xl);
+  gap: 1rem;
+  padding: 2rem;
   align-items: center;
   justify-content: center;
-  background-color: var(--dark-bg-secondary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-dark);
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
 }
 
 .tag-cloud-item {
-  color: var(--atom-green);
+  color: #28a745;
   text-decoration: none;
   padding: 0.25rem 0.75rem;
-  transition: var(--transition-base);
+  transition: all 0.2s ease-in-out;
   line-height: 1.5;
-  font-weight: var(--font-weight-medium);
-  border-radius: var(--radius-full);
+  font-weight: 500;
+  border-radius: 50rem;
   border: 1px solid transparent;
 }
 
 .tag-cloud-item:hover {
-  color: var(--atom-green-light);
+  color: #6fdc6f;
   transform: scale(1.1);
   text-shadow: 0 0 10px rgba(95, 176, 75, 0.5);
-  border-color: var(--atom-green);
+  border-color: #28a745;
   background-color: rgba(95, 176, 75, 0.1);
 }
 
 /* Size variations for tag popularity */
 .tag-cloud-item.size-xs {
-  font-size: var(--font-size-xs);
+  font-size: 0.75rem;
 }
 
 .tag-cloud-item.size-sm {
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
 }
 
 .tag-cloud-item.size-md {
-  font-size: var(--font-size-base);
+  font-size: 1rem;
 }
 
 .tag-cloud-item.size-lg {
-  font-size: var(--font-size-lg);
+  font-size: 1.125rem;
 }
 
 .tag-cloud-item.size-xl {
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
 }
 
 @media (max-width: 768px) {
   .tag-cloud {
-    gap: var(--spacing-sm);
-    padding: var(--spacing-md);
+    gap: 0.5rem;
+    padding: 1rem;
   }
   
   .tag-cloud-item {
