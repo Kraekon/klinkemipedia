@@ -456,17 +456,8 @@ const followUser = async (req, res) => {
     await targetUser.save();
 
     // Award reputation for receiving follower
-    const { awardReputation, createNotification } = require('../utils/reputation');
+    const { awardReputation } = require('../utils/reputation');
     await awardReputation(targetUserId, 5, 'Received a new follower');
-
-    // Create notification
-    await createNotification({
-      userId: targetUserId,
-      type: 'new_follower',
-      title: 'New Follower',
-      message: `${currentUser.username} started following you`,
-      link: `/profile/${currentUser.username}`
-    });
 
     res.json({
       success: true,

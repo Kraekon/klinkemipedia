@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import UserMenu from './UserMenu';
 import SearchBar from './SearchBar';
-import NotificationsDropdown from './NotificationsDropdown';
 import { useAuth } from '../contexts/AuthContext';
 import './Navbar.css';
 
@@ -35,9 +34,6 @@ const Navbar = () => {
           </div>
           {user ? (
             <>
-              <div className="ms-2">
-                <NotificationsDropdown />
-              </div>
               <div className="ms-2">
                 <UserMenu />
               </div>

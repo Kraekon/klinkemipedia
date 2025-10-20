@@ -1,6 +1,5 @@
 const Badge = require('../models/Badge');
 const User = require('../models/User');
-const { createNotification } = require('../utils/reputation');
 
 // @desc    Get all badges
 // @route   GET /api/badges
@@ -91,15 +90,6 @@ const awardBadge = async (req, res) => {
     // Award badge
     user.badges.push(badge.name);
     await user.save();
-
-    // Create notification
-    await createNotification({
-      userId: user._id,
-      type: 'badge_earned',
-      title: 'Badge Earned!',
-      message: `You've earned the ${badge.name} badge: ${badge.description}`,
-      link: `/profile/${user.username}`
-    });
 
     res.json({
       success: true,

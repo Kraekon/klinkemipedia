@@ -1,6 +1,5 @@
 const User = require('../models/User');
 const Badge = require('../models/Badge');
-const Notification = require('../models/Notification');
 
 /**
  * Award reputation points to a user
@@ -87,15 +86,6 @@ const checkAndAwardBadges = async (userId) => {
         user.badges.push(badge.name);
         newBadges.push(badge);
 
-        // Create notification
-        await createNotification({
-          userId: user._id,
-          type: 'badge_earned',
-          title: 'Badge Earned!',
-          message: `You've earned the ${badge.name} badge: ${badge.description}`,
-          link: `/profile/${user.username}`
-        });
-
         console.log(`Awarded badge ${badge.name} to user ${user.username}`);
       }
     }
@@ -111,24 +101,7 @@ const checkAndAwardBadges = async (userId) => {
   }
 };
 
-/**
- * Create a notification for a user
- * @param {Object} notificationData - Notification data
- * @returns {Promise<Object>} Created notification
- */
-const createNotification = async (notificationData) => {
-  try {
-    const notification = await Notification.create(notificationData);
-    console.log(`Created notification for user ${notificationData.userId}: ${notificationData.type}`);
-    return notification;
-  } catch (error) {
-    console.error('Error creating notification:', error);
-    throw error;
-  }
-};
-
 module.exports = {
   awardReputation,
-  checkAndAwardBadges,
-  createNotification
+  checkAndAwardBadges
 };
