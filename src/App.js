@@ -11,11 +11,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
 import AdminArticleForm from './pages/AdminArticleForm';
-import ArticleEditorPage from './pages/ArticleEditorPage';
-import MyDrafts from './pages/MyDrafts';
 import UserManagementPage from './pages/UserManagementPage';
 import AdminMediaLibrary from './pages/AdminMediaLibrary';
-import MediaAnalytics from './pages/MediaAnalytics';
 import TagBrowsePage from './pages/TagBrowsePage';
 import TagArticlesPage from './pages/TagArticlesPage';
 import AdminTagManagement from './pages/AdminTagManagement';
@@ -80,26 +77,6 @@ function App() {
                 <AdminArticleForm />
               </ProtectedRoute>
             } />
-            <Route path="/admin/editor/new" element={
-              <ProtectedRoute requireAdmin={true}>
-                <ArticleEditorPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/editor/:slug" element={
-              <ProtectedRoute requireAdmin={true}>
-                <ArticleEditorPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/editor/draft/:draftId" element={
-              <ProtectedRoute requireAdmin={true}>
-                <ArticleEditorPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/my-drafts" element={
-              <ProtectedRoute requireAdmin={true}>
-                <MyDrafts />
-              </ProtectedRoute>
-            } />
             <Route path="/admin/users" element={
               <ProtectedRoute requireAdmin={true}>
                 <UserManagementPage />
@@ -108,11 +85,6 @@ function App() {
             <Route path="/admin/media" element={
               <ProtectedRoute requireAdmin={true}>
                 <AdminMediaLibrary />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/media/analytics" element={
-              <ProtectedRoute requireAdmin={true}>
-                <MediaAnalytics />
               </ProtectedRoute>
             } />
             <Route path="/admin/tags" element={

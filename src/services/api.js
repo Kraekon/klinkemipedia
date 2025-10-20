@@ -251,23 +251,9 @@ export const getMediaStats = async () => {
   return response.data;
 };
 
-// Get analytics data
-export const getMediaAnalytics = async () => {
-  const response = await axios.get(`${API_BASE_URL}/media/analytics`);
-  return response.data;
-};
-
 // Get usage details for a specific image (by ID or filename)
 export const getMediaUsageById = async (mediaId) => {
   const response = await axios.get(`${API_BASE_URL}/media/${mediaId}/usage`);
-  return response.data;
-};
-
-// Bulk delete images
-export const bulkDeleteMedia = async (imageIds) => {
-  const response = await axios.delete(`${API_BASE_URL}/media/bulk`, {
-    data: { imageIds }
-  });
   return response.data;
 };
 
@@ -347,32 +333,6 @@ export const rejectComment = async (commentId) => {
 
 export const deleteCommentPermanently = async (commentId) => {
   const response = await axios.delete(`${API_BASE_URL}/admin/comments/${commentId}`);
-  return response.data;
-};
-
-// Draft APIs
-export const getDrafts = async () => {
-  const response = await axios.get(`${API_BASE_URL}/drafts`);
-  return response.data;
-};
-
-export const getDraft = async (draftId) => {
-  const response = await axios.get(`${API_BASE_URL}/drafts/${draftId}`);
-  return response.data;
-};
-
-export const saveDraft = async (draftData) => {
-  const response = await axios.post(`${API_BASE_URL}/drafts`, draftData);
-  return response.data;
-};
-
-export const updateDraft = async (draftId, draftData) => {
-  const response = await axios.put(`${API_BASE_URL}/drafts/${draftId}`, draftData);
-  return response.data;
-};
-
-export const deleteDraft = async (draftId) => {
-  const response = await axios.delete(`${API_BASE_URL}/drafts/${draftId}`);
   return response.data;
 };
 
