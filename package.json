@@ -7,7 +7,15 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
-    "@uiw/react-md-editor": "^4.0.8",
+    "@tiptap/extension-image": "^2.1.13",
+    "@tiptap/extension-link": "^2.1.13",
+    "@tiptap/extension-placeholder": "^2.1.13",
+    "@tiptap/extension-table": "^2.1.13",
+    "@tiptap/extension-table-cell": "^2.1.13",
+    "@tiptap/extension-table-header": "^2.1.13",
+    "@tiptap/extension-table-row": "^2.1.13",
+    "@tiptap/react": "^2.1.13",
+    "@tiptap/starter-kit": "^2.1.13",
     "ajv": "^8.17.1",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
@@ -66,7 +74,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!(axios|react-markdown|@uiw/react-md-editor)/)"
+      "node_modules/(?!(axios|react-markdown)/)"
     ]
   }
 }
