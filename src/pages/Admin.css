@@ -31,12 +31,14 @@
   gap: 1.5rem;
   grid-template-columns: 1fr;
   min-height: calc(100vh - 200px);
+  position: relative;
 }
 
 /* Desktop Split View (≥1024px) */
 @media (min-width: 1024px) {
   .editor-layout.with-preview {
     grid-template-columns: 1fr 1fr;
+    gap: 0;
   }
   
   .editor-layout.no-preview {
@@ -46,6 +48,7 @@
   .editor-panel {
     overflow-y: auto;
     max-height: calc(100vh - 200px);
+    padding-right: 0.75rem;
   }
   
   .preview-panel-container {
@@ -53,6 +56,29 @@
     top: 1rem;
     height: calc(100vh - 200px);
     overflow: hidden;
+  }
+
+  /* Resizable handle */
+  .editor-layout.with-preview .editor-panel {
+    border-right: 4px solid #dee2e6;
+    cursor: ew-resize;
+    position: relative;
+  }
+
+  .editor-layout.with-preview .editor-panel::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: ew-resize;
+    z-index: 10;
+  }
+
+  .editor-layout.with-preview .editor-panel:hover::after,
+  .editor-layout.with-preview .editor-panel:active::after {
+    background-color: rgba(40, 167, 69, 0.2);
   }
 }
 
