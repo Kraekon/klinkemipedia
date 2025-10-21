@@ -517,70 +517,6 @@ const getRelatedArticles = async (req, res) => {
   }
 };
 
-// @desc    Get popular articles by time period
-// @route   GET /api/articles/popular?period=day|week|month
-// @access  Public
-const getPopularArticles = async (req, res) => {
-  try {
-    const { period = 'week', limit = 10 } = req.query;
-    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
-
-    // Calculate date threshold based on period
-    const now = new Date();
-    let dateThreshold = new Date();
-    
-    switch (period) {
-      case 'day':
-        dateThreshold.setDate(now.getDate() - 1);
-        break;
-      case 'month':
-        dateThreshold.setMonth(now.getMonth() - 1);
-        break;
-      case 'week':
-      default:
-        dateThreshold.setDate(now.getDate() - 7);
-        break;
-    }
-
-    // Get most viewed articles in the time period
-    const popularArticles = await Article.find({
-      status: 'published',
-      lastViewedAt: { $gte: dateThreshold }
-    })
-      .select('title slug category summary tags views commentCount createdAt')
-      .sort({ views: -1 })
-      .limit(limitNum);
-
-    // If not enough articles in period, fall back to all-time popular
-    let articles = popularArticles;
-    if (popularArticles.length < limitNum) {
-      const additionalArticles = await Article.find({
-        status: 'published',
-        _id: { $nin: popularArticles.map(a => a._id) }
-      })
-        .select('title slug category summary tags views commentCount createdAt')
-        .sort({ views: -1 })
-        .limit(limitNum - popularArticles.length);
-      
-      articles = [...popularArticles, ...additionalArticles];
-    }
-
-    res.json({
-      success: true,
-      period,
-      count: articles.length,
-      data: articles
-    });
-  } catch (error) {
-    console.error('Error in getPopularArticles:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching popular articles',
-      error: error.message
-    });
-  }
-};
-
 module.exports = {
   getAllArticles,
   getArticleBySlug,
@@ -590,6 +526,5 @@ module.exports = {
   getArticlesByCategory,
   searchArticles,
   getRelatedArticles,
-  getPopularArticles,
   updateMediaUsageCounts
 };

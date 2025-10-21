@@ -112,14 +112,6 @@ export const getRelatedArticles = async (slug, limit = 5) => {
   return response.data;
 };
 
-// Get popular articles
-export const getPopularArticles = async (period = 'week', limit = 10) => {
-  const response = await axios.get(`${API_BASE_URL}/articles/popular`, { 
-    params: { period, limit } 
-  });
-  return response.data;
-};
-
 // Search APIs
 export const search = async (params) => {
   const response = await axios.get(`${API_BASE_URL}/search`, { params });

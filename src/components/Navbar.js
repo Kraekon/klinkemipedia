@@ -44,10 +44,11 @@ const Navbar = () => {
               >
                 {t('auth.login')}
               </Button>
+              {/* changed from variant="success" to variant="primary" to avoid Atom green */}
               <Button 
                 as={Link} 
                 to="/register" 
-                variant="success"
+                variant="primary"
                 size="sm"
               >
                 {t('auth.register')}

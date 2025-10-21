@@ -1,0 +1,352 @@
+/* ============================================
+   BOOTSTRAP OVERRIDES - ATOM THEME
+   Custom overrides for Bootstrap components
+   ============================================ */
+
+/* Override Bootstrap CSS Variables */
+:root {
+  /* Primary Color System */
+  --bs-primary: #5FB04B;
+  --bs-primary-rgb: 95, 176, 75;
+  --bs-secondary: #6C757D;
+  --bs-success: #50FA7B;
+  --bs-danger: #FF5555;
+  --bs-warning: #FFB86C;
+  --bs-info: #8BE9FD;
+  
+  /* Body Defaults */
+  --bs-body-bg: #282C34;
+  --bs-body-color: #ABB2BF;
+  --bs-body-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+                         'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 
+                         'Fira Sans', 'Droid Sans', 'Helvetica Neue', 
+                         sans-serif;
+  
+  /* Border System */
+  --bs-border-color: #3E4451;
+  --bs-border-radius: 6px;
+  --bs-border-radius-sm: 4px;
+  --bs-border-radius-lg: 8px;
+  --bs-border-radius-xl: 12px;
+  
+  /* Link Colors */
+  --bs-link-color: #5FB04B;
+  --bs-link-hover-color: #4E9A3D;
+  
+  /* Component Colors */
+  --bs-emphasis-color: #E5E9F0;
+  --bs-secondary-color: #ABB2BF;
+  --bs-secondary-bg: #21252B;
+  --bs-tertiary-bg: #2C313A;
+  
+  /* Form Controls */
+  --bs-form-valid-color: #50FA7B;
+  --bs-form-valid-border-color: #50FA7B;
+  --bs-form-invalid-color: #FF5555;
+  --bs-form-invalid-border-color: #FF5555;
+}
+
+/* Container Overrides */
+.container,
+.container-fluid {
+  max-width: 1200px;
+}
+
+/* Alert Overrides */
+.alert {
+  border-left: 4px solid;
+}
+
+.alert-heading {
+  color: inherit;
+  font-weight: 600;
+}
+
+.alert-success {
+  background-color: rgba(80, 250, 123, 0.15);
+  border-color: var(--bs-success);
+  color: var(--bs-success);
+}
+
+.alert-danger {
+  background-color: rgba(255, 85, 85, 0.15);
+  border-color: var(--bs-danger);
+  color: var(--bs-danger);
+}
+
+.alert-warning {
+  background-color: rgba(255, 184, 108, 0.15);
+  border-color: var(--bs-warning);
+  color: var(--bs-warning);
+}
+
+.alert-info {
+  background-color: rgba(139, 233, 253, 0.15);
+  border-color: var(--bs-info);
+  color: var(--bs-info);
+}
+
+/* List Group Overrides */
+.list-group-item {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.list-group-item:hover {
+  background-color: var(--dark-bg-tertiary);
+  color: var(--atom-green);
+}
+
+.list-group-item.active {
+  background-color: var(--atom-green);
+  border-color: var(--atom-green);
+  color: white;
+}
+
+/* Pagination Overrides */
+.page-link {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.page-link:hover {
+  background-color: var(--dark-bg-tertiary);
+  border-color: var(--atom-green);
+  color: var(--atom-green);
+}
+
+.page-item.active .page-link {
+  background-color: var(--atom-green);
+  border-color: var(--atom-green);
+  color: white;
+}
+
+.page-item.disabled .page-link {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--bs-border-color);
+  color: var(--text-dark-muted);
+}
+
+/* Progress Bar Overrides */
+.progress {
+  background-color: var(--dark-bg-tertiary);
+  border-radius: var(--bs-border-radius);
+}
+
+.progress-bar {
+  background-color: var(--atom-green);
+}
+
+/* Breadcrumb Overrides */
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+}
+
+.breadcrumb-item {
+  color: var(--bs-body-color);
+}
+
+.breadcrumb-item.active {
+  color: var(--atom-green);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--text-dark-muted);
+}
+
+/* Nav Tabs Overrides */
+.nav-tabs {
+  border-bottom-color: var(--bs-border-color);
+}
+
+.nav-tabs .nav-link {
+  color: var(--bs-body-color);
+  border: 1px solid transparent;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--atom-green);
+  border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--atom-green);
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--bs-border-color) var(--bs-border-color) var(--dark-bg-secondary);
+}
+
+/* Nav Pills Overrides */
+.nav-pills .nav-link {
+  color: var(--bs-body-color);
+}
+
+.nav-pills .nav-link:hover {
+  color: var(--atom-green);
+  background-color: var(--dark-bg-tertiary);
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--atom-green);
+  color: white;
+}
+
+/* Accordion Overrides */
+.accordion-item {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--bs-border-color);
+}
+
+.accordion-button {
+  background-color: var(--dark-bg-tertiary);
+  color: var(--bs-emphasis-color);
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--dark-bg-tertiary);
+  color: var(--atom-green);
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  border-color: var(--atom-green);
+  box-shadow: 0 0 0 3px rgba(95, 176, 75, 0.25);
+}
+
+.accordion-button::after {
+  filter: invert(1) brightness(2);
+}
+
+.accordion-body {
+  background-color: var(--dark-bg-secondary);
+  color: var(--bs-body-color);
+}
+
+/* Toast Overrides */
+.toast {
+  background-color: var(--dark-bg-secondary);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.toast-header {
+  background-color: var(--dark-bg-tertiary);
+  border-bottom: 1px solid var(--bs-border-color);
+  color: var(--bs-emphasis-color);
+}
+
+/* Tooltip Overrides */
+.tooltip-inner {
+  background-color: var(--dark-bg-elevated);
+  color: var(--bs-emphasis-color);
+  border: 1px solid var(--bs-border-color);
+}
+
+.tooltip .tooltip-arrow::before {
+  border-top-color: var(--dark-bg-elevated);
+}
+
+/* Popover Overrides */
+.popover {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--bs-border-color);
+}
+
+.popover-header {
+  background-color: var(--dark-bg-tertiary);
+  border-bottom-color: var(--bs-border-color);
+  color: var(--bs-emphasis-color);
+}
+
+.popover-body {
+  color: var(--bs-body-color);
+}
+
+/* Offcanvas Overrides */
+.offcanvas {
+  background-color: var(--dark-bg-secondary);
+  color: var(--bs-body-color);
+}
+
+.offcanvas-header {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.offcanvas-title {
+  color: var(--bs-emphasis-color);
+}
+
+/* Close Button Override */
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.8;
+}
+
+.btn-close:hover {
+  opacity: 1;
+}
+
+/* Form Validation Overrides */
+.was-validated .form-control:valid,
+.form-control.is-valid {
+  border-color: var(--bs-form-valid-border-color);
+}
+
+.was-validated .form-control:valid:focus,
+.form-control.is-valid:focus {
+  border-color: var(--bs-form-valid-border-color);
+  box-shadow: 0 0 0 3px rgba(80, 250, 123, 0.25);
+}
+
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.was-validated .form-control:invalid:focus,
+.form-control.is-invalid:focus {
+  border-color: var(--bs-form-invalid-border-color);
+  box-shadow: 0 0 0 3px rgba(255, 85, 85, 0.25);
+}
+
+.valid-feedback {
+  color: var(--bs-form-valid-color);
+}
+
+.invalid-feedback {
+  color: var(--bs-form-invalid-color);
+}
+
+/* HR Override */
+hr {
+  border-color: var(--bs-border-color);
+  opacity: 1;
+}
+
+/* Text Color Utilities Override */
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-body {
+  color: var(--bs-body-color) !important;
+}
+
+.text-emphasis {
+  color: var(--bs-emphasis-color) !important;
+}
+
+/* Background Utilities Override */
+.bg-body {
+  background-color: var(--bs-body-bg) !important;
+}
+
+.bg-light {
+  background-color: var(--dark-bg-tertiary) !important;
+}
+
+.bg-dark {
+  background-color: var(--dark-bg-primary) !important;
+}

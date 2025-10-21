@@ -150,19 +150,6 @@ Comprehensive search results page:
 - Loading states
 - Empty states with helpful messages
 
-#### PopularArticles (`src/components/PopularArticles.js`)
-Sidebar widget showing trending content:
-- Numbered list (1-10)
-- Gold/Silver/Bronze styling for top 3
-- Displays:
-  - Article title (linked)
-  - Category badge
-  - View count
-  - Comment count
-- Scrollable list (max height: 600px)
-- Customizable period (day/week/month)
-- Loading and error states
-
 #### RelatedArticles (`src/components/RelatedArticles.js`)
 Already existed, displays:
 - 4 related articles in grid
@@ -183,7 +170,6 @@ Already existed, displays:
 #### HomePage (`src/pages/HomePage.js`)
 - Two-column layout:
   - Left: Main content (articles, filters)
-  - Right: Sidebar with PopularArticles widget
 - Responsive: Sidebar moves below on mobile
 - Sticky sidebar on desktop
 
@@ -223,7 +209,6 @@ Highlighted search matches:
     "newest": "Nyaste",
     "popularity": "Populäritet",
     "relatedArticles": "Relaterade artiklar",
-    "popularArticles": "Populära artiklar",
     ...
   }
 }
@@ -243,7 +228,6 @@ getSearchHistory()
 getPopularSearches()
 
 // Popular & Related
-getPopularArticles(period, limit)
 getRelatedArticles(slug, limit)
 ```
 

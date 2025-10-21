@@ -12,7 +12,6 @@ const {
   getArticlesByCategory,
   searchArticles,
   getRelatedArticles,
-  getPopularArticles
 } = require('../controllers/articleController');
 
 // Configure multer for image uploads
@@ -87,9 +86,6 @@ router.post('/upload', upload.single('image'), async (req, res) => {
 
 // Search route (must be before :slug route to avoid conflicts)
 router.get('/search', searchArticles);
-
-// Popular articles route (must be before :slug route to avoid conflicts)
-router.get('/popular', getPopularArticles);
 
 // Tags route (must be before :slug route to avoid conflicts)
 router.get('/tags', async (req, res) => {

@@ -24,7 +24,6 @@ const RegisterPage = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear error for this field when user starts typing
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: '' });
     }
@@ -33,52 +32,33 @@ const RegisterPage = () => {
 
   const validate = () => {
     const newErrors = {};
+    if (!username) newErrors.username = t('auth.errors.usernameRequired');
+    else if (username.length < 3) newErrors.username = t('auth.errors.usernameTooShort');
+    else if (username.length > 20) newErrors.username = t('auth.errors.usernameTooLong');
 
-    if (!username) {
-      newErrors.username = t('auth.errors.usernameRequired');
-    } else if (username.length < 3) {
-      newErrors.username = t('auth.errors.usernameTooShort');
-    } else if (username.length > 20) {
-      newErrors.username = t('auth.errors.usernameTooLong');
-    }
+    if (!email) newErrors.email = t('auth.errors.emailRequired');
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = t('auth.errors.invalidEmail');
 
-    if (!email) {
-      newErrors.email = t('auth.errors.emailRequired');
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = t('auth.errors.invalidEmail');
-    }
+    if (!password) newErrors.password = t('auth.errors.passwordRequired');
+    else if (password.length < 6) newErrors.password = t('auth.errors.passwordTooShort');
 
-    if (!password) {
-      newErrors.password = t('auth.errors.passwordRequired');
-    } else if (password.length < 6) {
-      newErrors.password = t('auth.errors.passwordTooShort');
-    }
-
-    if (!confirmPassword) {
-      newErrors.confirmPassword = t('auth.errors.passwordRequired');
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = t('auth.errors.passwordMismatch');
-    }
+    if (!confirmPassword) newErrors.confirmPassword = t('auth.errors.passwordRequired');
+    else if (password !== confirmPassword) newErrors.confirmPassword = t('auth.errors.passwordMismatch');
 
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
     setLoading(true);
     setApiError('');
-
     const result = await register(username, email, password);
-
     if (result.success) {
-      // Auto-login after registration - redirect to home
       navigate('/', { replace: true });
     } else {
       setApiError(result.message || t('auth.errors.registrationFailed'));
@@ -93,7 +73,7 @@ const RegisterPage = () => {
           <Card className="register-card">
             <Card.Body>
               <h2 className="text-center mb-4">{t('auth.registerTitle')}</h2>
-              
+
               {apiError && <Alert variant="danger">{apiError}</Alert>}
 
               <Form onSubmit={handleSubmit}>
@@ -162,7 +142,7 @@ const RegisterPage = () => {
                 </Form.Group>
 
                 <Button
-                  variant="success"
+                  variant="primary"
                   type="submit"
                   className="w-100 register-button"
                   disabled={loading}
@@ -173,7 +153,7 @@ const RegisterPage = () => {
 
               <div className="text-center mt-3">
                 <p className="mb-0">
-                  {t('auth.hasAccount')}{' '}
+                  {t('auth.haveAccount')}{' '}
                   <Link to="/login" className="login-link">
                     {t('auth.loginLink')}
                   </Link>
