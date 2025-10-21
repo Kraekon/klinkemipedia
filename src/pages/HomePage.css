@@ -1,21 +1,13 @@
-/* Home Page Styles */
-
-.home-page {
-  min-height: calc(100vh - 80px);
+.search-container {
+  margin-top: 50px;
 }
 
-.display-4 {
-  font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  margin-bottom: 1rem;
+.search-container .input-group-lg .form-control {
+  font-size: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem 0 0 0.5rem;
 }
 
-.lead {
-  font-size: 1.125rem;
-  line-height: 1.6;
-}
-
-/* Articles Grid */
-.articles-grid {
-  margin-top: 2rem;
+.search-container .input-group-lg .btn {
+  border-radius: 0 0.5rem 0.5rem 0;
 }

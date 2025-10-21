@@ -21,7 +21,7 @@ const Navbar = () => {
         <BSNavbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">{t('navigation.home')}</Nav.Link>
-            <Nav.Link as={Link} to="/">{t('navigation.articles')}</Nav.Link>
+            <Nav.Link as={Link} to="/articles">{t('navigation.articles')}</Nav.Link>
             <Nav.Link as={Link} to="/tags">{t('navigation.tags')}</Nav.Link>
             <Nav.Link as={Link} to="/">{t('navigation.about')}</Nav.Link>
           </Nav>

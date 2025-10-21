@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
+import ArticlesPage from './pages/ArticlesPage';
 import ArticlePage from './pages/ArticlePage';
 import SearchPage from './pages/SearchPage';
 import LoginPage from './pages/LoginPage';
@@ -104,10 +105,10 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/admin/categories" element={
-  <ProtectedRoute requireAdmin={true}>
-    <AdminCategoryManagement />
-  </ProtectedRoute>
-} />
+              <ProtectedRoute requireAdmin={true}>
+                <AdminCategoryManagement />
+              </ProtectedRoute>
+            } />
 
             {/* Main site routes (with main navbar) */}
             <Route path="/*" element={
@@ -116,6 +117,7 @@ function App() {
                 <main className="container mt-4">
                   <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/articles" element={<ArticlesPage />} />
                     <Route path="/article/:slug" element={<ArticlePage />} />
                     <Route path="/search" element={<SearchPage />} />
                     <Route path="/tags" element={<TagBrowsePage />} />
