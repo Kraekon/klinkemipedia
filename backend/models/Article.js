@@ -55,17 +55,8 @@ const ArticleSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: [
-        'Electrolytes',
-        'Liver Function',
-        'Kidney Function',
-        'Cardiac Markers',
-        'Hormones',
-        'Enzymes',
-        'Hematology',
-        'Lipid Panel',
-        'Other'
-      ]
+      // REMOVED THE ENUM - Now accepts any category name
+      trim: true
     },
     tags: [{
       type: String,

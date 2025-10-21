@@ -1,338 +1,302 @@
-/* Tiptap Editor Container */
-.tiptap-editor {
-  border: 1px solid #dee2e6;
-  border-radius: 0.5rem;
-  background: white;
+/* Notion-like Editor Container */
+.tiptap-editor-notion {
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  background: #ffffff;
   overflow: hidden;
+  transition: border-color 0.2s ease;
 }
 
-/* Toolbar Styles */
-.tiptap-toolbar {
+.tiptap-editor-notion:focus-within {
+  border-color: #2383e2;
+  box-shadow: 0 0 0 1px #2383e2;
+}
+
+/* Notion-style Toolbar */
+.tiptap-toolbar-notion {
   display: flex;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  border-bottom: 1px solid #dee2e6;
-  background: #f8f9fa;
+  gap: 2px;
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fafafa;
   flex-wrap: wrap;
   align-items: center;
 }
 
-.tiptap-toolbar button {
-  padding: 0.375rem 0.625rem;
-  border: 1px solid #dee2e6;
-  background: white;
-  border-radius: 0.25rem;
+.tiptap-toolbar-notion button {
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 500;
-  color: #495057;
-  transition: all 0.15s ease-in-out;
-  white-space: nowrap;
+  color: #37352f;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
 }
 
-.tiptap-toolbar button:hover:not(:disabled) {
-  background: #e9ecef;
-  border-color: #0d6efd;
+.tiptap-toolbar-notion button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06);
 }
 
-.tiptap-toolbar button.is-active {
-  background: #0d6efd;
-  color: white;
-  border-color: #0d6efd;
+.tiptap-toolbar-notion button.is-active {
+  background: #e8e8e7;
+  color: #2383e2;
 }
 
-.tiptap-toolbar button:disabled {
-  opacity: 0.5;
+.tiptap-toolbar-notion button:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
 .toolbar-divider {
   width: 1px;
-  height: 24px;
-  background: #dee2e6;
-  margin: 0 0.25rem;
+  height: 18px;
+  background: #e0e0e0;
+  margin: 0 4px;
 }
 
-/* Dropdown Menu for Tables */
-.dropdown-container {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.25rem;
-  background: white;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  min-width: 180px;
-  padding: 0.25rem 0;
-}
-
-.dropdown-menu button {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: none;
-  background: none;
-  text-align: left;
-  font-size: 0.875rem;
-  color: #495057;
-  cursor: pointer;
-  transition: background-color 0.15s ease-in-out;
-}
-
-.dropdown-menu button:hover:not(:disabled) {
-  background: #e9ecef;
-}
-
-.dropdown-menu button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Editor Content Area */
-.ProseMirror {
-  padding: 1rem;
-  min-height: 400px;
+/* Notion-style Editor Content */
+.editor-content-notion .ProseMirror {
+  padding: 60px 96px;
+  min-height: 500px;
+  max-width: 100%;
   outline: none;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #212529;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #37352f;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-/* Placeholder */
-.ProseMirror p.is-editor-empty:first-child::before {
+/* Placeholder - Notion style */
+.editor-content-notion .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: #adb5bd;
+  color: rgba(55, 53, 47, 0.4);
   pointer-events: none;
   height: 0;
+  font-size: 16px;
 }
 
-/* Headings */
-.ProseMirror h1 {
-  font-size: 2rem;
+/* Headings - Notion style */
+.editor-content-notion .ProseMirror h1 {
+  font-size: 40px;
   font-weight: 700;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-  color: #212529;
+  line-height: 1.2;
+  margin-top: 2em;
+  margin-bottom: 4px;
+  color: #37352f;
 }
 
-.ProseMirror h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-top: 1.25rem;
-  margin-bottom: 0.75rem;
-  color: #212529;
+.editor-content-notion .ProseMirror h1:first-child {
+  margin-top: 0;
 }
 
-.ProseMirror h3 {
-  font-size: 1.25rem;
+.editor-content-notion .ProseMirror h2 {
+  font-size: 30px;
   font-weight: 600;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: #212529;
+  line-height: 1.3;
+  margin-top: 1.4em;
+  margin-bottom: 1px;
+  color: #37352f;
+}
+
+.editor-content-notion .ProseMirror h3 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1em;
+  margin-bottom: 1px;
+  color: #37352f;
 }
 
 /* Paragraphs */
-.ProseMirror p {
-  margin-bottom: 1rem;
+.editor-content-notion .ProseMirror p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
-/* Lists */
-.ProseMirror ul,
-.ProseMirror ol {
-  padding-left: 1.5rem;
-  margin-bottom: 1rem;
+/* Lists - Notion style */
+.editor-content-notion .ProseMirror ul,
+.editor-content-notion .ProseMirror ol {
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
-.ProseMirror ul li {
+.editor-content-notion .ProseMirror ul li {
   list-style-type: disc;
+  padding-left: 0.1em;
 }
 
-.ProseMirror ol li {
+.editor-content-notion .ProseMirror ol li {
   list-style-type: decimal;
+  padding-left: 0.1em;
 }
 
-.ProseMirror li {
-  margin-bottom: 0.25rem;
+.editor-content-notion .ProseMirror li {
+  margin: 0.25em 0;
 }
 
-.ProseMirror ul ul,
-.ProseMirror ol ol,
-.ProseMirror ul ol,
-.ProseMirror ol ul {
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+/* Code - Notion style */
+.editor-content-notion .ProseMirror code {
+  background: rgba(135, 131, 120, 0.15);
+  color: #eb5757;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 85%;
+  line-height: normal;
 }
 
-/* Code */
-.ProseMirror code {
-  background: #f8f9fa;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-family: 'Courier New', monospace;
-  font-size: 0.875em;
-  color: #e83e8c;
-}
-
-/* Code Block */
-.ProseMirror pre {
-  background: #2d2d2d;
-  color: #f8f8f2;
-  padding: 1rem;
-  border-radius: 0.5rem;
+/* Code Block - Notion style */
+.editor-content-notion .ProseMirror pre {
+  background: #2f3437;
+  color: #ffffff;
+  padding: 16px;
+  border-radius: 3px;
   overflow-x: auto;
-  margin: 1rem 0;
-  font-family: 'Courier New', monospace;
-  font-size: 0.875rem;
+  margin: 8px 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
   line-height: 1.5;
 }
 
-.ProseMirror pre code {
+.editor-content-notion .ProseMirror pre code {
   background: none;
   padding: 0;
   color: inherit;
   border-radius: 0;
+  font-size: inherit;
 }
 
-/* Blockquote */
-.ProseMirror blockquote {
-  border-left: 4px solid #0d6efd;
-  padding-left: 1rem;
+/* Blockquote - Notion style */
+.editor-content-notion .ProseMirror blockquote {
+  border-left: 3px solid #37352f;
+  padding-left: 14px;
   margin-left: 0;
   margin-right: 0;
-  margin-bottom: 1rem;
-  color: #6c757d;
-  font-style: italic;
+  margin: 8px 0;
+  color: #37352f;
+  font-size: 16px;
 }
 
 /* Horizontal Rule */
-.ProseMirror hr {
+.editor-content-notion .ProseMirror hr {
   border: none;
-  border-top: 2px solid #dee2e6;
-  margin: 2rem 0;
+  border-top: 1px solid rgba(55, 53, 47, 0.16);
+  margin: 16px 0;
 }
 
-/* Table Styles */
-.ProseMirror table,
-.tiptap-table {
+/* Table - Notion style */
+.editor-content-notion .ProseMirror table {
   border-collapse: collapse;
   table-layout: fixed;
   width: 100%;
-  margin: 1rem 0;
+  margin: 16px 0;
   overflow: hidden;
 }
 
-.ProseMirror table td,
-.ProseMirror table th,
-.tiptap-table td,
-.tiptap-table th {
+.editor-content-notion .ProseMirror table td,
+.editor-content-notion .ProseMirror table th {
   min-width: 1em;
-  border: 2px solid #ced4da;
-  padding: 0.5rem;
+  border: 1px solid rgba(55, 53, 47, 0.16);
+  padding: 8px 9px;
   vertical-align: top;
   box-sizing: border-box;
   position: relative;
 }
 
-.ProseMirror table th,
-.tiptap-table th {
-  font-weight: bold;
+.editor-content-notion .ProseMirror table th {
+  font-weight: 600;
   text-align: left;
-  background-color: #f8f9fa;
+  background-color: rgba(242, 241, 238, 0.6);
 }
 
-/* Selected cell */
-.ProseMirror .selectedCell,
-.tiptap-table .selectedCell {
-  background-color: #e3f2fd;
+.editor-content-notion .ProseMirror .selectedCell {
+  background-color: rgba(35, 131, 226, 0.14);
 }
 
-/* Table cell resize handle */
-.ProseMirror table .column-resize-handle,
-.tiptap-table .column-resize-handle {
-  position: absolute;
-  right: -2px;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background-color: #0d6efd;
-  cursor: col-resize;
-}
-
-/* Images */
-.ProseMirror img {
+/* Images - Notion style */
+.editor-content-notion .ProseMirror img {
   max-width: 100%;
   height: auto;
   display: block;
-  margin: 1rem auto;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin: 16px auto;
+  border-radius: 3px;
 }
 
-.ProseMirror img.ProseMirror-selectednode {
-  outline: 3px solid #0d6efd;
+.editor-content-notion .ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid #2383e2;
+  outline-offset: 2px;
 }
 
-/* Links */
-.ProseMirror a {
-  color: #0d6efd;
-  text-decoration: underline;
+/* Links - Notion style */
+.editor-content-notion .ProseMirror a {
+  color: #2383e2;
+  text-decoration: none;
+  border-bottom: 0.05em solid rgba(55, 53, 47, 0.25);
   cursor: pointer;
+  transition: border-color 0.2s ease;
 }
 
-.ProseMirror a:hover {
-  color: #0b5ed7;
+.editor-content-notion .ProseMirror a:hover {
+  border-bottom-color: rgba(55, 53, 47, 0.5);
 }
 
 /* Focus styles */
-.ProseMirror:focus {
+.editor-content-notion .ProseMirror:focus {
   outline: none;
 }
 
-/* Selection */
-.ProseMirror ::selection {
-  background: rgba(13, 110, 253, 0.2);
+/* Selection - Notion style */
+.editor-content-notion .ProseMirror ::selection {
+  background: rgba(35, 131, 226, 0.28);
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .tiptap-toolbar {
-    padding: 0.375rem;
-    gap: 0.125rem;
+  .editor-content-notion .ProseMirror {
+    padding: 24px 16px;
+    min-height: 400px;
+    font-size: 15px;
   }
 
-  .tiptap-toolbar button {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+  .tiptap-toolbar-notion {
+    padding: 6px;
+    gap: 1px;
+  }
+
+  .tiptap-toolbar-notion button {
+    padding: 5px 8px;
+    font-size: 13px;
+    min-width: 26px;
+    height: 26px;
   }
 
   .toolbar-divider {
     display: none;
   }
 
-  .ProseMirror {
-    padding: 0.75rem;
-    min-height: 300px;
-    font-size: 0.9375rem;
+  .editor-content-notion .ProseMirror h1 {
+    font-size: 32px;
   }
 
-  .ProseMirror table {
-    font-size: 0.875rem;
+  .editor-content-notion .ProseMirror h2 {
+    font-size: 24px;
   }
 
-  .ProseMirror table td,
-  .ProseMirror table th {
-    padding: 6px 8px;
+  .editor-content-notion .ProseMirror h3 {
+    font-size: 20px;
   }
 }
 
-/* Link Dialog Styles */
+/* Form control styles for modals */
 .form-group {
   margin-bottom: 1rem;
 }
@@ -341,27 +305,27 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #495057;
+  color: #37352f;
 }
 
 .form-control {
   display: block;
   width: 100%;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
+  padding: 8px 12px;
+  font-size: 15px;
   line-height: 1.5;
-  color: #495057;
+  color: #37352f;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .form-control:focus {
-  color: #495057;
+  color: #37352f;
   background-color: #fff;
-  border-color: #0d6efd;
+  border-color: #2383e2;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  box-shadow: 0 0 0 1px #2383e2;
 }

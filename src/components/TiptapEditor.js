@@ -50,7 +50,6 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
     },
   });
 
-  // Update editor content when value prop changes
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value || '');
@@ -83,14 +82,14 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
   };
 
   return (
-    <div className="tiptap-editor">
-      <div className="tiptap-toolbar">
+    <div className="tiptap-editor-notion">
+      <div className="tiptap-toolbar-notion">
         {/* Text Formatting */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={editor.isActive('bold') ? 'is-active' : ''}
-          title="Bold (Ctrl+B)"
+          title="Bold"
         >
           <strong>B</strong>
         </button>
@@ -98,7 +97,7 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={editor.isActive('italic') ? 'is-active' : ''}
-          title="Italic (Ctrl+I)"
+          title="Italic"
         >
           <em>I</em>
         </button>
@@ -114,7 +113,7 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           type="button"
           onClick={() => editor.chain().focus().toggleCode().run()}
           className={editor.isActive('code') ? 'is-active' : ''}
-          title="Inline Code"
+          title="Code"
         >
           {'</>'}
         </button>
@@ -169,112 +168,26 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
 
         <div className="toolbar-divider"></div>
 
-        {/* Table Controls */}
-        <button
-          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-          className={editor.isActive('table') ? 'is-active' : ''}
-          type="button"
-          title="Insert Table"
-        >
-          📊 Table
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().addColumnBefore().run()}
-          disabled={!editor.can().addColumnBefore()}
-          type="button"
-          title="Add Column Before"
-        >
-          ← Col
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().addColumnAfter().run()}
-          disabled={!editor.can().addColumnAfter()}
-          type="button"
-          title="Add Column After"
-        >
-          Col →
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().deleteColumn().run()}
-          disabled={!editor.can().deleteColumn()}
-          type="button"
-          title="Delete Column"
-        >
-          🗑️ Col
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().addRowBefore().run()}
-          disabled={!editor.can().addRowBefore()}
-          type="button"
-          title="Add Row Before"
-        >
-          ↑ Row
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().addRowAfter().run()}
-          disabled={!editor.can().addRowAfter()}
-          type="button"
-          title="Add Row After"
-        >
-          Row ↓
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().deleteRow().run()}
-          disabled={!editor.can().deleteRow()}
-          type="button"
-          title="Delete Row"
-        >
-          🗑️ Row
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().deleteTable().run()}
-          disabled={!editor.can().deleteTable()}
-          type="button"
-          title="Delete Table"
-        >
-          🗑️ Table
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().toggleHeaderRow().run()}
-          disabled={!editor.can().toggleHeaderRow()}
-          type="button"
-          title="Toggle Header Row"
-        >
-          Header
-        </button>
-
-        <div className="toolbar-divider"></div>
-
-        {/* Link */}
+        {/* Link & Image */}
         <button
           type="button"
           onClick={toggleLink}
           className={editor.isActive('link') ? 'is-active' : ''}
           title="Link"
         >
-          🔗 Link
+          🔗
         </button>
-
-        {/* Image */}
         <button
           type="button"
           onClick={() => setShowImageModal(true)}
-          title="Insert Image"
+          title="Image"
         >
-          📷 Image
+          📷
         </button>
 
         <div className="toolbar-divider"></div>
 
-        {/* Code Block */}
+        {/* Code Block & Quote */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
@@ -283,48 +196,29 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
         >
           {'{ }'}
         </button>
-
-        {/* Blockquote */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={editor.isActive('blockquote') ? 'is-active' : ''}
-          title="Blockquote"
+          title="Quote"
         >
           " "
         </button>
 
-        {/* Horizontal Rule */}
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          title="Horizontal Rule"
-        >
-          ―
-        </button>
-
         <div className="toolbar-divider"></div>
 
-        {/* Undo/Redo */}
+        {/* Table */}
         <button
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          className={editor.isActive('table') ? 'is-active' : ''}
           type="button"
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-          title="Undo (Ctrl+Z)"
+          title="Table"
         >
-          ↶
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-          title="Redo (Ctrl+Shift+Z)"
-        >
-          ↷
+          ⊞
         </button>
       </div>
 
-      <EditorContent editor={editor} />
+      <EditorContent editor={editor} className="editor-content-notion" />
 
       {/* Image Upload Modal */}
       <Modal 
@@ -369,6 +263,7 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
                   handleSetLink();
                 }
               }}
+              autoFocus
             />
           </div>
         </Modal.Body>
@@ -397,7 +292,7 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
             className="btn btn-primary"
             onClick={handleSetLink}
           >
-            Set Link
+            Insert
           </button>
         </Modal.Footer>
       </Modal>

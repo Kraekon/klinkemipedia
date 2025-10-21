@@ -23,6 +23,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import AdminCategoryManagement from './pages/AdminCategoryManagement';
+import AboutPage from './pages/AboutPage';
 import './App.css';
 
 const NotFoundPage = () => {
@@ -123,6 +124,7 @@ function App() {
                     <Route path="/tags" element={<TagBrowsePage />} />
                     <Route path="/tag/:tagname" element={<TagArticlesPage />} />
                     <Route path="/profile/:username" element={<ProfilePage />} />
+                    <Route path="/about" element={<AboutPage />} />
                     <Route path="/profile/edit" element={
                       <ProtectedRoute>
                         <EditProfilePage />

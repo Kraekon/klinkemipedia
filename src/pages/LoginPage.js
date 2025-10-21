@@ -114,7 +114,7 @@ const LoginPage = () => {
                 </Form.Group>
 
                 <Button
-                  variant="success"
+                  variant="primary"
                   type="submit"
                   className="w-100 login-button"
                   disabled={loading}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert, ListGroup, Badge, Modal } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Container, Row, Col, Card, Form, Button, Alert, Table, Modal, Badge, Spinner } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import AdminNavbar from '../components/AdminNavbar';
 import { getTagsWithCounts, mergeTags, deleteTag } from '../services/api';
@@ -12,22 +12,21 @@ const AdminTagManagement = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   
-  // Merge tags state
-  const [showMergeModal, setShowMergeModal] = useState(false);
-  const [sourceTags, setSourceTags] = useState([]);
-  const [targetTag, setTargetTag] = useState('');
-  const [merging, setMerging] = useState(false);
+  // Edit tag state (using merge functionality to rename)
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [tagToEdit, setTagToEdit] = useState(null);
+  const [editedTagName, setEditedTagName] = useState('');
+  const [editing, setEditing] = useState(false);
   
   // Delete tag state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tagToDelete, setTagToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  
+  // Search/filter state
+  const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    fetchTags();
-  }, []);
-
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -35,36 +34,53 @@ const AdminTagManagement = () => {
       setTags(response.data || []);
     } catch (err) {
       console.error('Error fetching tags:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load tags');
+      setError(err.response?.data?.message || err.message || t('tags.loadFailed'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
-  const handleMergeTags = async () => {
-    if (sourceTags.length === 0) {
-      setError(t('tags.selectSourceTags'));
+  useEffect(() => {
+    fetchTags();
+  }, [fetchTags]);
+
+  const handleEditTag = async () => {
+    if (!editedTagName.trim()) {
+      setError(t('tags.tagNameRequired'));
       return;
     }
-    if (!targetTag) {
-      setError(t('tags.selectTargetTag'));
-      return;
+
+    if (!tagToEdit) return;
+
+    // Check if new name already exists (case insensitive)
+    const newNameLower = editedTagName.trim().toLowerCase();
+    const oldNameLower = tagToEdit.tag.toLowerCase();
+    
+    if (newNameLower !== oldNameLower) {
+      const tagExists = tags.some(tag => tag.tag.toLowerCase() === newNameLower);
+      if (tagExists) {
+        setError(t('tags.tagExists'));
+        return;
+      }
     }
 
     try {
-      setMerging(true);
+      setEditing(true);
       setError(null);
-      await mergeTags(sourceTags, targetTag);
-      setSuccessMessage(t('tags.tagsMerged'));
-      setShowMergeModal(false);
-      setSourceTags([]);
-      setTargetTag('');
+      
+      // Use merge functionality to rename the tag
+      await mergeTags([tagToEdit.tag], editedTagName.trim());
+      
+      setSuccessMessage(t('tags.tagUpdated'));
+      setShowEditModal(false);
+      setTagToEdit(null);
+      setEditedTagName('');
       fetchTags();
     } catch (err) {
-      console.error('Error merging tags:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to merge tags');
+      console.error('Error editing tag:', err);
+      setError(err.response?.data?.message || err.message || t('tags.saveFailed'));
     } finally {
-      setMerging(false);
+      setEditing(false);
     }
   };
 
@@ -81,183 +97,224 @@ const AdminTagManagement = () => {
       fetchTags();
     } catch (err) {
       console.error('Error deleting tag:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to delete tag');
+      setError(err.response?.data?.message || err.message || t('tags.deleteFailed'));
     } finally {
       setDeleting(false);
     }
   };
 
-  const toggleSourceTag = (tag) => {
-    if (sourceTags.includes(tag)) {
-      setSourceTags(sourceTags.filter(t => t !== tag));
-    } else {
-      setSourceTags([...sourceTags, tag]);
-    }
+  const openEditModal = (tagObj) => {
+    setTagToEdit(tagObj);
+    setEditedTagName(tagObj.tag);
+    setShowEditModal(true);
   };
+
+  const openDeleteModal = (tagObj) => {
+    setTagToDelete(tagObj);
+    setShowDeleteModal(true);
+  };
+
+  // Filter tags based on search term
+  const filteredTags = tags.filter(tag => 
+    tag.tag.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
       <AdminNavbar />
-      <Container fluid className="mt-4">
-        <Row>
+      <Container className="mt-4">
+        <Row className="mb-4">
           <Col>
-            <h1 className="mb-4">{t('tags.tagManagement')}</h1>
-
-            {error && (
-              <Alert variant="danger" onClose={() => setError(null)} dismissible>
-                {error}
-              </Alert>
-            )}
-
-            {successMessage && (
-              <Alert variant="success" onClose={() => setSuccessMessage('')} dismissible>
-                {successMessage}
-              </Alert>
-            )}
-
-            <Row>
-              <Col md={8}>
-                <Card>
-                  <Card.Header>
-                    <h5>{t('tags.allTags')}</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    {loading ? (
-                      <p>{t('common.loading')}</p>
-                    ) : tags.length === 0 ? (
-                      <p className="text-muted">{t('tags.noTags')}</p>
-                    ) : (
-                      <ListGroup>
-                        {tags.map((tagObj, index) => (
-                          <ListGroup.Item
-                            key={index}
-                            className="d-flex justify-content-between align-items-center"
-                          >
-                            <div>
-                              <strong>{tagObj.tag}</strong>
-                              <Badge bg="primary" className="ms-2">
-                                {t('tags.tagCount', { count: tagObj.count })}
-                              </Badge>
-                            </div>
-                            <Button
-                              variant="outline-danger"
-                              size="sm"
-                              onClick={() => {
-                                setTagToDelete(tagObj);
-                                setShowDeleteModal(true);
-                              }}
-                            >
-                              {t('common.delete')}
-                            </Button>
-                          </ListGroup.Item>
-                        ))}
-                      </ListGroup>
-                    )}
-                  </Card.Body>
-                </Card>
-              </Col>
-
-              <Col md={4}>
-                <Card className="mb-3">
-                  <Card.Header>
-                    <h5>{t('tags.mergeTags')}</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <p className="text-muted small">
-                      {t('tags.sourceTagsHelp')}
-                    </p>
-                    <Button
-                      variant="primary"
-                      onClick={() => setShowMergeModal(true)}
-                      disabled={tags.length === 0}
-                      className="w-100"
-                    >
-                      {t('tags.mergeTags')}
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+            <h1>{t('tags.tagManagement')}</h1>
+            <p className="text-muted">
+              {t('tags.allTags')}: {tags.length}
+            </p>
           </Col>
         </Row>
 
-        {/* Merge Tags Modal */}
-        <Modal show={showMergeModal} onHide={() => setShowMergeModal(false)} size="lg">
-          <Modal.Header closeButton>
-            <Modal.Title>{t('tags.mergeTags')}</Modal.Title>
+        {error && (
+          <Alert variant="danger" onClose={() => setError(null)} dismissible>
+            {error}
+          </Alert>
+        )}
+
+        {successMessage && (
+          <Alert variant="success" onClose={() => setSuccessMessage('')} dismissible>
+            {successMessage}
+          </Alert>
+        )}
+
+        <Row>
+          <Col>
+            <Card>
+              <Card.Header className="bg-primary text-white">
+                <Row className="align-items-center">
+                  <Col md={6}>
+                    <h5 className="mb-0">
+                      {t('tags.allTags')} ({filteredTags.length})
+                    </h5>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Control
+                      type="text"
+                      placeholder={t('tags.searchTags')}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="bg-white"
+                    />
+                  </Col>
+                </Row>
+              </Card.Header>
+              <Card.Body className="p-0">
+                {loading ? (
+                  <div className="text-center p-5">
+                    <Spinner animation="border" variant="primary" />
+                    <p className="mt-3 text-muted">{t('common.loading')}</p>
+                  </div>
+                ) : filteredTags.length === 0 ? (
+                  <div className="text-center p-5">
+                    <p className="text-muted">
+                      {searchTerm ? t('tags.noTagsFound') : t('tags.noTags')}
+                    </p>
+                  </div>
+                ) : (
+                  <Table responsive hover className="mb-0">
+                    <thead className="table-light">
+                      <tr>
+                        <th style={{ width: '5%' }}>#</th>
+                        <th style={{ width: '50%' }}>{t('tags.tagName')}</th>
+                        <th style={{ width: '20%' }} className="text-center">
+                          {t('tags.usageCount')}
+                        </th>
+                        <th style={{ width: '25%' }} className="text-end">
+                          {t('tags.actions')}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredTags.map((tagObj, index) => (
+                        <tr key={index}>
+                          <td className="text-muted">{index + 1}</td>
+                          <td>
+                            <strong>{tagObj.tag}</strong>
+                          </td>
+                          <td className="text-center">
+                            <Badge bg="primary" pill>
+                              {tagObj.count}
+                            </Badge>
+                          </td>
+                          <td className="text-end">
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              className="me-2"
+                              onClick={() => openEditModal(tagObj)}
+                            >
+                              {t('tags.edit')}
+                            </Button>
+                            <Button
+                              variant="outline-danger"
+                              size="sm"
+                              onClick={() => openDeleteModal(tagObj)}
+                            >
+                              {t('tags.delete')}
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                )}
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Edit Tag Modal */}
+        <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+          <Modal.Header closeButton className="bg-primary text-white">
+            <Modal.Title>{t('tags.editTag')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form.Group className="mb-3">
-              <Form.Label>{t('tags.selectSourceTags')}</Form.Label>
-              <p className="text-muted small">{t('tags.sourceTagsHelp')}</p>
-              <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                {tags.map((tagObj, index) => (
-                  <Form.Check
-                    key={index}
-                    type="checkbox"
-                    id={`source-tag-${index}`}
-                    label={`${tagObj.tag} (${tagObj.count})`}
-                    checked={sourceTags.includes(tagObj.tag)}
-                    onChange={() => toggleSourceTag(tagObj.tag)}
-                  />
-                ))}
-              </div>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>{t('tags.selectTargetTag')}</Form.Label>
-              <p className="text-muted small">{t('tags.targetTagHelp')}</p>
+            <Alert variant="info">
+              <small>
+                <strong>{t('tags.currentTag')}</strong> {tagToEdit?.tag}
+              </small>
+            </Alert>
+            <Form.Group>
+              <Form.Label>{t('tags.newTagName')}</Form.Label>
               <Form.Control
                 type="text"
-                placeholder={t('tags.enterTag')}
-                value={targetTag}
-                onChange={(e) => setTargetTag(e.target.value)}
+                placeholder={t('tags.tagNamePlaceholder')}
+                value={editedTagName}
+                onChange={(e) => setEditedTagName(e.target.value)}
+                autoFocus
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleEditTag();
+                  }
+                }}
               />
+              <Form.Text className="text-muted">
+                {t('tags.renameTagInfo', { count: tagToEdit?.count || 0 })}
+              </Form.Text>
             </Form.Group>
-
-            {sourceTags.length > 0 && targetTag && (
-              <Alert variant="info">
-                {sourceTags.join(', ')} → {targetTag}
-              </Alert>
-            )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowMergeModal(false)}>
-              {t('common.cancel')}
+            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+              {t('tags.cancel')}
             </Button>
             <Button
               variant="primary"
-              onClick={handleMergeTags}
-              disabled={merging || sourceTags.length === 0 || !targetTag}
+              onClick={handleEditTag}
+              disabled={editing || !editedTagName.trim() || editedTagName.trim() === tagToEdit?.tag}
             >
-              {merging ? t('common.loading') : t('tags.mergeTags')}
+              {editing ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  {t('tags.saving')}
+                </>
+              ) : (
+                t('tags.save')
+              )}
             </Button>
           </Modal.Footer>
         </Modal>
 
         {/* Delete Tag Modal */}
-        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-          <Modal.Header closeButton>
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+          <Modal.Header closeButton className="bg-danger text-white">
             <Modal.Title>{t('tags.confirmDeleteTag')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <Alert variant="warning">
+              <strong>{t('tags.deleteTagWarning')}</strong>
+            </Alert>
             <p>{t('tags.deleteTagDetail', { tag: tagToDelete?.tag })}</p>
-            {tagToDelete && (
-              <Alert variant="warning">
-                {t('tags.tagCount', { count: tagToDelete.count })}
+            {tagToDelete && tagToDelete.count > 0 && (
+              <Alert variant="info">
+                {t('tags.deleteTagUsage', { count: tagToDelete.count })}
               </Alert>
             )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-              {t('common.cancel')}
+              {t('tags.cancel')}
             </Button>
             <Button
               variant="danger"
               onClick={handleDeleteTag}
               disabled={deleting}
             >
-              {deleting ? t('common.loading') : t('common.delete')}
+              {deleting ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  {t('tags.deleting')}
+                </>
+              ) : (
+                t('tags.delete')
+              )}
             </Button>
           </Modal.Footer>
         </Modal>

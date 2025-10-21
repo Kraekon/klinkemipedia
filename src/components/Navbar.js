@@ -23,7 +23,7 @@ const Navbar = () => {
             <Nav.Link as={Link} to="/">{t('navigation.home')}</Nav.Link>
             <Nav.Link as={Link} to="/articles">{t('navigation.articles')}</Nav.Link>
             <Nav.Link as={Link} to="/tags">{t('navigation.tags')}</Nav.Link>
-            <Nav.Link as={Link} to="/">{t('navigation.about')}</Nav.Link>
+            <Nav.Link as={Link} to="/about">{t('navigation.about')}</Nav.Link>
           </Nav>
           <div className="ms-2">
             <LanguageSwitcher variant="navbar" />

@@ -28,7 +28,6 @@ const AdminArticleForm = () => {
     content: '',
     relatedTests: [],
     tags: [],
-    references: [''],
     status: 'draft',
     changeDescription: ''
   });
@@ -98,7 +97,6 @@ const AdminArticleForm = () => {
         content: article.content || '',
         relatedTests: article.relatedTests || [],
         tags: article.tags || [],
-        references: article.references?.length > 0 ? article.references : [''],
         status: article.status || 'draft',
         changeDescription: ''
       });
@@ -143,25 +141,6 @@ const AdminArticleForm = () => {
 
   const countWords = (text) => {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-  };
-
-  const handleReferenceChange = (index, value) => {
-    const newReferences = [...formData.references];
-    newReferences[index] = value;
-    setFormData(prev => ({ ...prev, references: newReferences }));
-  };
-
-  const addReference = () => {
-    setFormData(prev => ({ ...prev, references: [...prev.references, ''] }));
-  };
-
-  const removeReference = (index) => {
-    if (formData.references.length > 1) {
-      setFormData(prev => ({
-        ...prev,
-        references: prev.references.filter((_, i) => i !== index)
-      }));
-    }
   };
 
   const validateForm = () => {
@@ -240,8 +219,7 @@ const AdminArticleForm = () => {
 
       const submitData = {
         ...formData,
-        status: publishNow ? 'published' : formData.status,
-        references: formData.references.filter(ref => ref.trim())
+        status: publishNow ? 'published' : formData.status
       };
 
       if (isEditMode) {
@@ -467,41 +445,16 @@ const AdminArticleForm = () => {
             </Form.Group>
           </div>
 
-          {/* Tags and References */}
+          {/* Tags and Metadata */}
           <div className="form-section">
+            <h3>{t('article.metadata')}</h3>
+            
             <TagInput
               tags={formData.tags}
               onChange={(newTags) => handleInputChange('tags', newTags)}
               maxTags={10}
               availableTags={availableTags}
             />
-
-            <Form.Group className="mb-3">
-              <Form.Label>{t('article.references')}</Form.Label>
-              <div className="references-list">
-                {formData.references.map((ref, index) => (
-                  <div key={index} className="reference-item">
-                    <Form.Control
-                      type="text"
-                      value={ref}
-                      onChange={(e) => handleReferenceChange(index, e.target.value)}
-                      placeholder={`${t('article.referencePlaceholder')} ${index + 1}`}
-                    />
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => removeReference(index)}
-                      disabled={formData.references.length === 1}
-                    >
-                      ✕
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <Button variant="outline-primary" size="sm" onClick={addReference} className="mt-2">
-                + {t('article.addReference')}
-              </Button>
-            </Form.Group>
 
             {isEditMode && (
               <Form.Group className="mb-3">

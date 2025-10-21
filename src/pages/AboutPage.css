@@ -1,0 +1,9 @@
+.about-page {
+  min-height: 60vh;
+}
+
+.about-card {
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 8px;
+}

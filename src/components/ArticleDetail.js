@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { Card, Badge, Table, Button } from 'react-bootstrap';
+import { Card, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
-import { getImageUrl } from '../utils/imageUrl';
 import TagBadge from './TagBadge';
 import VersionHistory from './VersionHistory';
 import './ArticleDetail.css';
@@ -11,6 +9,7 @@ import './ArticleDetail.css';
 const ArticleDetail = ({ article }) => {
   const { t } = useTranslation();
   const [showVersionHistory, setShowVersionHistory] = useState(false);
+  
   return (
     <div className="article-detail-container">
       <div className="article-detail-header">
@@ -32,7 +31,7 @@ const ArticleDetail = ({ article }) => {
         <Card.Body>
           <h1 className="mb-3">{article.title}</h1>
           
-          <div className="article-tags">
+          <div className="article-tags mb-4">
             {article.category && (
               <Badge bg="primary" className="me-2">{article.category}</Badge>
             )}
@@ -42,79 +41,15 @@ const ArticleDetail = ({ article }) => {
           </div>
 
           {article.summary && (
-            <div className="article-summary-box">
+            <div className="article-summary-box mb-4">
               <h5>Summary</h5>
               <p className="mb-0">{article.summary}</p>
             </div>
           )}
 
-          <div className="mb-4">
-            <h5>Content</h5>
-            <div className="article-content">
-              <ReactMarkdown
-                components={{
-                  img: ({node, ...props}) => (
-                    <img
-                      {...props}
-                      src={getImageUrl(props.src)}
-                      alt={props.alt}
-                      style={{ maxWidth: '100%', height: 'auto' }}
-                    />
-                  )
-                }}
-              >
-                {article.content}
-              </ReactMarkdown>
-            </div>
+          <div className="article-content mb-4">
+            <div dangerouslySetInnerHTML={{ __html: article.content }} />
           </div>
-
-          {article.referenceRanges && article.referenceRanges.length > 0 && (
-            <div className="mb-4">
-              <h5>Reference Ranges</h5>
-              <Table striped bordered hover responsive className="reference-ranges-table">
-                <thead>
-                  <tr>
-                    <th>Parameter</th>
-                    <th>Range</th>
-                    <th>Unit</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {article.referenceRanges.map((range, index) => (
-                    <tr key={index}>
-                      <td>{range.parameter}</td>
-                      <td>{range.range}</td>
-                      <td>{range.unit}</td>
-                      <td>{range.notes || '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          )}
-
-          {article.clinicalSignificance && (
-            <div className="mb-4">
-              <h5>Clinical Significance</h5>
-              <div className="clinical-significance">
-                <ReactMarkdown
-                  components={{
-                    img: ({node, ...props}) => (
-                      <img
-                        {...props}
-                        src={getImageUrl(props.src)}
-                        alt={props.alt}
-                        style={{ maxWidth: '100%', height: 'auto' }}
-                      />
-                    )
-                  }}
-                >
-                  {article.clinicalSignificance}
-                </ReactMarkdown>
-              </div>
-            </div>
-          )}
 
           {article.relatedTests && article.relatedTests.length > 0 && (
             <div className="mb-4">
@@ -148,7 +83,6 @@ const ArticleDetail = ({ article }) => {
         onHide={() => setShowVersionHistory(false)}
         slug={article.slug}
         onRestore={() => {
-          // Refresh the article after restore
           window.location.reload();
         }}
       />
