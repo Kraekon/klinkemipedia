@@ -1,5 +1,8 @@
 {
   "navigation": {
+    "profile": "Profil",
+    "logout": "Logga ut",
+    "login": "Logga in",
     "home": "Hem",
     "articles": "Artiklar",
     "tags": "Taggar",

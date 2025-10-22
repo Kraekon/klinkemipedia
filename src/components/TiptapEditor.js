@@ -8,7 +8,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Dropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import ImageUploader from './ImageUploader';
 import './TiptapEditor.css';
@@ -71,11 +71,30 @@ const Iframe = Node.create({
   },
 });
 
+// Custom Table extension with class support
+const CustomTable = Table.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: 'table-default',
+        parseHTML: element => element.getAttribute('class'),
+        renderHTML: attributes => {
+          return {
+            class: attributes.class || 'table-default',
+          };
+        },
+      },
+    };
+  },
+});
+
 const TiptapEditor = ({ value, onChange, placeholder }) => {
   const { t } = useTranslation();
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [showIframeDialog, setShowIframeDialog] = useState(false);
+  const [showTableStyleMenu, setShowTableStyleMenu] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [iframeData, setIframeData] = useState({
     src: '',
@@ -89,11 +108,8 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
     extensions: [
       StarterKit,
       Image,
-      Table.configure({
+      CustomTable.configure({
         resizable: true,
-        HTMLAttributes: {
-          class: 'tiptap-table',
-        },
       }),
       TableRow,
       TableHeader,
@@ -108,7 +124,7 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
           rel: 'noopener noreferrer',
         },
       }),
-      Iframe, // Add the iframe extension
+      Iframe,
     ],
     content: value || '',
     onUpdate: ({ editor }) => {
@@ -162,6 +178,60 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
     const previousUrl = editor.getAttributes('link').href;
     setLinkUrl(previousUrl || '');
     setShowLinkDialog(true);
+  };
+
+  const applyTableStyle = (className) => {
+    const { state } = editor;
+    const { selection } = state;
+    const { $from } = selection;
+    
+    // Find the table node
+    let tablePos = null;
+    let tableNode = null;
+    
+    for (let depth = $from.depth; depth > 0; depth--) {
+      const node = $from.node(depth);
+      if (node.type.name === 'table') {
+        tablePos = $from.before(depth);
+        tableNode = node;
+        break;
+      }
+    }
+    
+    if (tablePos !== null && tableNode) {
+      const tr = state.tr;
+      tr.setNodeMarkup(tablePos, null, {
+        ...tableNode.attrs,
+        class: className,
+      });
+      editor.view.dispatch(tr);
+      editor.view.focus();
+    }
+    
+    setShowTableStyleMenu(false);
+  };
+
+  const toggleHeaderRow = () => {
+    editor.chain().focus().toggleHeaderRow().run();
+    setShowTableStyleMenu(false);
+  };
+
+  const hasHeaderRow = () => {
+    const { state } = editor;
+    const { selection } = state;
+    const { $from } = selection;
+    
+    for (let depth = $from.depth; depth > 0; depth--) {
+      const node = $from.node(depth);
+      if (node.type.name === 'table') {
+        // Check if first row has tableHeader cells
+        const firstRow = node.firstChild;
+        if (firstRow && firstRow.firstChild) {
+          return firstRow.firstChild.type.name === 'tableHeader';
+        }
+      }
+    }
+    return false;
   };
 
   return (
@@ -306,6 +376,52 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
         >
           <i className="bi bi-table"></i>
         </button>
+
+        {/* Table Style Dropdown */}
+        {editor.isActive('table') && (
+          <Dropdown show={showTableStyleMenu} onToggle={setShowTableStyleMenu}>
+            <Dropdown.Toggle variant="outline-secondary" size="sm" className="table-style-btn">
+              <i className="bi bi-palette"></i>
+            </Dropdown.Toggle>
+            
+            <Dropdown.Menu>
+              <Dropdown.Header>Table Style</Dropdown.Header>
+              <Dropdown.Item onClick={() => applyTableStyle('table-default')}>
+                <i className="bi bi-border-all"></i> Default (with borders)
+              </Dropdown.Item>
+              
+              <Dropdown.Item onClick={() => applyTableStyle('table-striped')}>
+                <i className="bi bi-list-ul"></i> Striped rows
+              </Dropdown.Item>
+              
+              <Dropdown.Item onClick={() => applyTableStyle('table-borderless')}>
+                <i className="bi bi-border-none"></i> No borders
+              </Dropdown.Item>
+              
+              <Dropdown.Item onClick={() => applyTableStyle('table-hover')}>
+                <i className="bi bi-hand-pointer"></i> Hover effect
+              </Dropdown.Item>
+              
+              <Dropdown.Item onClick={() => applyTableStyle('table-compact')}>
+                <i className="bi bi-arrows-collapse"></i> Compact
+              </Dropdown.Item>
+
+              <Dropdown.Divider />
+              <Dropdown.Header>Header Row</Dropdown.Header>
+              <Dropdown.Item onClick={toggleHeaderRow}>
+                {hasHeaderRow() ? (
+                  <>
+                    <i className="bi bi-toggle-on"></i> Remove header row
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-toggle-off"></i> Add header row
+                  </>
+                )}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
       </div>
 
       <EditorContent editor={editor} className="editor-content-notion" />

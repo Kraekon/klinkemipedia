@@ -1,5 +1,8 @@
 {
   "navigation": {
+    "profile": "Profile",
+    "logout": "Log Out",
+    "login": "Log In",
     "home": "Home",
     "articles": "Articles",
     "tags": "Tags",

@@ -34,7 +34,8 @@ const TagCloud = ({ tags = [], minSize = 0.8, maxSize = 2 }) => {
           <Link
             key={index}
             to={`/tag/${encodeURIComponent(tagObj.tag)}`}
-            className="tag-cloud-item"
+            // use Bootstrap 'primary' badge for blue badges
+            className="tag-cloud-item badge bg-primary text-white rounded-pill text-decoration-none"
             style={{ fontSize: `${size}rem` }}
             title={t('tags.tagCount', { count: tagObj.count })}
           >

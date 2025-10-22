@@ -1,5 +1,5 @@
 /* ============================================
-   TAG CLOUD - ATOM THEME
+   TAG CLOUD - Bootstrap-friendly (blue badges)
    ============================================ */
 
 .tag-cloud {
@@ -14,45 +14,33 @@
   border: 1px solid #dee2e6;
 }
 
+/* Keep layout + interactions but don't force colors (Bootstrap handles badge color) */
 .tag-cloud-item {
-  color: #28a745;
-  text-decoration: none;
   padding: 0.25rem 0.75rem;
-  transition: all 0.2s ease-in-out;
+  transition: transform 0.15s ease-in-out, filter 0.15s ease-in-out;
   line-height: 1.5;
   font-weight: 500;
-  border-radius: 50rem;
+  border-radius: 50rem; /* rounded-pill */
   border: 1px solid transparent;
+  display: inline-block;
+  margin: 0;
 }
 
-.tag-cloud-item:hover {
-  color: #6fdc6f;
-  transform: scale(1.1);
-  text-shadow: 0 0 10px rgba(95, 176, 75, 0.5);
-  border-color: #28a745;
-  background-color: rgba(95, 176, 75, 0.1);
+/* Subtle hover effect that preserves badge color */
+.tag-cloud-item:hover,
+.tag-cloud-item:focus {
+  transform: scale(1.05);
+  text-decoration: none;
+  filter: brightness(0.98);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
 }
 
-/* Size variations for tag popularity */
-.tag-cloud-item.size-xs {
-  font-size: 0.75rem;
-}
-
-.tag-cloud-item.size-sm {
-  font-size: 0.875rem;
-}
-
-.tag-cloud-item.size-md {
-  font-size: 1rem;
-}
-
-.tag-cloud-item.size-lg {
-  font-size: 1.125rem;
-}
-
-.tag-cloud-item.size-xl {
-  font-size: 1.25rem;
-}
+/* Size helpers (optional) */
+.tag-cloud-item.size-xs { font-size: 0.75rem; }
+.tag-cloud-item.size-sm { font-size: 0.875rem; }
+.tag-cloud-item.size-md { font-size: 1rem; }
+.tag-cloud-item.size-lg { font-size: 1.125rem; }
+.tag-cloud-item.size-xl { font-size: 1.25rem; }
 
 @media (max-width: 768px) {
   .tag-cloud {

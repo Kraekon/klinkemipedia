@@ -46,22 +46,17 @@ const Navbar = () => {
               {t('navigation.about')}
             </Nav.Link>
 
-            {/* Language Switcher */}
+            {/* Language Switcher with Flags */}
             <NavDropdown 
-              title={
-                <>
-                  <i className="bi bi-globe me-1"></i>
-                  {i18n.language === 'sv' ? 'Svenska' : 'English'}
-                </>
-              } 
+              title={i18n.language === 'sv' ? '🇸🇪' : '🇬🇧'} 
               id="language-dropdown"
               align="end"
             >
               <NavDropdown.Item onClick={() => changeLanguage('sv')}>
-                Svenska
+                🇸🇪 Svenska
               </NavDropdown.Item>
               <NavDropdown.Item onClick={() => changeLanguage('en')}>
-                English
+                🇬🇧 English
               </NavDropdown.Item>
             </NavDropdown>
 

@@ -1,116 +1,82 @@
-.article-page {
-  max-width: 900px;
-  margin: 0 auto;
+/* Table styles for article content */
+.article-content table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 16px 0;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
 }
 
-.article-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #212529;
+.article-content table td,
+.article-content table th {
+  min-width: 1em;
+  border: 1px solid #dee2e6;
+  padding: 8px 9px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
 }
 
-.article-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.article-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.article-content-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.article-content {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #333;
-}
-
-.article-content h1,
-.article-content h2,
-.article-content h3 {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+.article-content table th {
   font-weight: 600;
+  text-align: left;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
 }
 
-.article-content h1 {
-  font-size: 2rem;
+.article-content table tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
-.article-content h2 {
-  font-size: 1.75rem;
+.article-content table tr:hover {
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
-.article-content h3 {
-  font-size: 1.5rem;
+/* Default table with borders */
+.article-content table.table-default,
+.editor-content-notion table.table-default {
+  border: 1px solid #dee2e6;
 }
 
-.article-content p {
-  margin-bottom: 1rem;
+.article-content table.table-default td,
+.article-content table.table-default th,
+.editor-content-notion table.table-default td,
+.editor-content-notion table.table-default th {
+  border: 1px solid #dee2e6;
 }
 
-.article-content img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin: 1.5rem 0;
+/* Striped table */
+.article-content table.table-striped tr:nth-child(even),
+.editor-content-notion table.table-striped tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.article-content ul,
-.article-content ol {
-  margin-bottom: 1rem;
-  padding-left: 2rem;
+/* Borderless table */
+.article-content table.table-borderless,
+.editor-content-notion table.table-borderless {
+  border: none;
 }
 
-.article-content li {
-  margin-bottom: 0.5rem;
+.article-content table.table-borderless td,
+.article-content table.table-borderless th,
+.editor-content-notion table.table-borderless td,
+.editor-content-notion table.table-borderless th {
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.article-content blockquote {
-  border-left: 4px solid #0d6efd;
-  padding-left: 1rem;
-  margin: 1.5rem 0;
-  font-style: italic;
-  color: #666;
+/* Hover effect */
+.article-content table.table-hover tr:hover,
+.editor-content-notion table.table-hover tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
 }
 
-.article-content code {
-  background: #f8f9fa;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
+/* Compact table */
+.article-content table.table-compact td,
+.article-content table.table-compact th,
+.editor-content-notion table.table-compact td,
+.editor-content-notion table.table-compact th {
+  padding: 4px 6px;
   font-size: 0.9em;
-  color: #e83e8c;
-}
-
-.article-content pre {
-  background: #2d2d2d;
-  color: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin: 1.5rem 0;
-}
-
-.article-content pre code {
-  background: none;
-  color: inherit;
-  padding: 0;
-}
-
-@media (max-width: 768px) {
-  .article-title {
-    font-size: 2rem;
-  }
-
-  .article-content {
-    font-size: 1rem;
-  }
 }

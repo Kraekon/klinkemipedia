@@ -304,3 +304,51 @@
     font-size: 20px;
   }
 }
+
+/* Default table with borders */
+.article-content table.table-default,
+.editor-content-notion table.table-default {
+  border: 1px solid #dee2e6;
+}
+
+.article-content table.table-default td,
+.article-content table.table-default th,
+.editor-content-notion table.table-default td,
+.editor-content-notion table.table-default th {
+  border: 1px solid #dee2e6;
+}
+
+/* Striped table */
+.article-content table.table-striped tr:nth-child(even),
+.editor-content-notion table.table-striped tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Borderless table */
+.article-content table.table-borderless,
+.editor-content-notion table.table-borderless {
+  border: none;
+}
+
+.article-content table.table-borderless td,
+.article-content table.table-borderless th,
+.editor-content-notion table.table-borderless td,
+.editor-content-notion table.table-borderless th {
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect */
+.article-content table.table-hover tr:hover,
+.editor-content-notion table.table-hover tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+/* Compact table */
+.article-content table.table-compact td,
+.article-content table.table-compact th,
+.editor-content-notion table.table-compact td,
+.editor-content-notion table.table-compact th {
+  padding: 4px 6px;
+  font-size: 0.9em;
+}
