@@ -114,7 +114,7 @@ const TagInput = ({ tags = [], onChange, maxTags = 10, availableTags = [] }) => 
             <Form.Control
               ref={inputRef}
               type="text"
-              placeholder={tags.length < maxTags ? t('article.tags.enterTag') : t('article.tags.maxTags', { max: maxTags })}
+              placeholder={tags.length < maxTags ? t('article.enterTag') : t('article.maxTags', { max: maxTags })}
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
@@ -142,7 +142,7 @@ const TagInput = ({ tags = [], onChange, maxTags = 10, availableTags = [] }) => 
           </div>
         </div>
         <Form.Text className="text-muted">
-          {t('article.tags.maxTags', { max: maxTags })} ({tags.length}/{maxTags})
+          {t('article.maxTags', { max: maxTags })} ({tags.length}/{maxTags})
         </Form.Text>
       </Form.Group>
     </div>

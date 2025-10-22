@@ -228,10 +228,10 @@ const AdminPage = () => {
 
       <Modal show={deleteModal.show} onHide={() => setDeleteModal({ show: false, article: null })}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('messages.confirm.deleteArticle')}</Modal.Title>
+          <Modal.Title>{t('messages.confirmDeleteArticle')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {t('messages.confirm.deleteArticleDetail', { title: deleteModal.article?.title })}
+          {t('messages.confirmDeleteArticleDetail', { title: deleteModal.article?.title })}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setDeleteModal({ show: false, article: null })}>

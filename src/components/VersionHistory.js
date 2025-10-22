@@ -54,7 +54,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
   };
 
   const handleRestoreRevision = async (versionNumber) => {
-    if (!window.confirm(t('revisions.confirmRestore', { version: versionNumber }) + ' ' + t('messages.confirm.proceedAction'))) {
+    if (!window.confirm(t('revisions.confirmRestore', { version: versionNumber }) + ' ' + t('messages.confirmProceedAction'))) {
       return;
     }
 
@@ -71,7 +71,7 @@ const VersionHistory = ({ show, onHide, slug, onRestore }) => {
       onHide();
     } catch (err) {
       console.error('Error restoring revision:', err);
-      setError(err.response?.data?.message || t('messages.error.saveFailed'));
+      setError(err.response?.data?.message || t('messages.errorSaveFailed'));
     } finally {
       setRestoring(false);
     }

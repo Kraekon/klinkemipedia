@@ -21,7 +21,7 @@ const VersionCompare = () => {
     if (slug && v1 && v2) {
       fetchComparison();
     } else {
-      setError(t('messages.error.invalidData'));
+      setError(t('messages.errorInvalidData'));
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -35,7 +35,7 @@ const VersionCompare = () => {
       setComparison(response.data);
     } catch (err) {
       console.error('Error comparing versions:', err);
-      setError(err.response?.data?.message || t('messages.error.loadFailed'));
+      setError(err.response?.data?.message || t('messages.errorLoadFailed'));
     } finally {
       setLoading(false);
     }

@@ -34,13 +34,13 @@ const LoginPage = () => {
     const newErrors = {};
 
     if (!email) {
-      newErrors.email = t('auth.errors.emailRequired');
+      newErrors.email = t('auth.errorsEmailRequired');
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = t('auth.errors.invalidEmail');
+      newErrors.email = t('auth.errorInvalidEmail');
     }
 
     if (!password) {
-      newErrors.password = t('auth.errors.passwordRequired');
+      newErrors.password = t('auth.errorPasswordRequired');
     }
 
     return newErrors;
@@ -65,7 +65,7 @@ const LoginPage = () => {
       const from = location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
     } else {
-      setApiError(result.message || t('auth.errors.loginFailed'));
+      setApiError(result.message || t('auth.errorLoginFailed'));
       setLoading(false);
     }
   };

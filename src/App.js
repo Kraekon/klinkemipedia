@@ -32,21 +32,21 @@ const NotFoundPage = () => {
   return (
     <Container className="mt-5">
       <Alert variant="warning" className="text-center">
-        <Alert.Heading className="display-4">{t('page.notFound.title')}</Alert.Heading>
-        <h2 className="mb-4">{t('page.notFound.heading')}</h2>
+        <Alert.Heading className="display-4">{t('page.notFoundTitle')}</Alert.Heading>
+        <h2 className="mb-4">{t('page.notFoundHeading')}</h2>
         <p className="lead">
-          {t('page.notFound.message')}
+          {t('page.notFoundMessage')}
         </p>
         <p>
-          {t('page.notFound.description')}
+          {t('page.notFoundDescription')}
         </p>
         <hr />
         <div className="d-flex gap-2 justify-content-center">
           <Button as={Link} to="/" variant="primary" size="lg">
-            {t('page.notFound.goHome')}
+            {t('page.notFoundGoHome')}
           </Button>
           <Button as={Link} to="/search" variant="outline-primary" size="lg">
-            {t('page.notFound.searchArticles')}
+            {t('page.notFoundSearchArticles')}
           </Button>
         </div>
       </Alert>

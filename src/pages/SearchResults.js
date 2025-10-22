@@ -261,7 +261,7 @@ export default function SearchResults() {
 
           {error && (
             <Alert variant="danger">
-              <Alert.Heading>{t('messages.error.somethingWrong')}</Alert.Heading>
+              <Alert.Heading>{t('messages.errorSomethingWrong')}</Alert.Heading>
               <p className="mb-0">{error}</p>
             </Alert>
           )}

@@ -38,6 +38,8 @@
     "tag": "Tagg"
   },
   "article": {
+    "tags": "Taggar",
+    "maxTags": "Max {{max}} taggar tillåtna",
     "readMore": "Läs mer",
     "backToHome": "Tillbaka till hem",
     "notFound": "Artikel hittades inte",
@@ -46,7 +48,6 @@
     "loading": "Laddar artikel...",
     "loadingArticles": "Laddar artiklar...",
     "category": "Kategori",
-    "tags": "Taggar",
     "lastUpdated": "Senast uppdaterad",
     "lastModified": "Senast ändrad",
     "created": "Skapad",
@@ -97,20 +98,21 @@
     "createSuccess": "Artikel skapad!",
     "saveFailed": "Kunde inte spara artikel",
     "noArticlesFound": "Inga artiklar hittades",
-    "validation": {
-      "titleRequired": "Titel krävs",
-      "titleTooLong": "Titeln får inte överstiga 200 tecken",
-      "categoryRequired": "Kategori krävs",
-      "summaryRequired": "Sammanfattning krävs",
-      "summaryTooLong": "Sammanfattningen får inte överstiga 500 tecken",
-      "contentRequired": "Innehåll krävs"
-    },
+    "validationTitleRequired": "Titel krävs",
+    "validationTitleTooLong": "Titeln får inte överstiga 200 tecken",
+    "validationCategoryRequired": "Kategori krävs",
+    "validationSummaryRequired": "Sammanfattning krävs",
+    "validationSummaryTooLong": "Sammanfattningen får inte överstiga 500 tecken",
+    "validationContentRequired": "Innehåll krävs",
     "enterTag": "Skriv en tagg och tryck Enter",
     "tagLimitReached": "Max antal taggar nått",
     "tagLimit": "{{current}} / {{max}} taggar",
     "addCategory": "Lägg till kategori",
     "createCategory": "Skapa kategori",
-    "createArticle": "Skapa artikel"
+    "createArticle": "Skapa artikel",
+    "articleDashboard": "Instrumentpanel för artiklar",
+    "articleCount": "{{count}} artikel",
+    "searchArticles": "Sök artiklar..."
   },
   "auth": {
     "login": "Logga in",
@@ -133,18 +135,16 @@
     "hasAccount": "Har du redan ett konto?",
     "loggingIn": "Loggar in...",
     "registering": "Skapar konto...",
-    "errors": {
-      "usernameRequired": "Användarnamn krävs",
-      "usernameTooShort": "Användarnamnet måste vara minst 3 tecken",
-      "usernameTooLong": "Användarnamnet får inte överstiga 20 tecken",
-      "emailRequired": "E-post krävs",
-      "invalidEmail": "Ange en giltig e-postadress",
-      "passwordRequired": "Lösenord krävs",
-      "passwordTooShort": "Lösenordet måste vara minst 6 tecken",
-      "passwordMismatch": "Lösenorden matchar inte",
-      "loginFailed": "Inloggning misslyckades. Försök igen.",
-      "registrationFailed": "Registrering misslyckades. Försök igen."
-    }
+    "errorUsernameRequired": "Användarnamn krävs",
+    "errorUsernameTooShort": "Användarnamnet måste vara minst 3 tecken",
+    "errorUsernameTooLong": "Användarnamnet får inte överstiga 20 tecken",
+    "errorEmailRequired": "E-post krävs",
+    "errorInvalidEmail": "Ange en giltig e-postadress",
+    "errorPasswordRequired": "Lösenord krävs",
+    "errorPasswordTooShort": "Lösenordet måste vara minst 6 tecken",
+    "errorPasswordMismatch": "Lösenorden matchar inte",
+    "errorLoginFailed": "Inloggning misslyckades. Försök igen.",
+    "errorRegistrationFailed": "Registrering misslyckades. Försök igen."
   },
   "common": {
     "loading": "Laddar...",
@@ -172,14 +172,12 @@
     "notFound": "Användare hittades inte"
   },
   "page": {
-    "notFound": {
-      "title": "404",
-      "heading": "Sidan hittades inte",
-      "message": "Sidan du letar efter finns inte eller har flyttats.",
-      "description": "Du kan gå tillbaka till startsidan eller söka efter artiklar.",
-      "goHome": "Gå till startsidan",
-      "searchArticles": "Sök artiklar"
-    },
+    "notFoundTitle": "404",
+    "notFoundHeading": "Sidan hittades inte",
+    "notFoundMessage": "Sidan du letar efter finns inte eller har flyttats.",
+    "notFoundDescription": "Du kan gå tillbaka till startsidan eller söka efter artiklar.",
+    "notFoundGoHome": "Gå till startsidan",
+    "notFoundSearchArticles": "Sök artiklar",
     "about": "Utvecklad av Filip Landgren (filip.landgren@gmail.com)"
   },
   "home": {
@@ -261,21 +259,15 @@
     "errorUpdate": "Kunde inte uppdatera tagg",
     "errorDelete": "Kunde inte ta bort tagg",
     "errorMerge": "Kunde inte slå samman taggar",
-    "validation": {
-      "nameRequired": "Taggnamn krävs",
-      "nameTooLong": "Taggnamnet är för långt",
-      "maxTags": "Maximalt {{max}} taggar tillåtna"
-    },
-    "placeholders": {
-      "addTag": "Skriv en tagg och tryck Enter",
-      "editTag": "Redigera taggnamn"
-    },
-    "confirmation": {
-      "deleteTitle": "Ta bort tagg",
-      "mergeTitle": "Slå samman taggar",
-      "cancel": "Avbryt",
-      "confirm": "Bekräfta"
-    },
+    "validationNameRequired": "Taggnamn krävs",
+    "validationNameTooLong": "Taggnamnet är för långt",
+    "validationMaxTags": "Maximalt {{max}} taggar tillåtna",
+    "placeholderAddTag": "Skriv en tagg och tryck Enter",
+    "placeholderEditTag": "Redigera taggnamn",
+    "confirmDeleteTitle": "Ta bort tagg",
+    "confirmMergeTitle": "Slå samman taggar",
+    "confirmCancel": "Avbryt",
+    "confirmConfirm": "Bekräfta",
     "browseByTag": "Bläddra efter tagg",
     "tagCloud": "Taggmoln",
     "allTags": "Alla taggar",
@@ -360,20 +352,12 @@
     "unusedSize": "Oanvänd storlek"
   },
   "messages": {
-    "success": {
-      "urlCopied": "URL kopierad till urklipp"
-    },
-    "error": {
-      "loadFailed": "Kunde inte ladda data",
-      "somethingWrong": "Något gick fel"
-    },
-    "info": {
-      "noData": "Ingen data tillgänglig"
-    },
-    "confirm": {
-      "deleteArticle": "Bekräfta borttagning av artikel",
-      "deleteArticleDetail": "Är du säker på att du vill ta bort \"{{title}}\"? Denna åtgärd kan inte ångras."
-    }
+    "successUrlCopied": "URL kopierad till urklipp",
+    "errorLoadFailed": "Kunde inte ladda data",
+    "errorSomethingWrong": "Något gick fel",
+    "infoNoData": "Ingen data tillgänglig",
+    "confirmDeleteArticle": "Bekräfta borttagning av artikel",
+    "confirmDeleteArticleDetail": "Är du säker på att du vill ta bort \"{{title}}\"? Denna åtgärd kan inte ångras."
   },
   "sort": {
     "by": "Sortera efter",

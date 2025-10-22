@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal, Nav, Badge } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Toast, ToastContainer, Modal, Badge, Card, Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import AdminNavbar from '../components/AdminNavbar';
 import ImageUploader from '../components/ImageUploader';
 import VersionHistory from '../components/VersionHistory';
 import TagInput from '../components/TagInput';
 import TiptapEditor from '../components/TiptapEditor';
-import PreviewPanel from '../components/PreviewPanel';
 import { getArticleBySlug, createArticle, updateArticle, getAllTags } from '../services/api';
 import { getAllCategories, createCategory } from '../services/categoryApi';
 import { slugify } from '../utils/slugify';
-import { useDebounce } from '../utils/useDebounce';
 import './Admin.css';
 
 const AdminArticleForm = () => {
@@ -43,19 +41,12 @@ const AdminArticleForm = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [activeTab, setActiveTab] = useState('edit');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryData, setNewCategoryData] = useState({
     name: '',
     description: '',
     color: '#0d6efd'
   });
-  
-  // Debounced values for preview
-  const debouncedTitle = useDebounce(formData.title, 300);
-  const debouncedSummary = useDebounce(formData.summary, 300);
-  const debouncedContent = useDebounce(formData.content, 300);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -260,27 +251,33 @@ const AdminArticleForm = () => {
     <>
       <AdminNavbar />
       <div className="admin-container">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">{isEditMode ? t('article.editTitle') : t('article.createTitle')}</h2>
-          <div className="d-flex gap-2">
-            <Button 
-              variant="outline-primary"
-              onClick={() => setShowPreview(!showPreview)}
-              className="d-none d-lg-block"
-            >
-              {showPreview ? `👁️ ${t('article.hidePreview')}` : `👁️ ${t('article.showPreview')}`}
-            </Button>
-            {isEditMode && (
-              <Button 
-                variant="outline-secondary" 
-                onClick={() => setShowVersionHistory(true)}
-              >
-                📜 {t('article.versionHistory')}
-              </Button>
-            )}
-          </div>
+        {/* Header */}
+        <div className="mb-4">
+          <Row className="align-items-center">
+            <Col>
+              <h2 className="mb-0 fw-bold">
+                {isEditMode ? t('article.editTitle') : t('article.createTitle')}
+              </h2>
+              {formData.slug && (
+                <small className="text-muted">/{formData.slug}</small>
+              )}
+            </Col>
+            <Col xs="auto">
+              {isEditMode && (
+                <Button 
+                  variant="outline-secondary" 
+                  size="sm"
+                  onClick={() => setShowVersionHistory(true)}
+                >
+                  <i className="bi bi-clock-history me-2"></i>
+                  {t('article.versionHistory')}
+                </Button>
+              )}
+            </Col>
+          </Row>
         </div>
 
+        {/* Success Toast */}
         <ToastContainer position="top-end" className="p-3" style={{ position: 'fixed', zIndex: 9999 }}>
           <Toast 
             show={showSuccessToast} 
@@ -290,251 +287,304 @@ const AdminArticleForm = () => {
             bg="success"
           >
             <Toast.Header>
+              <i className="bi bi-check-circle-fill text-success me-2"></i>
               <strong className="me-auto">{t('article.success')}</strong>
             </Toast.Header>
             <Toast.Body className="text-white">{successMessage}</Toast.Body>
           </Toast>
         </ToastContainer>
 
+        {/* Error Alert */}
         {error && (
           <Alert variant="danger" dismissible onClose={() => setError(null)}>
+            <i className="bi bi-exclamation-triangle-fill me-2"></i>
             {error}
           </Alert>
         )}
 
-        <Nav variant="tabs" className="mb-3 d-lg-none">
-          <Nav.Item>
-            <Nav.Link active={activeTab === 'edit'} onClick={() => setActiveTab('edit')}>
-              ✏️ {t('article.edit')}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link active={activeTab === 'preview'} onClick={() => setActiveTab('preview')}>
-              👁️ {t('article.preview')}
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-
-        <div className={`editor-layout ${showPreview ? 'with-preview' : 'no-preview'}`}>
-          <div className={`editor-panel ${activeTab === 'edit' ? 'd-block' : 'd-none d-lg-block'}`}>
-            <div className="article-form">
-          
-          {/* Basic Information */}
-          <div className="form-section">
-            <h3>{t('article.basicInfo')}</h3>
+        {/* Main Form */}
+        <Card className="shadow-sm border-0">
+          <Card.Body className="p-4">
             
-            <Form.Group className="mb-3">
-              <Form.Label>{t('article.title')} <span className="text-danger">*</span></Form.Label>
-              <Form.Control
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                isInvalid={!!validationErrors.title}
-                placeholder={t('article.titlePlaceholder')}
-              />
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.title}
-              </Form.Control.Feedback>
-              {formData.slug && (
-                <div className="slug-preview">
-                  {t('article.slug')}: <code>{formData.slug}</code>
+            {/* Basic Information Section */}
+            <div className="mb-5">
+              <h4 className="mb-4 pb-2 border-bottom">
+                <i className="bi bi-info-circle me-2"></i>
+                {t('article.basicInfo')}
+              </h4>
+              
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-semibold">
+                  {t('article.title')} <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  size="lg"
+                  value={formData.title}
+                  onChange={(e) => handleInputChange('title', e.target.value)}
+                  isInvalid={!!validationErrors.title}
+                  placeholder={t('article.titlePlaceholder')}
+                  className="border-2"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {validationErrors.title}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Row>
+                <Col md={6}>
+                  <Form.Group className="mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <Form.Label className="fw-semibold mb-0">
+                        {t('article.category')} <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        onClick={() => setShowCategoryModal(true)}
+                        className="p-0 text-decoration-none"
+                      >
+                        <i className="bi bi-plus-circle me-1"></i>
+                        {t('article.addCategory')}
+                      </Button>
+                    </div>
+                    <Form.Select
+                      value={formData.category}
+                      onChange={(e) => handleInputChange('category', e.target.value)}
+                      isInvalid={!!validationErrors.category}
+                      className="border-2"
+                    >
+                      <option value="">{t('article.selectCategory')}</option>
+                      {categories.map(cat => (
+                        <option key={cat._id} value={cat.name}>{cat.name}</option>
+                      ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {validationErrors.category}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="fw-semibold">{t('article.status')}</Form.Label>
+                    <div className="d-flex align-items-center h-100">
+                      <Form.Check
+                        type="switch"
+                        id="status-switch"
+                        label={
+                          <Badge bg={formData.status === 'published' ? 'success' : 'secondary'} className="fs-6">
+                            <i className={`bi ${formData.status === 'published' ? 'bi-check-circle' : 'bi-file-earmark-text'} me-1`}></i>
+                            {formData.status === 'published' ? t('article.published') : t('article.draft')}
+                          </Badge>
+                        }
+                        checked={formData.status === 'published'}
+                        onChange={(e) => handleInputChange('status', e.target.checked ? 'published' : 'draft')}
+                        className="fs-5"
+                      />
+                    </div>
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-semibold">
+                  {t('article.summary')} <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={formData.summary}
+                  onChange={(e) => handleInputChange('summary', e.target.value)}
+                  isInvalid={!!validationErrors.summary}
+                  placeholder={t('article.summaryPlaceholder')}
+                  className="border-2"
+                />
+                <div className="d-flex justify-content-between mt-1">
+                  <Form.Control.Feedback type="invalid">
+                    {validationErrors.summary}
+                  </Form.Control.Feedback>
+                  <small className="text-muted">
+                    <i className="bi bi-file-text me-1"></i>
+                    {formData.summary.length} {t('article.characters')} / {countWords(formData.summary)} {t('article.words')}
+                  </small>
                 </div>
-              )}
-            </Form.Group>
+              </Form.Group>
+            </div>
 
-            <Form.Group className="mb-3">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <Form.Label className="mb-0">{t('article.category')} <span className="text-danger">*</span></Form.Label>
-                <Button 
-                  variant="link" 
-                  size="sm" 
-                  onClick={() => setShowCategoryModal(true)}
-                  className="p-0"
-                >
-                  + {t('article.addCategory')}
-                </Button>
-              </div>
-              <Form.Select
-                value={formData.category}
-                onChange={(e) => handleInputChange('category', e.target.value)}
-                isInvalid={!!validationErrors.category}
-              >
-                <option value="">{t('article.selectCategory')}</option>
-                {categories.map(cat => (
-                  <option key={cat._id} value={cat.name}>{cat.name}</option>
-                ))}
-              </Form.Select>
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.category}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>{t('article.summary')} <span className="text-danger">*</span></Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={formData.summary}
-                onChange={(e) => handleInputChange('summary', e.target.value)}
-                isInvalid={!!validationErrors.summary}
-                placeholder={t('article.summaryPlaceholder')}
-              />
-              <div className="char-count">
-                {formData.summary.length} {t('article.characters')} / {countWords(formData.summary)} {t('article.words')}
-              </div>
-              <Form.Control.Feedback type="invalid">
-                {validationErrors.summary}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>{t('article.content')} <span className="text-danger">*</span></Form.Label>
-              <TiptapEditor
-                value={formData.content}
-                onChange={(value) => handleInputChange('content', value || '')}
-                placeholder={t('article.contentPlaceholder')}
-              />
-              <div className="char-count mt-2">
-                {formData.content.length} {t('article.characters')} / {countWords(formData.content)} {t('article.words')}
-              </div>
-              {validationErrors.content && (
-                <div className="text-danger small mt-1">
-                  {validationErrors.content}
+            {/* Content Section */}
+            <div className="mb-5">
+              <h4 className="mb-4 pb-2 border-bottom">
+                <i className="bi bi-file-earmark-richtext me-2"></i>
+                {t('article.content')}
+              </h4>
+              
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold">
+                  {t('article.content')} <span className="text-danger">*</span>
+                </Form.Label>
+                <TiptapEditor
+                  value={formData.content}
+                  onChange={(value) => handleInputChange('content', value || '')}
+                  placeholder={t('article.contentPlaceholder')}
+                />
+                <div className="d-flex justify-content-between mt-2">
+                  {validationErrors.content && (
+                    <small className="text-danger">
+                      <i className="bi bi-exclamation-circle me-1"></i>
+                      {validationErrors.content}
+                    </small>
+                  )}
+                  <small className="text-muted ms-auto">
+                    <i className="bi bi-file-text me-1"></i>
+                    {formData.content.length} {t('article.characters')} / {countWords(formData.content)} {t('article.words')}
+                  </small>
                 </div>
-              )}
-            </Form.Group>
+              </Form.Group>
 
-            <div className="mb-3">
               <Button 
                 variant="outline-primary" 
                 onClick={() => setShowImageUploadModal(true)}
                 size="sm"
               >
-                📷 {t('article.uploadImage')}
+                <i className="bi bi-image me-2"></i>
+                {t('article.uploadImage')}
               </Button>
             </div>
-          </div>
 
-          {/* Related Tests */}
-          <div className="form-section">
-            <h3>{t('article.relatedTests')}</h3>
+            {/* Related Tests Section */}
+            <div className="mb-5">
+              <h4 className="mb-4 pb-2 border-bottom">
+                <i className="bi bi-link-45deg me-2"></i>
+                {t('article.relatedTests')}
+              </h4>
 
-            <Form.Group className="mb-3">
-              <Form.Label>{t('article.relatedTestsLabel')}</Form.Label>
-              <div className="related-tests-input">
-                {formData.relatedTests.map((test, index) => (
-                  <span key={index} className="test-chip">
-                    {test}
-                    <button type="button" onClick={() => removeRelatedTest(test)}>
-                      ✕
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <Form.Control
-                type="text"
-                className="mt-2"
-                value={relatedTestInput}
-                onChange={(e) => setRelatedTestInput(e.target.value)}
-                onKeyDown={handleRelatedTestInputKeyDown}
-                placeholder={t('article.relatedTestsPlaceholder')}
-              />
-              <Form.Text muted>
-                {t('article.relatedTestsHelp')}
-              </Form.Text>
-            </Form.Group>
-          </div>
-
-          {/* Tags and Metadata */}
-          <div className="form-section">
-            <h3>{t('article.metadata')}</h3>
-            
-            <TagInput
-              tags={formData.tags}
-              onChange={(newTags) => handleInputChange('tags', newTags)}
-              maxTags={10}
-              availableTags={availableTags}
-            />
-
-            {isEditMode && (
-              <Form.Group className="mb-3">
-                <Form.Label>{t('article.changeDescription')}</Form.Label>
+              <Form.Group>
+                <Form.Label className="fw-semibold">{t('article.relatedTestsLabel')}</Form.Label>
+                {formData.relatedTests.length > 0 && (
+                  <div className="d-flex flex-wrap gap-2 mb-3">
+                    {formData.relatedTests.map((test, index) => (
+                      <Badge 
+                        key={index} 
+                        bg="light" 
+                        text="dark" 
+                        className="d-flex align-items-center gap-2 px-3 py-2 border"
+                      >
+                        <i className="bi bi-clipboard-pulse"></i>
+                        {test}
+                        <button 
+                          type="button" 
+                          onClick={() => removeRelatedTest(test)}
+                          className="btn-close btn-close-sm"
+                          style={{ fontSize: '0.6rem' }}
+                          aria-label="Remove"
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
                 <Form.Control
                   type="text"
-                  placeholder={t('article.changeDescriptionPlaceholder')}
-                  value={formData.changeDescription}
-                  onChange={(e) => handleInputChange('changeDescription', e.target.value)}
-                  maxLength={200}
+                  value={relatedTestInput}
+                  onChange={(e) => setRelatedTestInput(e.target.value)}
+                  onKeyDown={handleRelatedTestInputKeyDown}
+                  placeholder={t('article.relatedTestsPlaceholder')}
+                  className="border-2"
                 />
-                <Form.Text className="text-muted">
-                  {t('article.changeDescriptionHelp')}
+                <Form.Text muted>
+                  <i className="bi bi-info-circle me-1"></i>
+                  {t('article.relatedTestsHelp')}
                 </Form.Text>
               </Form.Group>
-            )}
-
-            <Form.Group className="mb-3">
-              <Form.Label>{t('article.status')}</Form.Label>
-              <div className="status-toggle">
-                <Form.Check
-                  type="switch"
-                  id="status-switch"
-                  label={formData.status === 'published' ? t('article.published') : t('article.draft')}
-                  checked={formData.status === 'published'}
-                  onChange={(e) => handleInputChange('status', e.target.checked ? 'published' : 'draft')}
-                />
-              </div>
-            </Form.Group>
-          </div>
-
-          {/* Form Actions */}
-          <div className="form-actions">
-            <Button
-              variant="secondary"
-              onClick={() => navigate('/admin')}
-              disabled={loading}
-            >
-              {t('article.cancel')}
-            </Button>
-            <Button
-              variant="outline-primary"
-              onClick={() => handleSubmit(false)}
-              disabled={loading}
-            >
-              {loading ? t('article.saving') : t('article.saveAsDraft')}
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => handleSubmit(true)}
-              disabled={loading}
-            >
-              {loading ? t('article.publishing') : t('article.publish')}
-            </Button>
-          </div>
-        </div>
-          </div>
-
-          {showPreview && (
-            <div className="preview-panel-container d-none d-lg-block">
-              <PreviewPanel
-                title={debouncedTitle}
-                summary={debouncedSummary}
-                content={debouncedContent}
-                category={formData.category}
-                tags={formData.tags}
-              />
             </div>
-          )}
 
-          <div className={`preview-tab-container d-lg-none ${activeTab === 'preview' ? 'd-block' : 'd-none'}`}>
-            <PreviewPanel
-              title={debouncedTitle}
-              summary={debouncedSummary}
-              content={debouncedContent}
-              category={formData.category}
-              tags={formData.tags}
-            />
-          </div>
-        </div>
+            {/* Tags and Metadata Section */}
+            <div className="mb-5">
+              <h4 className="mb-4 pb-2 border-bottom">
+                <i className="bi bi-tags me-2"></i>
+                {t('article.metadata')}
+              </h4>
+              
+              <TagInput
+                tags={formData.tags}
+                onChange={(newTags) => handleInputChange('tags', newTags)}
+                maxTags={10}
+                availableTags={availableTags}
+              />
+
+              {isEditMode && (
+                <Form.Group className="mt-4">
+                  <Form.Label className="fw-semibold">
+                    <i className="bi bi-pencil-square me-2"></i>
+                    {t('article.changeDescription')}
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder={t('article.changeDescriptionPlaceholder')}
+                    value={formData.changeDescription}
+                    onChange={(e) => handleInputChange('changeDescription', e.target.value)}
+                    maxLength={200}
+                    className="border-2"
+                  />
+                  <Form.Text className="text-muted">
+                    <i className="bi bi-info-circle me-1"></i>
+                    {t('article.changeDescriptionHelp')}
+                  </Form.Text>
+                </Form.Group>
+              )}
+            </div>
+
+            {/* Form Actions */}
+            <div className="d-flex gap-3 pt-4 border-top">
+              <Button
+                variant="outline-secondary"
+                onClick={() => navigate('/admin')}
+                disabled={loading}
+                size="lg"
+              >
+                <i className="bi bi-x-circle me-2"></i>
+                {t('article.cancel')}
+              </Button>
+              <Button
+                variant="outline-primary"
+                onClick={() => handleSubmit(false)}
+                disabled={loading}
+                size="lg"
+              >
+                {loading ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    {t('article.saving')}
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-save me-2"></i>
+                    {t('article.saveAsDraft')}
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => handleSubmit(true)}
+                disabled={loading}
+                size="lg"
+                className="ms-auto"
+              >
+                {loading ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    {t('article.publishing')}
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-send-check me-2"></i>
+                    {t('article.publish')}
+                  </>
+                )}
+              </Button>
+            </div>
+
+          </Card.Body>
+        </Card>
 
         {/* Image Upload Modal */}
         <Modal 
@@ -544,7 +594,10 @@ const AdminArticleForm = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t('article.uploadImage')}</Modal.Title>
+            <Modal.Title>
+              <i className="bi bi-cloud-upload me-2"></i>
+              {t('article.uploadImage')}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <ImageUploader
@@ -564,11 +617,17 @@ const AdminArticleForm = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t('article.createCategory')}</Modal.Title>
+            <Modal.Title>
+              <i className="bi bi-folder-plus me-2"></i>
+              {t('article.createCategory')}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form.Group className="mb-3">
-              <Form.Label>{t('categories.name')} *</Form.Label>
+              <Form.Label className="fw-semibold">
+                <i className="bi bi-tag me-2"></i>
+                {t('categories.name')} *
+              </Form.Label>
               <Form.Control
                 type="text"
                 value={newCategoryData.name}
@@ -578,7 +637,10 @@ const AdminArticleForm = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>{t('categories.description')}</Form.Label>
+              <Form.Label className="fw-semibold">
+                <i className="bi bi-text-paragraph me-2"></i>
+                {t('categories.description')}
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={2}
@@ -589,7 +651,10 @@ const AdminArticleForm = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>{t('categories.color')} *</Form.Label>
+              <Form.Label className="fw-semibold">
+                <i className="bi bi-palette me-2"></i>
+                {t('categories.color')} *
+              </Form.Label>
               <div className="d-flex align-items-center gap-3">
                 <Form.Control
                   type="color"
@@ -619,6 +684,7 @@ const AdminArticleForm = () => {
                 setNewCategoryData({ name: '', description: '', color: '#0d6efd' });
               }}
             >
+              <i className="bi bi-x-circle me-2"></i>
               {t('categories.cancel')}
             </Button>
             <Button 
@@ -626,6 +692,7 @@ const AdminArticleForm = () => {
               onClick={handleCreateCategory}
               disabled={!newCategoryData.name.trim()}
             >
+              <i className="bi bi-check-circle me-2"></i>
               {t('categories.create')}
             </Button>
           </Modal.Footer>

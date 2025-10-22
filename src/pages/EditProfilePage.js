@@ -150,7 +150,7 @@ const EditProfilePage = () => {
       }
 
       if (passwordData.newPassword.length < 6) {
-        setMessage({ type: 'danger', text: t('auth.errors.passwordTooShort') });
+        setMessage({ type: 'danger', text: t('auth.errorPasswordTooShort') });
         return;
       }
 

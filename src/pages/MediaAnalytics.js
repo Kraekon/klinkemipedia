@@ -43,7 +43,7 @@ const MediaAnalytics = () => {
         setUnusedImages(unusedResponse.data);
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || t('messages.error.somethingWrong'));
+      setError(err.response?.data?.message || err.message || t('messages.errorSomethingWrong'));
     } finally {
       setLoading(false);
     }
@@ -79,22 +79,22 @@ const MediaAnalytics = () => {
       const response = await bulkDeleteMedia(imageIds);
       
       if (response.success) {
-        showSuccessToast(t('messages.success.imagesDeleted', { count: response.deleted }));
+        showSuccessToast(t('messages.successImagesDeleted', { count: response.deleted }));
         setShowBulkDeleteModal(false);
         // Refresh analytics
         fetchAnalytics();
       } else {
-        showErrorToast(t('messages.error.deleteFailed'));
+        showErrorToast(t('messages.errorDeleteFailed'));
       }
     } catch (err) {
-      showErrorToast(err.response?.data?.message || err.message || t('messages.error.somethingWrong'));
+      showErrorToast(err.response?.data?.message || err.message || t('messages.errorSomethingWrong'));
     } finally {
       setDeleting(false);
     }
   };
 
   const handleCopyUrl = (url) => {
-    showSuccessToast(t('messages.success.urlCopied'));
+    showSuccessToast(t('messages.successUrlCopied'));
   };
 
   const showSuccessToast = (message) => {
@@ -135,7 +135,7 @@ const MediaAnalytics = () => {
         <AdminNavbar />
         <Container className="mt-4">
           <Alert variant="danger">
-            <Alert.Heading>{t('messages.error.loadFailed')}</Alert.Heading>
+            <Alert.Heading>{t('messages.errorLoadFailed')}</Alert.Heading>
             <p>{error}</p>
             <Button variant="outline-danger" onClick={fetchAnalytics}>
               {t('common.back')}
@@ -152,7 +152,7 @@ const MediaAnalytics = () => {
         <AdminNavbar />
         <Container className="mt-4">
           <Alert variant="warning">
-            {t('messages.info.noData')}
+            {t('messages.infoNoData')}
           </Alert>
         </Container>
       </>
@@ -414,8 +414,8 @@ const MediaAnalytics = () => {
           show={showBulkDeleteModal}
           onHide={() => setShowBulkDeleteModal(false)}
           onConfirm={handleBulkDelete}
-          title={t('messages.confirm.deleteUnusedImages')}
-          message={t('messages.confirm.deleteUnusedImagesDetail', { count: unusedImages.length })}
+          title={t('messages.confirmDeleteUnusedImages')}
+          message={t('messages.confirmDeleteUnusedImagesDetail', { count: unusedImages.length })}
           confirmText={t('common.delete')}
           cancelText={t('common.cancel')}
           variant="danger"

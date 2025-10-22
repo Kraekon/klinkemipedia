@@ -66,7 +66,7 @@ const SearchPage = () => {
 
       {!query && !loading && (
         <Alert variant="info" className="text-center">
-          <Alert.Heading>{t('messages.info.noData')}</Alert.Heading>
+          <Alert.Heading>{t('messages.infoNoData')}</Alert.Heading>
           <p className="mb-0">{t('search.placeholder')}</p>
         </Alert>
       )}
@@ -91,7 +91,7 @@ const SearchPage = () => {
 
       {error && (
         <Alert variant="danger" className="text-center">
-          <Alert.Heading>{t('messages.error.somethingWrong')}</Alert.Heading>
+          <Alert.Heading>{t('messages.errorSomethingWrong')}</Alert.Heading>
           <p className="mb-0">{error}</p>
         </Alert>
       )}
