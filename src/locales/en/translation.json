@@ -188,6 +188,7 @@
     "english": "English"
   },
   "categories": {
+    "updated": "Updated",
     "management": "Category Management",
     "add": "Add Category",
     "create": "Create Category",

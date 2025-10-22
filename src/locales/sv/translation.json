@@ -38,6 +38,7 @@
     "tag": "Tagg"
   },
   "article": {
+    "updated": "Uppdaterad",
     "tags": "Taggar",
     "maxTags": "Max {{max}} taggar tillåtna",
     "readMore": "Läs mer",
