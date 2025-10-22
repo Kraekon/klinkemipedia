@@ -13,11 +13,77 @@ import { useTranslation } from 'react-i18next';
 import ImageUploader from './ImageUploader';
 import './TiptapEditor.css';
 
+// Custom extension to allow iframes
+import { Node, mergeAttributes } from '@tiptap/core';
+
+const Iframe = Node.create({
+  name: 'iframe',
+  group: 'block',
+  atom: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: null,
+      },
+      frameborder: {
+        default: 0,
+      },
+      allowfullscreen: {
+        default: true,
+      },
+      style: {
+        default: null,
+      },
+      title: {
+        default: null,
+      },
+      width: {
+        default: '100%',
+      },
+      height: {
+        default: '600px',
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'iframe',
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['iframe', mergeAttributes(HTMLAttributes)];
+  },
+
+  addCommands() {
+    return {
+      setIframe: (options) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs: options,
+        });
+      },
+    };
+  },
+});
+
 const TiptapEditor = ({ value, onChange, placeholder }) => {
   const { t } = useTranslation();
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [showIframeDialog, setShowIframeDialog] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
+  const [iframeData, setIframeData] = useState({
+    src: '',
+    width: '100%',
+    height: '800px',
+    title: '',
+    style: 'border: 1px solid #dee2e6; border-radius: 8px;'
+  });
 
   const editor = useEditor({
     extensions: [
@@ -42,6 +108,7 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
           rel: 'noopener noreferrer',
         },
       }),
+      Iframe, // Add the iframe extension
     ],
     content: value || '',
     onUpdate: ({ editor }) => {
@@ -75,6 +142,20 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
     }
     setLinkUrl('');
     setShowLinkDialog(false);
+  };
+
+  const handleSetIframe = () => {
+    if (iframeData.src) {
+      editor.chain().focus().setIframe(iframeData).run();
+    }
+    setIframeData({
+      src: '',
+      width: '100%',
+      height: '800px',
+      title: '',
+      style: 'border: 1px solid #dee2e6; border-radius: 8px;'
+    });
+    setShowIframeDialog(false);
   };
 
   const toggleLink = () => {
@@ -170,7 +251,7 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
 
         <div className="toolbar-divider"></div>
 
-        {/* Link & Image */}
+        {/* Link, Image & Iframe */}
         <button
           type="button"
           onClick={toggleLink}
@@ -185,6 +266,13 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
           title={t('editor.image')}
         >
           <i className="bi bi-image"></i>
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowIframeDialog(true)}
+          title="Embed Content (iframe)"
+        >
+          <i className="bi bi-window"></i>
         </button>
 
         <div className="toolbar-divider"></div>
@@ -300,6 +388,71 @@ const TiptapEditor = ({ value, onChange, placeholder }) => {
           >
             <i className="bi bi-check-circle me-2"></i>
             {t('editor.insert')}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Iframe Dialog */}
+      <Modal 
+        show={showIframeDialog} 
+        onHide={() => setShowIframeDialog(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="bi bi-window me-2"></i>
+            Embed Interactive Content
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label>Source URL</Form.Label>
+            <Form.Control
+              type="text"
+              value={iframeData.src}
+              onChange={(e) => setIframeData({ ...iframeData, src: e.target.value })}
+              placeholder="/interactive-tools/calculator.html"
+            />
+            <Form.Text className="text-muted">
+              Path to your HTML file (e.g., /interactive-tools/sensitivity-specificity.html)
+            </Form.Text>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Title (for accessibility)</Form.Label>
+            <Form.Control
+              type="text"
+              value={iframeData.title}
+              onChange={(e) => setIframeData({ ...iframeData, title: e.target.value })}
+              placeholder="Interactive Calculator"
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Height</Form.Label>
+            <Form.Control
+              type="text"
+              value={iframeData.height}
+              onChange={(e) => setIframeData({ ...iframeData, height: e.target.value })}
+              placeholder="800px"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowIframeDialog(false)}
+          >
+            <i className="bi bi-x-circle me-2"></i>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSetIframe}
+            disabled={!iframeData.src}
+          >
+            <i className="bi bi-check-circle me-2"></i>
+            Insert Embed
           </Button>
         </Modal.Footer>
       </Modal>

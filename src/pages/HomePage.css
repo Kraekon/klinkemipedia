@@ -1,13 +1,79 @@
-.search-container {
-  margin-top: 50px;
+.homepage-container {
+  min-height: calc(100vh - 150px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
 }
 
-.search-container .input-group-lg .form-control {
-  font-size: 1.25rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem 0 0 0.5rem;
+.search-section {
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
 }
 
-.search-container .input-group-lg .btn {
-  border-radius: 0 0.5rem 0.5rem 0;
+.homepage-heading {
+  font-size: 2rem;
+  font-weight: 400;
+  color: #495057;
+  line-height: 1.4;
+}
+
+.search-form {
+  margin-top: 2rem;
+}
+
+.search-input {
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  border: 2px solid #dee2e6;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.search-button {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid #0d6efd;
+  transition: all 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #0b5ed7;
+  border-color: #0b5ed7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.search-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .homepage-container {
+    padding-top: 3rem;
+  }
+
+  .homepage-heading {
+    font-size: 1.5rem;
+  }
+
+  .search-input,
+  .search-button {
+    font-size: 1rem;
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .homepage-heading {
+    font-size: 1.25rem;
+  }
 }

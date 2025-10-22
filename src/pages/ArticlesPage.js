@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Spinner, Alert, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,76 +8,29 @@ import axios from 'axios';
 const ArticlesPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [allArticles, setAllArticles] = useState([]); // Store all articles
-  const [filteredArticles, setFilteredArticles] = useState([]); // Store filtered articles
+  const [allArticles, setAllArticles] = useState([]);
+  const [filteredArticles, setFilteredArticles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    // Filter articles client-side when category changes
-    if (selectedCategory === 'All') {
-      setFilteredArticles(allArticles);
-    } else {
-      const filtered = allArticles.filter(article => {
-        const articleCategory = typeof article.category === 'object' 
-          ? article.category.name 
-          : article.category;
-        return articleCategory === selectedCategory;
-      });
-      setFilteredArticles(filtered);
-    }
-  }, [selectedCategory, allArticles]);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch all published articles
-      const articlesResponse = await getAllArticles({ status: 'published' });
-      const articlesData = articlesResponse.data || [];
-      setAllArticles(articlesData);
-      setFilteredArticles(articlesData);
-      
-      // Fetch categories
-      await fetchCategories(articlesData);
-      
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load articles');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchCategories = async (articlesData) => {
+  const fetchCategories = useCallback(async (articlesData) => {
     try {
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
       const response = await axios.get(`${API_BASE_URL}/categories`);
       
-      // Check if response has nested data
       const categoriesData = response.data.data || response.data;
       
-      // Extract unique categories from articles
       const uniqueArticleCategories = [...new Set(
         articlesData
           .map(article => typeof article.category === 'object' ? article.category.name : article.category)
           .filter(cat => cat)
       )];
       
-      console.log('Unique categories from articles:', uniqueArticleCategories);
-      
-      // Use categories from the new system if available, otherwise use article categories
       if (categoriesData.length > 0) {
         setCategories(categoriesData);
       } else if (uniqueArticleCategories.length > 0) {
-        // Create category objects from article categories
         const categoryObjects = uniqueArticleCategories.map(cat => ({
           _id: cat,
           name: cat,
@@ -88,7 +41,6 @@ const ArticlesPage = () => {
       }
     } catch (err) {
       console.error('Error fetching categories:', err);
-      // If categories fetch fails, still extract from articles
       const uniqueArticleCategories = [...new Set(
         articlesData
           .map(article => typeof article.category === 'object' ? article.category.name : article.category)
@@ -105,14 +57,52 @@ const ArticlesPage = () => {
         setCategories(categoryObjects);
       }
     }
-  };
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      const articlesResponse = await getAllArticles({ status: 'published' });
+      const articlesData = articlesResponse.data || [];
+      setAllArticles(articlesData);
+      setFilteredArticles(articlesData);
+      
+      await fetchCategories(articlesData);
+      
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load articles');
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    if (selectedCategory === 'All') {
+      setFilteredArticles(allArticles);
+    } else {
+      const filtered = allArticles.filter(article => {
+        const articleCategory = typeof article.category === 'object' 
+          ? article.category.name 
+          : article.category;
+        return articleCategory === selectedCategory;
+      });
+      setFilteredArticles(filtered);
+    }
+  }, [selectedCategory, allArticles]);
 
   const handleCardClick = (slug) => {
     navigate(`/article/${slug}`);
   };
 
   const handleTagClick = (e, tag) => {
-    e.stopPropagation(); // Prevent card click
+    e.stopPropagation();
     navigate(`/tag/${tag}`);
   };
 
@@ -137,7 +127,6 @@ const ArticlesPage = () => {
           </Badge>
           {categories.length > 0 ? (
             categories.map((category) => {
-              // Count articles in this category
               const count = allArticles.filter(article => {
                 const articleCategory = typeof article.category === 'object' 
                   ? article.category.name 

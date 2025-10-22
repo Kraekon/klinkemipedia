@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiv beslutsgräns för sensitivitet och specificitet</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            font-size: 0.9rem;
+        }
+        .app-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+        h5 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .large-metric {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .ref-interval-metric {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .card {
+            border: 1px solid #dee2e6;
+            margin-bottom: 0.75rem;
+        }
+        .card-header {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        .card-body {
+            padding: 0.75rem;
+        }
+        .form-label {
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+        .form-range {
+            margin-bottom: 0.75rem;
+        }
+        .accordion-button {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        .accordion-button:not(.collapsed) {
+            color: var(--bs-body-color);
+            background-color: #e9ecef;
+        }
+        .accordion-body {
+            padding: 1.5rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .roc-chart-container {
+            max-width: 280px;
+            height: 280px;
+            margin: 0 auto;
+        }
+        .muted-small {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .slider-container {
+            position: relative;
+            padding-top: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .cutoff-bubble {
+            position: absolute;
+            background-color: #212529;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            transform: translate(-50%, -40px);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease-in-out;
+            white-space: nowrap;
+        }
+        .metrics-display {
+            text-align: center;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 0.75rem;
+        }
+        .metric-item h5 {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+        .form-check-label {
+            font-size: 0.85rem;
+        }
+        hr {
+            margin: 0.75rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="row g-3">
+            <!-- Left Panel - Controls -->
+            <div class="col-5">
+                <h4 class="text-center mb-3">
+                    <i class="bi bi-sliders"></i> Kontroller
+                </h4>
+                
+                <!-- Metrics Display -->
+                <div class="metrics-display">
+                    <div class="row">
+                        <div class="col-6 metric-item">
+                            <h5>Sensitivitet</h5>
+                            <p id="sensitivity_text" class="large-metric">--</p>
+                        </div>
+                        <div class="col-6 metric-item">
+                            <h5>Specificitet</h5>
+                            <p id="specificity_text" class="large-metric">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Population Parameters -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-heart-pulse-fill text-success"></i> Frisk Population
+                    </div>
+                    <div class="card-body">
+                        <label for="healthy_mean" class="form-label">
+                            Medelvärde: <strong><span id="healthy_mean_val">87.5</span></strong>
+                        </label>
+                        <input type="range" class="form-range" min="0" max="200" step="0.5" value="87.5" id="healthy_mean">
+                        
+                        <label for="healthy_sd" class="form-label">
+                            Standardavvikelse: <strong><span id="healthy_sd_val">10.0</span></strong>
+                        </label>
+                        <input type="range" class="form-range" min="1" max="30" step="0.5" value="10" id="healthy_sd">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-heart-pulse-fill text-danger"></i> Sjuk Population
+                    </div>
+                    <div class="card-body">
+                        <label for="sick_mean" class="form-label">
+                            Medelvärde: <strong><span id="sick_mean_val">112.5</span></strong>
+                        </label>
+                        <input type="range" class="form-range" min="0" max="200" step="0.5" value="112.5" id="sick_mean">
+                        
+                        <label for="sick_sd" class="form-label">
+                            Standardavvikelse: <strong><span id="sick_sd_val">10.0</span></strong>
+                        </label>
+                        <input type="range" class="form-range" min="1" max="30" step="0.5" value="10" id="sick_sd">
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Reference Interval Toggle -->
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="show_ref_interval">
+                    <label class="form-check-label" for="show_ref_interval">
+                        Visa referensintervall (95%)
+                    </label>
+                </div>
+                
+                <div id="ref-interval-display" class="d-none">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <h5>
+                                <i class="bi bi-bar-chart-line"></i> Referensintervall
+                            </h5>
+                            <p id="reference_interval_text" class="ref-interval-metric mb-2">--</p>
+                            <p id="sick_outside_ref_text" class="muted-small mb-0">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Graphs -->
+            <div class="col-7">
+                <h4 class="text-center mb-3">
+                    <i class="bi bi-graph-up"></i> Visualisering
+                </h4>
+
+                <!-- Distribution Chart -->
+                <div class="card mb-2">
+                    <div class="card-body p-2">
+                        <div class="chart-container">
+                            <canvas id="distPlot"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cutoff Slider -->
+                <div class="slider-container">
+                    <span id="cutoff-bubble" class="cutoff-bubble">100</span>
+                    <label for="cutoff" class="form-label text-center d-block">
+                        <i class="bi bi-scissors"></i> Beslutsgräns
+                    </label>
+                    <input type="range" class="form-range" min="0" max="200" step="1" value="100" id="cutoff">
+                </div>
+
+                <!-- ROC Curve Accordion -->
+                <div class="accordion mt-3" id="rocAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                <i class="bi bi-graph-up-arrow me-2"></i> ROC-kurva
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#rocAccordion">
+                            <div class="accordion-body">
+                                <div class="roc-chart-container">
+                                    <canvas id="rocPlot"></canvas>
+                                </div>
+                                <p id="youden_text" class="muted-small text-center mb-0 mt-3">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Application Logic -->
+    <script>
+        // --- Statistical Helper Functions ---
+        
+        const erf = (x) => {
+            const a1 =  0.254829592;
+            const a2 = -0.284496736;
+            const a3 =  1.421413741;
+            const a4 = -1.453152027;
+            const a5 =  1.061405429;
+            const p  =  0.3275911;
+
+            const sign = x < 0 ? -1 : 1;
+            const absX = Math.abs(x);
+            
+            const t = 1.0 / (1.0 + p * absX);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absX * absX);
+            
+            return sign * y;
+        };
+
+        const pnorm = (x, mean, sd) => {
+            const z = (x - mean) / sd;
+            return 0.5 * (1 + erf(z / Math.sqrt(2)));
+        };
+
+        const dnorm = (x, mean, sd) => (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
+
+        // --- DOM Element References ---
+        const dom = {
+            healthy_mean: document.getElementById('healthy_mean'),
+            healthy_sd: document.getElementById('healthy_sd'),
+            sick_mean: document.getElementById('sick_mean'),
+            sick_sd: document.getElementById('sick_sd'),
+            cutoff: document.getElementById('cutoff'),
+            cutoff_bubble: document.getElementById('cutoff-bubble'),
+            show_ref_interval: document.getElementById('show_ref_interval'),
+            healthy_mean_val: document.getElementById('healthy_mean_val'),
+            healthy_sd_val: document.getElementById('healthy_sd_val'),
+            sick_mean_val: document.getElementById('sick_mean_val'),
+            sick_sd_val: document.getElementById('sick_sd_val'),
+            sensitivity_text: document.getElementById('sensitivity_text'),
+            specificity_text: document.getElementById('specificity_text'),
+            reference_interval_text: document.getElementById('reference_interval_text'),
+            ref_interval_display: document.getElementById('ref-interval-display'),
+            youden_text: document.getElementById('youden_text'),
+            sick_outside_ref_text: document.getElementById('sick_outside_ref_text'),
+            rocCollapse: document.getElementById('collapseOne'),
+        };
+
+        // --- Chart Initialization ---
+        const distCtx = document.getElementById('distPlot').getContext('2d');
+        const rocCtx = document.getElementById('rocPlot').getContext('2d');
+        let distChart, rocChart;
+        
+        const CHART_MIN = 0;
+        const CHART_MAX = 200;
+        const NUM_POINTS = 400;
+
+        function initializeCharts() {
+            distChart = new Chart(distCtx, {
+                type: 'line',
+                data: { datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    animation: { duration: 0 },
+                    scales: {
+                        x: { 
+                            type: 'linear',
+                            min: CHART_MIN, 
+                            max: CHART_MAX, 
+                            title: { display: false },
+                        },
+                        y: { 
+                            beginAtZero: true, 
+                            display: false 
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        title: { 
+                            display: true, 
+                            text: 'Fördelning: Frisk (grön) vs Sjuk (röd)', 
+                            font: { size: 13 } 
+                        },
+                        annotation: { annotations: {} }
+                    },
+                    elements: { point: { radius: 0 } }
+                }
+            });
+
+            rocChart = new Chart(rocCtx, {
+                type: 'line',
+                data: { datasets: [] },
+                options: {
+                    responsive: true,
+                    aspectRatio: 1,
+                    maintainAspectRatio: true,
+                    animation: { duration: 0 },
+                    scales: {
+                        x: { 
+                            type: 'linear',
+                            min: 0, 
+                            max: 1,
+                            grace: '2%',
+                            title: { display: true, text: '1 - Specificitet', font: { size: 11 } } 
+                        },
+                        y: { 
+                            type: 'linear',
+                            min: 0, 
+                            max: 1,
+                            grace: '2%',
+                            title: { display: true, text: 'Sensitivitet', font: { size: 11 } } 
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true },
+                        title: { display: false },
+                    },
+                    clip: false
+                }
+            });
+        }
+        
+        // --- Main Update Function ---
+        function updateApp() {
+            const hm = parseFloat(dom.healthy_mean.value);
+            const hs = parseFloat(dom.healthy_sd.value);
+            const sm = parseFloat(dom.sick_mean.value);
+            const ss = parseFloat(dom.sick_sd.value);
+            const cut = parseFloat(dom.cutoff.value);
+
+            dom.healthy_mean_val.textContent = hm.toFixed(1);
+            dom.healthy_sd_val.textContent = hs.toFixed(1);
+            dom.sick_mean_val.textContent = sm.toFixed(1);
+            dom.sick_sd_val.textContent = ss.toFixed(1);
+            
+            const sensitivity = 1 - pnorm(cut, sm, ss);
+            const specificity = pnorm(cut, hm, hs);
+            dom.sensitivity_text.textContent = (sensitivity * 100).toFixed(1) + '%';
+            dom.specificity_text.textContent = (specificity * 100).toFixed(1) + '%';
+            
+            if (dom.show_ref_interval.checked) {
+                const lower = hm - 1.96 * hs;
+                const upper = hm + 1.96 * hs;
+                dom.reference_interval_text.textContent = `${lower.toFixed(1)} - ${upper.toFixed(1)}`;
+
+                const sick_below = pnorm(lower, sm, ss);
+                const sick_above = 1 - pnorm(upper, sm, ss);
+                const sick_outside_percentage = (sick_below + sick_above) * 100;
+                dom.sick_outside_ref_text.textContent = `${sick_outside_percentage.toFixed(1)}% av sjuka är utanför intervallet`;
+
+                dom.ref_interval_display.classList.remove('d-none');
+            } else {
+                dom.ref_interval_display.classList.add('d-none');
+            }
+
+            updateDistPlot(hm, hs, sm, ss, cut);
+            updateRocPlot(hm, hs, sm, ss, cut);
+        }
+        
+        function updateDistPlot(hm, hs, sm, ss, cut) {
+            const healthyData = [];
+            const sickData = [];
+
+            for (let i = 0; i <= NUM_POINTS; i++) {
+                const x = CHART_MIN + (CHART_MAX - CHART_MIN) * (i / NUM_POINTS);
+                healthyData.push({x: x, y: dnorm(x, hm, hs)});
+                sickData.push({x: x, y: dnorm(x, sm, ss)});
+            }
+            
+            const createShadedArea = (data, threshold, condition) => {
+                return data.map(point => {
+                    const include = (condition === 'less' && point.x < threshold) || (condition === 'more' && point.x >= threshold);
+                    return include ? point : {x: point.x, y: 0};
+                });
+            };
+
+            distChart.data.datasets = [
+                { data: createShadedArea(healthyData, cut, 'less'), fill: true, backgroundColor: 'rgba(60, 179, 113, 0.5)', borderColor: 'transparent' },
+                { data: createShadedArea(healthyData, cut, 'more'), fill: true, backgroundColor: 'rgba(255, 215, 0, 0.5)', borderColor: 'transparent' },
+                { data: createShadedArea(sickData, cut, 'less'), fill: true, backgroundColor: 'rgba(255, 160, 122, 0.5)', borderColor: 'transparent' },
+                { data: createShadedArea(sickData, cut, 'more'), fill: true, backgroundColor: 'rgba(220, 20, 60,.5)', borderColor: 'transparent' },
+                { data: healthyData, borderColor: 'darkgreen', borderWidth: 2, tension: 0.1 },
+                { data: sickData, borderColor: 'darkred', borderWidth: 2, tension: 0.1 }
+            ];
+            
+            const newAnnotations = {
+                cutoffLine: {
+                    type: 'line',
+                    xMin: cut, xMax: cut,
+                    borderColor: 'black',
+                    borderWidth: 2,
+                    borderDash: [6, 6]
+                }
+            };
+            
+            if (dom.show_ref_interval.checked) {
+                const lower = hm - 1.96 * hs;
+                const upper = hm + 1.96 * hs;
+                newAnnotations.refLower = {
+                    type: 'line', xMin: lower, xMax: lower,
+                    borderColor: '#0d6efd', borderWidth: 2, borderDash: [4, 4]
+                };
+                newAnnotations.refUpper = {
+                    type: 'line', xMin: upper, xMax: upper,
+                    borderColor: '#0d6efd', borderWidth: 2, borderDash: [4, 4]
+                };
+            }
+            distChart.options.plugins.annotation.annotations = newAnnotations;
+            
+            distChart.update('none'); 
+        }
+
+        function updateRocPlot(hm, hs, sm, ss, cut) {
+            const rocData = [];
+            let maxYouden = -Infinity;
+            let bestYouden = null;
+
+            for (let i = 0; i <= NUM_POINTS; i++) {
+                const c = CHART_MIN + (CHART_MAX - CHART_MIN) * (i / NUM_POINTS);
+                const sens = 1 - pnorm(c, sm, ss);
+                const spec = pnorm(c, hm, hs);
+                const fpr = 1 - spec;
+                const youden = sens + spec - 1;
+                rocData.push({ x: fpr, y: sens });
+
+                if (youden > maxYouden) {
+                    maxYouden = youden;
+                    bestYouden = { youden: maxYouden, cutoff: c };
+                }
+            }
+            
+            rocData.sort((a, b) => a.x - b.x);
+
+            const currentSens = 1 - pnorm(cut, sm, ss);
+            const currentSpec = pnorm(cut, hm, hs);
+            const currentPoint = { x: 1 - currentSpec, y: currentSens };
+            
+            const diagonalLine = [{x: 0, y: 0}, {x: 1, y: 1}];
+
+            rocChart.data.datasets = [
+                {
+                    data: rocData,
+                    borderColor: '#4682B4',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    elements: { point: { radius: 0 } }
+                },
+                {
+                    data: [currentPoint],
+                    backgroundColor: '#CD5C5C',
+                    pointRadius: 7,
+                    pointHoverRadius: 9,
+                    type: 'scatter'
+                },
+                {
+                    data: diagonalLine,
+                    borderColor: 'grey',
+                    borderWidth: 1,
+                    borderDash: [6, 6],
+                    elements: { point: { radius: 0 } }
+                }
+            ];
+            rocChart.update();
+            
+            dom.youden_text.textContent = `Maximal Youdens index: ${bestYouden.youden.toFixed(2)} vid beslutsgräns ${bestYouden.cutoff.toFixed(1)}`;
+        }
+        
+        function updateCutoffBubble(slider) {
+            const bubble = dom.cutoff_bubble;
+            const val = slider.value;
+            const min = slider.min ? slider.min : 0;
+            const max = slider.max ? slider.max : 200;
+            const newVal = Number(((val - min) * 100) / (max - min));
+            bubble.innerHTML = val;
+            bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            
+            const simulatorInputs = [
+                dom.healthy_mean, dom.healthy_sd, dom.sick_mean, dom.sick_sd,
+                dom.cutoff, dom.show_ref_interval
+            ];
+            simulatorInputs.forEach(el => {
+                if(el) {
+                     el.addEventListener('input', updateApp);
+                }
+            });
+            
+            dom.cutoff.addEventListener('mousedown', () => dom.cutoff_bubble.style.opacity = '1');
+            dom.cutoff.addEventListener('mouseup', () => dom.cutoff_bubble.style.opacity = '0');
+            dom.cutoff.addEventListener('mouseleave', () => dom.cutoff_bubble.style.opacity = '0');
+            dom.cutoff.addEventListener('input', function() {
+                updateCutoffBubble(this);
+            });
+
+            if (dom.rocCollapse) {
+                dom.rocCollapse.addEventListener('shown.bs.collapse', () => {
+                    setTimeout(() => {
+                        if (rocChart) {
+                            rocChart.resize();
+                        }
+                    }, 50);
+                });
+            }
+
+            updateApp(); 
+            updateCutoffBubble(dom.cutoff);
+        });
+    </script>
+</body>
+</html>

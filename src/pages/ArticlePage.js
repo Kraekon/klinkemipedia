@@ -136,18 +136,7 @@ const ArticlePage = () => {
           </div>
         )}
 
-        {/* Summary */}
-        {article.summary && (
-          <Card className="mb-4 border-start border-primary border-4">
-            <Card.Body>
-              <h5 className="mb-2">
-                <i className="bi bi-info-circle me-2"></i>
-                {t('article.summary')}
-              </h5>
-              <p className="mb-0">{article.summary}</p>
-            </Card.Body>
-          </Card>
-        )}
+        {/* Summary section REMOVED - only shows on article cards, not in article view */}
       </div>
 
       {/* Article Content */}
