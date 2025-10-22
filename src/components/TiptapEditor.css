@@ -29,15 +29,20 @@
   background: transparent;
   border-radius: 3px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: #37352f;
   transition: background-color 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
-  height: 28px;
+  min-width: 32px;
+  height: 32px;
+}
+
+.tiptap-toolbar-notion button i {
+  font-size: 16px;
+  line-height: 1;
 }
 
 .tiptap-toolbar-notion button:hover:not(:disabled) {
@@ -274,9 +279,13 @@
 
   .tiptap-toolbar-notion button {
     padding: 5px 8px;
-    font-size: 13px;
-    min-width: 26px;
-    height: 26px;
+    font-size: 14px;
+    min-width: 28px;
+    height: 28px;
+  }
+
+  .tiptap-toolbar-notion button i {
+    font-size: 14px;
   }
 
   .toolbar-divider {
@@ -294,38 +303,4 @@
   .editor-content-notion .ProseMirror h3 {
     font-size: 20px;
   }
-}
-
-/* Form control styles for modals */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #37352f;
-}
-
-.form-control {
-  display: block;
-  width: 100%;
-  padding: 8px 12px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: #37352f;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid #e0e0e0;
-  border-radius: 3px;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-control:focus {
-  color: #37352f;
-  background-color: #fff;
-  border-color: #2383e2;
-  outline: 0;
-  box-shadow: 0 0 0 1px #2383e2;
 }

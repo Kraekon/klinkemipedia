@@ -164,11 +164,9 @@
     "title": "Profil",
     "overview": "Översikt",
     "articles": "Artiklar",
-    "activity": "Aktivitet",
     "bio": "Bio",
     "noBio": "Ingen bio angiven",
     "noArticles": "Inga artiklar än",
-    "noActivity": "Ingen aktivitet än",
     "notFound": "Användare hittades inte"
   },
   "page": {
@@ -369,5 +367,28 @@
     "category": "Kategori",
     "status": "Status",
     "actions": "Åtgärder"
+  },
+  "editor": {
+  "placeholder": "Börja skriva...",
+  "bold": "Fetstil",
+  "italic": "Kursiv",
+  "strikethrough": "Genomstruken",
+  "code": "Kod",
+  "heading1": "Rubrik 1",
+  "heading2": "Rubrik 2",
+  "heading3": "Rubrik 3",
+  "bulletList": "Punktlista",
+  "orderedList": "Numrerad lista",
+  "link": "Länk",
+  "image": "Bild",
+  "codeBlock": "Kodblock",
+  "quote": "Citat",
+  "table": "Tabell",
+  "insertImage": "Infoga bild",
+  "insertLink": "Infoga länk",
+  "url": "URL",
+  "cancel": "Avbryt",
+  "removeLink": "Ta bort länk",
+  "insert": "Infoga"
   }
 }

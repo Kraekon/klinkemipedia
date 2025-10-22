@@ -70,14 +70,6 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
-    followers: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }],
-    following: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }]
   },
   {
     timestamps: true

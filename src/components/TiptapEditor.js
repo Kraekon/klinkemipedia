@@ -8,11 +8,13 @@ import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
-import { Modal } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import ImageUploader from './ImageUploader';
 import './TiptapEditor.css';
 
-const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => {
+const TiptapEditor = ({ value, onChange, placeholder }) => {
+  const { t } = useTranslation();
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -31,7 +33,7 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
       TableHeader,
       TableCell,
       Placeholder.configure({
-        placeholder,
+        placeholder: placeholder || t('editor.placeholder'),
       }),
       Link.configure({
         openOnClick: false,
@@ -89,33 +91,33 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={editor.isActive('bold') ? 'is-active' : ''}
-          title="Bold"
+          title={t('editor.bold')}
         >
-          <strong>B</strong>
+          <i className="bi bi-type-bold"></i>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={editor.isActive('italic') ? 'is-active' : ''}
-          title="Italic"
+          title={t('editor.italic')}
         >
-          <em>I</em>
+          <i className="bi bi-type-italic"></i>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleStrike().run()}
           className={editor.isActive('strike') ? 'is-active' : ''}
-          title="Strikethrough"
+          title={t('editor.strikethrough')}
         >
-          <s>S</s>
+          <i className="bi bi-type-strikethrough"></i>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCode().run()}
           className={editor.isActive('code') ? 'is-active' : ''}
-          title="Code"
+          title={t('editor.code')}
         >
-          {'</>'}
+          <i className="bi bi-code"></i>
         </button>
 
         <div className="toolbar-divider"></div>
@@ -125,25 +127,25 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
-          title="Heading 1"
+          title={t('editor.heading1')}
         >
-          H1
+          <i className="bi bi-type-h1"></i>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}
-          title="Heading 2"
+          title={t('editor.heading2')}
         >
-          H2
+          <i className="bi bi-type-h2"></i>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           className={editor.isActive('heading', { level: 3 }) ? 'is-active' : ''}
-          title="Heading 3"
+          title={t('editor.heading3')}
         >
-          H3
+          <i className="bi bi-type-h3"></i>
         </button>
 
         <div className="toolbar-divider"></div>
@@ -153,17 +155,17 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={editor.isActive('bulletList') ? 'is-active' : ''}
-          title="Bullet List"
+          title={t('editor.bulletList')}
         >
-          • List
+          <i className="bi bi-list-ul"></i>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={editor.isActive('orderedList') ? 'is-active' : ''}
-          title="Numbered List"
+          title={t('editor.orderedList')}
         >
-          1. List
+          <i className="bi bi-list-ol"></i>
         </button>
 
         <div className="toolbar-divider"></div>
@@ -173,16 +175,16 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           type="button"
           onClick={toggleLink}
           className={editor.isActive('link') ? 'is-active' : ''}
-          title="Link"
+          title={t('editor.link')}
         >
-          🔗
+          <i className="bi bi-link-45deg"></i>
         </button>
         <button
           type="button"
           onClick={() => setShowImageModal(true)}
-          title="Image"
+          title={t('editor.image')}
         >
-          📷
+          <i className="bi bi-image"></i>
         </button>
 
         <div className="toolbar-divider"></div>
@@ -192,17 +194,17 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           type="button"
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           className={editor.isActive('codeBlock') ? 'is-active' : ''}
-          title="Code Block"
+          title={t('editor.codeBlock')}
         >
-          {'{ }'}
+          <i className="bi bi-code-square"></i>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={editor.isActive('blockquote') ? 'is-active' : ''}
-          title="Quote"
+          title={t('editor.quote')}
         >
-          " "
+          <i className="bi bi-quote"></i>
         </button>
 
         <div className="toolbar-divider"></div>
@@ -212,9 +214,9 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
           onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
           className={editor.isActive('table') ? 'is-active' : ''}
           type="button"
-          title="Table"
+          title={t('editor.table')}
         >
-          ⊞
+          <i className="bi bi-table"></i>
         </button>
       </div>
 
@@ -228,7 +230,10 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Insert Image</Modal.Title>
+          <Modal.Title>
+            <i className="bi bi-image me-2"></i>
+            {t('editor.insertImage')}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <ImageUploader
@@ -245,15 +250,17 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Insert Link</Modal.Title>
+          <Modal.Title>
+            <i className="bi bi-link-45deg me-2"></i>
+            {t('editor.insertLink')}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="form-group">
-            <label htmlFor="link-url">URL</label>
-            <input
+          <Form.Group>
+            <Form.Label htmlFor="link-url">{t('editor.url')}</Form.Label>
+            <Form.Control
               id="link-url"
               type="url"
-              className="form-control"
               value={linkUrl}
               onChange={(e) => setLinkUrl(e.target.value)}
               placeholder="https://example.com"
@@ -265,35 +272,35 @@ const TiptapEditor = ({ value, onChange, placeholder = 'Start writing...' }) => 
               }}
               autoFocus
             />
-          </div>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <button
-            type="button"
-            className="btn btn-secondary"
+          <Button
+            variant="secondary"
             onClick={() => setShowLinkDialog(false)}
           >
-            Cancel
-          </button>
+            <i className="bi bi-x-circle me-2"></i>
+            {t('editor.cancel')}
+          </Button>
           {editor.isActive('link') && (
-            <button
-              type="button"
-              className="btn btn-danger"
+            <Button
+              variant="danger"
               onClick={() => {
                 editor.chain().focus().unsetLink().run();
                 setShowLinkDialog(false);
               }}
             >
-              Remove Link
-            </button>
+              <i className="bi bi-trash me-2"></i>
+              {t('editor.removeLink')}
+            </Button>
           )}
-          <button
-            type="button"
-            className="btn btn-primary"
+          <Button
+            variant="primary"
             onClick={handleSetLink}
           >
-            Insert
-          </button>
+            <i className="bi bi-check-circle me-2"></i>
+            {t('editor.insert')}
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

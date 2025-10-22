@@ -12,21 +12,9 @@ const {
   updateProfile,
   uploadAvatar,
   changePassword,
-  followUser,
-  unfollowUser,
-  getUserActivity,
-  getUserFollowers,
-  getUserFollowing
 } = require('../controllers/userController');
 const { adminAuth, protect } = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
-
-// Rate limiter for follow actions
-const followLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10, // 10 requests per minute
-  message: 'Too many follow/unfollow requests, please try again later'
-});
 
 // Configure multer for avatar uploads
 const storage = multer.diskStorage({
@@ -66,16 +54,11 @@ const publicUserLimiter = rateLimit({
 
 // Public routes - specific routes before dynamic params
 router.get('/profile/:username', publicUserLimiter, getUserProfile);
-router.get('/profile/:username/activity', publicUserLimiter, getUserActivity);
-router.get('/profile/:username/followers', publicUserLimiter, getUserFollowers);
-router.get('/profile/:username/following', publicUserLimiter, getUserFollowing);
 
 // Protected routes (require authentication)
 router.put('/profile', protect, updateProfile);
 router.post('/avatar', protect, upload.single('avatar'), uploadAvatar);
 router.put('/password', protect, changePassword);
-router.post('/:id/follow', protect, followLimiter, followUser);
-router.delete('/:id/follow', protect, followLimiter, unfollowUser);
 
 // Admin routes
 router.use('/admin', adminAuth);

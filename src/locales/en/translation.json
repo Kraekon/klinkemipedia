@@ -165,11 +165,9 @@
     "title": "Profile",
     "overview": "Overview",
     "articles": "Articles",
-    "activity": "Activity",
     "bio": "Bio",
     "noBio": "No bio provided",
     "noArticles": "No articles yet",
-    "noActivity": "No activity yet",
     "notFound": "User not found"
   },
   "page": {
@@ -370,5 +368,28 @@
     "category": "Category",
     "status": "Status",
     "actions": "Actions"
+  },
+  "editor": {
+  "placeholder": "Start writing...",
+  "bold": "Bold",
+  "italic": "Italic",
+  "strikethrough": "Strikethrough",
+  "code": "Code",
+  "heading1": "Heading 1",
+  "heading2": "Heading 2",
+  "heading3": "Heading 3",
+  "bulletList": "Bullet List",
+  "orderedList": "Numbered List",
+  "link": "Link",
+  "image": "Image",
+  "codeBlock": "Code Block",
+  "quote": "Quote",
+  "table": "Table",
+  "insertImage": "Insert Image",
+  "insertLink": "Insert Link",
+  "url": "URL",
+  "cancel": "Cancel",
+  "removeLink": "Remove Link",
+  "insert": "Insert"
   }
 }
