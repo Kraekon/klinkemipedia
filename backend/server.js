@@ -21,17 +21,14 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true // Allow cookies to be sent
-})); // Enable CORS for all routes
-app.use(express.json()); // Parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
-// CSRF Protection Note: JWT tokens in httpOnly cookies provide some CSRF protection
-// as they can only be sent by the same origin. For production, consider adding
-// explicit CSRF tokens using libraries like 'csurf' for additional security.
-app.use(cookieParser()); // Parse cookies
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-// Serve static files from uploads directory
+// Serve static files from uploads directory (if any local uploads exist)
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Request logging middleware
@@ -81,25 +78,37 @@ app.get('/api/health', async (req, res) => {
   res.json({
     status: isDbConnected ? 'healthy' : 'unhealthy',
     database: isDbConnected ? 'connected' : 'disconnected',
-    port: getEnv('PORT', 5001)
+    port: getEnv('PORT', 5001),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Root route
-app.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Welcome to Klinkemipedia API',
-    version: '1.0.0',
-    endpoints: {
-      test: '/api/test',
-      articles: '/api/articles',
-      articleBySlug: '/api/articles/:slug',
-      articlesByCategory: '/api/articles/category/:category',
-      searchArticles: '/api/articles/search?q=query'
-    }
+// Serve React build files in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from React build
+  app.use(express.static(path.join(__dirname, '../build')));
+  
+  // All other GET requests return the React app (must be after API routes)
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build', 'index.html'));
   });
-});
+} else {
+  // Root route for development
+  app.get('/', (req, res) => {
+    res.json({
+      success: true,
+      message: 'Welcome to Klinkemipedia API',
+      version: '1.0.0',
+      endpoints: {
+        test: '/api/test',
+        articles: '/api/articles',
+        articleBySlug: '/api/articles/:slug',
+        articlesByCategory: '/api/articles/category/:category',
+        searchArticles: '/api/articles/search?q=query'
+      }
+    });
+  });
+}
 
 // 404 handler
 app.use((req, res) => {
@@ -139,6 +148,7 @@ const startServer = async () => {
     console.log(`📡 API available at: http://localhost:${PORT}`);
     console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
     console.log(`📚 Articles API: http://localhost:${PORT}/api/articles`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log('─────────────────────────────────────\n');
   });
 };
