@@ -524,7 +524,8 @@
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
                             För ålder < 18, använd beräkning för barn.
                         </div>
-                        <div class="card">
+                        <!-- Give the results card an id so we can hide it when there are no results -->
+                        <div class="card" id="adult_results_card" style="display: none;">
                             <div class="card-header"><i class="bi bi-file-earmark-text me-2"></i>Resultat (vuxen)</div>
                             <div class="card-body" style="padding: 0;">
                                 <div class="table-responsive">
@@ -849,6 +850,7 @@
         // --- Utility Functions ---
 
         function isValidNum(x, min = -Infinity, max = Infinity) {
+            // NOTE: Treat empty string, null or undefined as invalid.
             if (x === null || x === undefined || x === "") return false;
             const num = Number(x);
             return !isNaN(num) && isFinite(num) && num >= min && num <= max;
@@ -1779,6 +1781,7 @@
             const adultClearBtn = document.getElementById("adult_clear_btn");
             const adultAgeWarning = document.getElementById("adult_age_warning");
             const adultResultsTbody = document.getElementById("adult_results_tbody");
+            const adultResultsCard = document.getElementById("adult_results_card");
             const adultMeanResult = document.getElementById("adult_mean_result");
             const adultFootnote = document.getElementById("adult_footnote");
             
@@ -1835,7 +1838,11 @@
                     }
                 });
                 selectedAdultRows.clear();
-                calculateAdultEgfr();
+                // hide results on clear
+                adultResultsTbody.innerHTML = "";
+                adultResultsCard.style.display = "none";
+                adultMeanResult.style.display = "none";
+                adultFootnote.style.display = "none";
             });
             
             adultResultsTbody.addEventListener("click", (e) => {
@@ -1853,25 +1860,33 @@
                 updateAdultMean();
             });
             
-            // --- eGFR Adult: Main Calculation (UPDATED) ---
+            // --- eGFR Adult: Main Calculation (FIXED) ---
             
             function calculateAdultEgfr() {
-                // Use the raw input string to avoid Number("") -> 0 for empty input
+                // Use the raw input string for checks to correctly detect empty fields
                 const ageInput = adultAge.value;
-                // If age is empty or invalid, clear results and hide warning (prevents warning after reset)
                 if (!isValidNum(ageInput)) {
+                    // Hide/clear results when age invalid or empty
                     adultAgeWarning.style.display = "none";
                     adultResultsTbody.innerHTML = "";
                     selectedAdultRows.clear();
                     adultMeanResult.style.display = "none";
                     adultFootnote.style.display = "none";
+                    adultResultsCard.style.display = "none";
                     return; // Not enough data
                 }
 
                 const age = Number(ageInput);
                 const sex = adultSex.value;
-                const scr_umol = Number(adultCreatinine.value);
-                const scys = Number(adultCysc.value);
+
+                // Use raw strings for creatinine and cysc so empty strings are not coerced to 0
+                const scr_raw = adultCreatinine.value;
+                const scys_raw = adultCysc.value;
+
+                const scr_umol = isValidNum(scr_raw) ? Number(scr_raw) : null;
+                const scys = isValidNum(scys_raw) ? Number(scys_raw) : null;
+                const scr_mgdl = (isValidNum(scr_raw) ? scr_umol / 88.4 : null);
+
                 const formulas = Array.from(adultFormulaCheckboxes)
                                     .filter(cb => cb.checked)
                                     .map(cb => cb.value);
@@ -1883,71 +1898,88 @@
                 adultFootnote.style.display = "none";
 
                 adultAgeWarning.style.display = (age < 18) ? "block" : "none";
-                if (age < 18) return;
+                if (age < 18) {
+                    adultResultsCard.style.display = "none";
+                    return;
+                }
 
-                const scr_mgdl = isValidNum(scr_umol) ? scr_umol / 88.4 : null;
                 const results = [];
-                let showFootnote = false;
+                // We'll set showFootnote true only if an asterisk-result is actually added to displayed results
+                let addedAsterisk = false;
 
-                // Q-values
+                // Q-values (compute q for cystatin C only if age valid)
                 const q_sex_age_adj = calculate_q_cysc(age, sex);
                 const q_age_adj_rlmr = calculate_q_cysc(age);
 
+                // EKFC
                 if (formulas.includes("EKFC")) {
-                    if (isValidNum(scr_mgdl)) {
+                    if (isValidNum(scr_raw)) {
                         const gfr = ekfc_gfr(scr_mgdl, (sex === "Man" ? 0.9 : 0.7), -0.322, -1.132);
                         results.push({ name: "EKFC (kreatinin)", value: gfr });
                     }
-                    if (isValidNum(scys)) {
+                    if (isValidNum(scys_raw)) {
                         const gfr_cys = ekfc_gfr(scys, 0.83, -0.322, -1.132);
                         results.push({ name: "EKFC (cystatin C)", value: gfr_cys });
                         if (isValidNum(q_sex_age_adj)) {
                             const gfr_cys_sexadj = ekfc_gfr(scys, q_sex_age_adj, -0.322, -1.132);
                             results.push({ name: "EKFC (cystatin C)*", value: gfr_cys_sexadj });
-                            showFootnote = true;
                         }
                     }
-                    if (isValidNum(scr_mgdl) && isValidNum(scys)) {
+                    if (isValidNum(scr_raw) && isValidNum(scys_raw)) {
                         const gfr_cr = ekfc_gfr(scr_mgdl, (sex === "Man" ? 0.9 : 0.7), -0.322, -1.132);
                         const gfr_cys = ekfc_gfr(scys, 0.83, -0.322, -1.132);
                         results.push({ name: "EKFC (kreatinin & cystatin C)", value: (gfr_cr + gfr_cys) / 2 });
                         if (isValidNum(q_sex_age_adj)) {
                             const gfr_cys_sexadj = ekfc_gfr(scys, q_sex_age_adj, -0.322, -1.132);
                             results.push({ name: "EKFC (kreatinin & cystatin C)*", value: (gfr_cr + gfr_cys_sexadj) / 2 });
-                            showFootnote = true;
                         }
                     }
                 }
+
+                // FAS
                 if (formulas.includes("FAS")) {
-                    if (isValidNum(scr_mgdl)) results.push({ name: "FAS (kreatinin)", value: fas_gfr_cr(scr_mgdl, age) });
-                    if (isValidNum(scys)) results.push({ name: "FAS (cystatin C)", value: fas_gfr_cys(scys, age) });
-                    if (isValidNum(scr_mgdl) && isValidNum(scys)) results.push({ name: "FAS (kreatinin & cystatin C)", value: (fas_gfr_cr(scr_mgdl, age) + fas_gfr_cys(scys, age)) / 2 });
+                    if (isValidNum(scr_raw)) results.push({ name: "FAS (kreatinin)", value: fas_gfr_cr(scr_mgdl, age) });
+                    if (isValidNum(scys_raw)) results.push({ name: "FAS (cystatin C)", value: fas_gfr_cys(scys, age) });
+                    if (isValidNum(scr_raw) && isValidNum(scys_raw)) results.push({ name: "FAS (kreatinin & cystatin C)", value: (fas_gfr_cr(scr_mgdl, age) + fas_gfr_cys(scys, age)) / 2 });
                 }
+
+                // r-LMR
                 if (formulas.includes("r-LMR")) {
-                    if (isValidNum(scr_umol)) results.push({ name: "r-LMR (kreatinin)", value: r_lmr_gfr_cr(scr_umol, sex, age) });
-                    if (isValidNum(scys)) results.push({ name: "r-LMR (cystatin C)", value: r_lmr_gfr_cys(scys, age, q_age_adj_rlmr) });
-                    if (isValidNum(scr_umol) && isValidNum(scys)) results.push({ name: "r-LMR (kreatinin & cystatin C)", value: (r_lmr_gfr_cr(scr_umol, sex, age) + r_lmr_gfr_cys(scys, age, q_age_adj_rlmr)) / 2 });
+                    if (isValidNum(scr_raw)) results.push({ name: "r-LMR (kreatinin)", value: r_lmr_gfr_cr(scr_umol, sex, age) });
+                    if (isValidNum(scys_raw)) results.push({ name: "r-LMR (cystatin C)", value: r_lmr_gfr_cys(scys, age, q_age_adj_rlmr) });
+                    if (isValidNum(scr_raw) && isValidNum(scys_raw)) results.push({ name: "r-LMR (kreatinin & cystatin C)", value: (r_lmr_gfr_cr(scr_umol, sex, age) + r_lmr_gfr_cys(scys, age, q_age_adj_rlmr)) / 2 });
                 }
+
+                // CKD-EPI (2021)
                 if (formulas.includes("CKD-EPI (2021)")) {
-                    if (isValidNum(scr_umol)) results.push({ name: "CKD-EPI (kreatinin)", value: ckdepi2021_gfr_cr(scr_umol, sex, age) });
-                    if (isValidNum(scys)) results.push({ name: "CKD-EPI (cystatin C)", value: ckdepi2021_gfr_cys(scys, sex, age) });
-                    if (isValidNum(scr_umol) && isValidNum(scys)) results.push({ name: "CKD-EPI (kreatinin & cystatin C)", value: ckdepi2021_gfr_cr_cys(scr_umol, scys, sex, age) });
+                    if (isValidNum(scr_raw)) results.push({ name: "CKD-EPI (kreatinin)", value: ckdepi2021_gfr_cr(scr_umol, sex, age) });
+                    if (isValidNum(scys_raw)) results.push({ name: "CKD-EPI (cystatin C)", value: ckdepi2021_gfr_cys(scys, sex, age) });
+                    if (isValidNum(scr_raw) && isValidNum(scys_raw)) results.push({ name: "CKD-EPI (kreatinin & cystatin C)", value: ckdepi2021_gfr_cr_cys(scr_umol, scys, sex, age) });
                 }
+
+                // LMR18
                 if (formulas.includes("LMR18")) {
-                    if (isValidNum(scr_umol)) results.push({ name: "LMR18 (kreatinin)", value: lmr18_gfr_cr(scr_umol, sex, age) });
+                    if (isValidNum(scr_raw)) results.push({ name: "LMR18 (kreatinin)", value: lmr18_gfr_cr(scr_umol, sex, age) });
                 }
+
+                // CAPA
                 if (formulas.includes("CAPA")) {
-                    if (isValidNum(scys)) results.push({ name: "CAPA (cystatin C)", value: capa_gfr_cys(scys, age) });
+                    if (isValidNum(scys_raw)) results.push({ name: "CAPA (cystatin C)", value: capa_gfr_cys(scys, age) });
                 }
+
+                // MDRD
                 if (formulas.includes("MDRD")) {
-                    if (isValidNum(scr_umol)) results.push({ name: "MDRD (kreatinin)", value: mdrd_gfr(scr_umol, sex, age) });
+                    if (isValidNum(scr_raw)) results.push({ name: "MDRD (kreatinin)", value: mdrd_gfr(scr_umol, sex, age) });
                 }
+
+                // BIS
                 if (formulas.includes("BIS") && age >= 70) {
-                    if (isValidNum(scr_umol)) results.push({ name: "BIS (kreatinin)", value: bis_gfr(scr_umol, sex, age) });
+                    if (isValidNum(scr_raw)) results.push({ name: "BIS (kreatinin)", value: bis_gfr(scr_umol, sex, age) });
                 }
                 
                 // Only show rows that actually have a numeric result
                 const visibleResults = results.filter(r => isValidNum(r.value));
+                // Generate table rows
                 visibleResults.forEach(res => {
                     const val = Math.round(res.value);
                     adultResultsTbody.innerHTML += `
@@ -1956,9 +1988,21 @@
                             <td class="text-end fw-bold">${val}</td>
                         </tr>`;
                 });
-                
-                adultFootnote.style.display = showFootnote ? "block" : "none";
-                updateAdultMean();
+
+                // Show/hide results card depending on presence of visible results
+                if (visibleResults.length > 0) {
+                    adultResultsCard.style.display = "block";
+                } else {
+                    adultResultsCard.style.display = "none";
+                }
+
+                // Footnote should only be visible when at least one displayed result uses the age/sex-adjusted Q (has an asterisk)
+                const footnoteShown = visibleResults.some(r => r.name.includes('*'));
+                adultFootnote.style.display = (visibleResults.length > 0 && footnoteShown) ? "block" : "none";
+
+                // Clear selected rows set (user must reselect if desired)
+                selectedAdultRows.clear();
+                adultMeanResult.style.display = "none";
             }
             
             function updateAdultMean() {
@@ -1966,6 +2010,7 @@
                 let count = 0;
                 selectedAdultRows.forEach(formula => {
                     const row = adultResultsTbody.querySelector(`tr[data-formula="${formula}"]`);
+                    if (!row) return;
                     const value = Number(row.dataset.value);
                     if (isValidNum(value)) {
                         sum += value;
@@ -2356,13 +2401,19 @@
             });
             
             // --- Initial State Triggers ---
-            // Set initial disabled states
+            // Set initial disabled states and hide adult results
             document.getElementById("adult_check_BIS").parentElement.classList.add("text-muted");
             childFormulaCheckboxes.forEach(cb => {
                 if (cb.value !== "Schwartz") {
                     cb.parentElement.querySelector("label").classList.add("text-muted");
                 }
             });
+            // Ensure adult results hidden on start (sex preset to "Man" is already set in HTML)
+            adultResultsCard.style.display = "none";
+            adultResultsTbody.innerHTML = "";
+            adultMeanResult.style.display = "none";
+            adultFootnote.style.display = "none";
+
             // Run Iohexol reset to set defaults
             resetIohexolForm();
         });
