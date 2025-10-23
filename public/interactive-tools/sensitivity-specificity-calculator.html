@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interaktiv beslutsgräns för sensitivitet och specificitet</title>
+    <title>Interaktiv beslutsgräns med prevalens</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -148,6 +148,20 @@
                     </div>
                 </div>
 
+                <!-- Prevalence Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-pie-chart-fill text-primary"></i> Prevalens
+                    </div>
+                    <div class="card-body">
+                        <label for="prevalence" class="form-label">
+                            Prevalens (sjuka): <strong><span id="prevalence_val">10</span>%</strong>
+                        </label>
+                        <!-- *** MODIFIED: Default value changed to 10 *** -->
+                        <input type="range" class="form-range" min="1" max="99" step="1" value="10" id="prevalence">
+                    </div>
+                </div>
+
                 <!-- Population Parameters -->
                 <div class="card">
                     <div class="card-header">
@@ -192,6 +206,14 @@
                         Visa referensintervall (95%)
                     </label>
                 </div>
+
+                <!-- *** NEW: Predictive Values Toggle *** -->
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="show_predictive_values">
+                    <label class="form-check-label" for="show_predictive_values">
+                        Visa prediktiva värdena
+                    </label>
+                </div>
                 
                 <div id="ref-interval-display" class="d-none">
                     <div class="card border-primary">
@@ -201,6 +223,27 @@
                             </h5>
                             <p id="reference_interval_text" class="ref-interval-metric mb-2">--</p>
                             <p id="sick_outside_ref_text" class="muted-small mb-0">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- *** NEW: Predictive Values Display *** -->
+                <div id="predictive-values-display" class="d-none">
+                    <div class="card border-info">
+                        <div class="card-body">
+                            <h5 class="text-info-emphasis">
+                                <i class="bi bi-bullseye"></i> Prediktiva Värden
+                            </h5>
+                            <div class="row text-center mt-2">
+                                <div class="col-6">
+                                    <h6 class="text-muted small">Positivt (PPV)</h6>
+                                    <p id="ppv_text" class="ref-interval-metric text-info-emphasis mb-0">--</p>
+                                </div>
+                                <div class="col-6">
+                                    <h6 class="text-muted small">Negativt (NPV)</h6>
+                                    <p id="npv_text" class="ref-interval-metric text-info-emphasis mb-0">--</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -293,12 +336,14 @@
             sick_mean: document.getElementById('sick_mean'),
             sick_sd: document.getElementById('sick_sd'),
             cutoff: document.getElementById('cutoff'),
+            prevalence: document.getElementById('prevalence'), 
             cutoff_bubble: document.getElementById('cutoff-bubble'),
             show_ref_interval: document.getElementById('show_ref_interval'),
             healthy_mean_val: document.getElementById('healthy_mean_val'),
             healthy_sd_val: document.getElementById('healthy_sd_val'),
             sick_mean_val: document.getElementById('sick_mean_val'),
             sick_sd_val: document.getElementById('sick_sd_val'),
+            prevalence_val: document.getElementById('prevalence_val'), 
             sensitivity_text: document.getElementById('sensitivity_text'),
             specificity_text: document.getElementById('specificity_text'),
             reference_interval_text: document.getElementById('reference_interval_text'),
@@ -306,6 +351,11 @@
             youden_text: document.getElementById('youden_text'),
             sick_outside_ref_text: document.getElementById('sick_outside_ref_text'),
             rocCollapse: document.getElementById('collapseOne'),
+            // *** ADDED ***
+            show_predictive_values: document.getElementById('show_predictive_values'),
+            predictive_values_display: document.getElementById('predictive-values-display'),
+            ppv_text: document.getElementById('ppv_text'),
+            npv_text: document.getElementById('npv_text'),
         };
 
         // --- Chart Initialization ---
@@ -392,16 +442,24 @@
             const sm = parseFloat(dom.sick_mean.value);
             const ss = parseFloat(dom.sick_sd.value);
             const cut = parseFloat(dom.cutoff.value);
+            const prev = parseFloat(dom.prevalence.value) / 100; 
 
             dom.healthy_mean_val.textContent = hm.toFixed(1);
             dom.healthy_sd_val.textContent = hs.toFixed(1);
             dom.sick_mean_val.textContent = sm.toFixed(1);
             dom.sick_sd_val.textContent = ss.toFixed(1);
+            dom.prevalence_val.textContent = (prev * 100).toFixed(0); 
             
             const sensitivity = 1 - pnorm(cut, sm, ss);
             const specificity = pnorm(cut, hm, hs);
             dom.sensitivity_text.textContent = (sensitivity * 100).toFixed(1) + '%';
             dom.specificity_text.textContent = (specificity * 100).toFixed(1) + '%';
+
+            // *** ADDED: PPV/NPV Calculation ***
+            // PPV = (sens * prev) / ((sens * prev) + ((1 - spec) * (1 - prev)))
+            const ppv = (sensitivity * prev) / ((sensitivity * prev) + ((1 - specificity) * (1 - prev)));
+            // NPV = (spec * (1 - prev)) / (((1 - sens) * prev) + (spec * (1 - prev)))
+            const npv = (specificity * (1 - prev)) / (((1 - sensitivity) * prev) + (specificity * (1 - prev)));
             
             if (dom.show_ref_interval.checked) {
                 const lower = hm - 1.96 * hs;
@@ -418,18 +476,29 @@
                 dom.ref_interval_display.classList.add('d-none');
             }
 
-            updateDistPlot(hm, hs, sm, ss, cut);
+            // *** ADDED: Show/Hide Predictive Values ***
+            if (dom.show_predictive_values.checked) {
+                dom.ppv_text.textContent = isNaN(ppv) ? 'N/A' : (ppv * 100).toFixed(1) + '%';
+                dom.npv_text.textContent = isNaN(npv) ? 'N/A' : (npv * 100).toFixed(1) + '%';
+                dom.predictive_values_display.classList.remove('d-none');
+            } else {
+                dom.predictive_values_display.classList.add('d-none');
+            }
+
+            updateDistPlot(hm, hs, sm, ss, cut, prev);
             updateRocPlot(hm, hs, sm, ss, cut);
         }
         
-        function updateDistPlot(hm, hs, sm, ss, cut) {
+        function updateDistPlot(hm, hs, sm, ss, cut, prev) {
             const healthyData = [];
             const sickData = [];
+            const healthy_scale = 1 - prev;
+            const sick_scale = prev;
 
             for (let i = 0; i <= NUM_POINTS; i++) {
                 const x = CHART_MIN + (CHART_MAX - CHART_MIN) * (i / NUM_POINTS);
-                healthyData.push({x: x, y: dnorm(x, hm, hs)});
-                sickData.push({x: x, y: dnorm(x, sm, ss)});
+                healthyData.push({x: x, y: dnorm(x, hm, hs) * healthy_scale});
+                sickData.push({x: x, y: dnorm(x, sm, ss) * sick_scale});
             }
             
             const createShadedArea = (data, threshold, condition) => {
@@ -440,10 +509,10 @@
             };
 
             distChart.data.datasets = [
-                { data: createShadedArea(healthyData, cut, 'less'), fill: true, backgroundColor: 'rgba(60, 179, 113, 0.5)', borderColor: 'transparent' },
-                { data: createShadedArea(healthyData, cut, 'more'), fill: true, backgroundColor: 'rgba(255, 215, 0, 0.5)', borderColor: 'transparent' },
-                { data: createShadedArea(sickData, cut, 'less'), fill: true, backgroundColor: 'rgba(255, 160, 122, 0.5)', borderColor: 'transparent' },
-                { data: createShadedArea(sickData, cut, 'more'), fill: true, backgroundColor: 'rgba(220, 20, 60,.5)', borderColor: 'transparent' },
+                { data: createShadedArea(healthyData, cut, 'less'), fill: true, backgroundColor: 'rgba(60, 179, 113, 0.5)', borderColor: 'transparent' }, // TN
+                { data: createShadedArea(healthyData, cut, 'more'), fill: true, backgroundColor: 'rgba(255, 215, 0, 0.5)', borderColor: 'transparent' }, // FP
+                { data: createShadedArea(sickData, cut, 'less'), fill: true, backgroundColor: 'rgba(255, 160, 122, 0.5)', borderColor: 'transparent' }, // FN
+                { data: createShadedArea(sickData, cut, 'more'), fill: true, backgroundColor: 'rgba(220, 20, 60,.5)', borderColor: 'transparent' },    // TP
                 { data: healthyData, borderColor: 'darkgreen', borderWidth: 2, tension: 0.1 },
                 { data: sickData, borderColor: 'darkred', borderWidth: 2, tension: 0.1 }
             ];
@@ -546,7 +615,8 @@
             
             const simulatorInputs = [
                 dom.healthy_mean, dom.healthy_sd, dom.sick_mean, dom.sick_sd,
-                dom.cutoff, dom.show_ref_interval
+                dom.cutoff, dom.show_ref_interval, dom.prevalence,
+                dom.show_predictive_values // *** ADDED ***
             ];
             simulatorInputs.forEach(el => {
                 if(el) {
@@ -577,3 +647,4 @@
     </script>
 </body>
 </html>
+

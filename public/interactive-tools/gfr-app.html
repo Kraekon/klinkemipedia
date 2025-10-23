@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFR-beräknare</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* Use Inter font */
+        body,
+        .nav-link,
+        .btn,
+        .form-control,
+        .form-select,
+        .card-header,
+        .card-body,
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Inter", sans-serif;
+        }
+
+        /* Custom styles */
+        body {
+            background-color: #f4f7f6;
+            /* A very light, neutral background */
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-tabs .nav-link {
+            color: #495057;
+            border: 0;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active,
+        .nav-tabs .nav-link:hover {
+            color: #0d6efd;
+            border-bottom: 3px solid #0d6efd;
+        }
+
+        /* Form styling */
+        .form-label {
+            font-weight: 500;
+            color: #343a40;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 0.5rem;
+            border: 1px solid #ced4da;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Custom card styling */
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            /* Remove forced 100% height to prevent layout jumps from canvas resizing */
+            height: auto;
+            /* Make cards adapt to their content height */
+        }
+
+        .card-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 1rem 1.25rem;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .btn-primary {
+            border-radius: 0.5rem;
+            font-weight: 500;
+            padding: 0.6rem 1rem;
+        }
+        
+        .btn-outline-secondary {
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Checkbox styling */
+        .form-check-input {
+            border-radius: 0.35rem;
+            border: 1px solid #ced4da;
+        }
+
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .form-check-label {
+            padding-left: 0.25rem;
+        }
+
+        /* Result display */
+        .result-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .result-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+        
+        .result-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #343a40;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-unit {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #6c757d;
+            margin-left: 0.25rem;
+        }
+        
+        .result-group {
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .result-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        /* Table styling */
+        #adultResultsTable,
+        #childResultsTable {
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        #adultResultsTable th, #childResultsTable th {
+            background-color: #f8f9fa;
+            text-align: left;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        #adultResultsTable td, #childResultsTable td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        #adultResultsTable tr, #childResultsTable tr {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        #adultResultsTable tr:last-child td, #childResultsTable tr:last-child td {
+            border-bottom: none;
+        }
+
+        #adultResultsTable tr:hover, #childResultsTable tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        #adultResultsTable tr.selected, #childResultsTable tr.selected {
+            background-color: #e0e9ff;
+        }
+        
+        /* Mean result display */
+        .mean-result {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #198754;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.5rem;
+        }
+        
+        .footnote {
+             font-size: 0.85rem;
+             color: #6c757d;
+             margin-top: 1rem;
+        }
+
+        /* Ensure app fits within 800px */
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+            border-radius: 0 0 1rem 1rem;
+            /* Add padding to prevent content touching edges */
+            padding-bottom: 1.5rem; 
+        }
+        
+        .tab-content {
+            padding: 1.5rem;
+        }
+        
+        /* Hide number input spinners */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        /* Ensure table header is sticky */
+         .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        /* Chart wrapper and canvas — prevents Chart.js from resizing parent */
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 350px; /* fixed height for the plot card */
+            overflow: hidden;
+        }
+        .chart-wrapper canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Navigation Tabs -->
+        <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-iohexol-tab" data-bs-toggle="tab" data-bs-target="#nav-iohexol"
+                    type="button" role="tab" aria-controls="nav-iohexol" aria-selected="true">
+                    <i class="bi bi-droplet-half me-1"></i> Iohexolberäkning
+                </button>
+                <button class="nav-link" id="nav-adult-tab" data-bs-toggle="tab" data-bs-target="#nav-adult"
+                    type="button" role="tab" aria-controls="nav-adult" aria-selected="false">
+                    <i class="bi bi-person me-1"></i> eGFR (vuxna)
+                </button>
+                <button class="nav-link" id="nav-child-tab" data-bs-toggle="tab" data-bs-target="#nav-child"
+                    type="button" role="tab" aria-controls="nav-child" aria-selected="false">
+                    <i class="bi bi-person-standing me-1"></i> eGFR (barn)
+                </button>
+                <button class="nav-link" id="nav-other-tab" data-bs-toggle="tab" data-bs-target="#nav-other"
+                    type="button" role="tab" aria-controls="nav-other" aria-selected="false">
+                    <i class="bi bi-calculator me-1"></i> Övrigt
+                </button>
+                <button class="nav-link" id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
+                    type="button" role="tab" aria-controls="nav-about" aria-selected="false">
+                    <i class="bi bi-info-circle me-1"></i> Om
+                </button>
+            </div>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="nav-tabContent">
+
+            <!-- Iohexol Tab -->
+            <div class="tab-pane fade show active" id="nav-iohexol" role="tabpanel" aria-labelledby="nav-iohexol-tab">
+                <div class="row g-4">
+                    <!-- Left Column: Inputs -->
+                    <div class="col-lg-5">
+                        <div class="row g-3">
+                            <!-- Patient Card -->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header"><i class="bi bi-person-lines-fill me-2"></i>Patient</div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="io_sex" class="form-label">Kön</label>
+                                            <select id="io_sex" class="form-select">
+                                                <option value="Man" selected>Man</option>
+                                                <option value="Kvinna">Kvinna</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="io_height" class="form-label">Längd (cm)</label>
+                                            <input id="io_height" type="number" class="form-control"
+                                                min="100" max="230" step="1">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="io_weight" class="form-label">Vikt (kg)</label>
+                                            <input id="io_weight" type="number" class="form-control"
+                                                min="30" max="200" step="1">
+                                        </div>
+                                        <div>
+                                            <label for="io_bsa_formula" class="form-label">BSA-formel</label>
+                                            <select id="io_bsa_formula" class="form-select"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Injektion Card -->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header"><i class="bi bi-eyedropper me-2"></i>Injektion</div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="io_conc_inj" class="form-label">Iohexol (mg jod/mL)</label>
+                                            <select id="io_conc_inj" class="form-select">
+                                                <option value="140">Omnipaque 140</option>
+                                                <option value="180">Omnipaque 180</option>
+                                                <option value="200">Omnipaque 200</option>
+                                                <option value="240">Omnipaque 240</option>
+                                                <option value="300" selected>Omnipaque 300</option>
+                                                <option value="350">Omnipaque 350</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="io_vol_inj" class="form-label">Volym iohexol (mL)</label>
+                                            <input id="io_vol_inj" type="number" class="form-control" value="4" min="0"
+                                                step="0.1">
+                                        </div>
+                                        <div>
+                                            <label for="io_inj_time" class="form-label">Tidpunkt (HH:MM)</label>
+                                            <input id="io_inj_time" type="time" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Provtagning Card -->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header"><i class="bi bi-hourglass-split me-2"></i>Provtagning</div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="io_num_points" class="form-label">Antal mätpunkter</label>
+                                            <select id="io_num_points" class="form-select">
+                                                <option value="1" selected>1-punkt</option>
+                                                <option value="2">2-punkt</option>
+                                                <option value="4">4-punkt</option>
+                                            </select>
+                                        </div>
+                                        <!-- Sample Point 1 -->
+                                        <div class="row g-2 mb-2">
+                                            <div class="col">
+                                                <label for="io_sample_time1" class="form-label">Tid 1 (HH:MM)</label>
+                                                <input id="io_sample_time1" type="time" class="form-control">
+                                            </div>
+                                            <div class="col">
+                                                <label for="io_conc_p1" class="form-label">Konc. 1 (mg/L)</label>
+                                                <input id="io_conc_p1" type="number" class="form-control" min="0">
+                                            </div>
+                                        </div>
+                                        <!-- Sample Point 2 -->
+                                        <div class="row g-2 mb-2" id="io_point_2_group" style="display: none;">
+                                            <div class="col">
+                                                <label for="io_sample_time2" class="form-label">Tid 2 (HH:MM)</label>
+                                                <input id="io_sample_time2" type="time" class="form-control">
+                                            </div>
+                                            <div class="col">
+                                                <label for="io_conc_p2" class="form-label">Konc. 2 (mg/L)</label>
+                                                <input id="io_conc_p2" type="number" class="form-control" min="0">
+                                            </div>
+                                        </div>
+                                        <!-- Sample Point 3 -->
+                                        <div class="row g-2 mb-2" id="io_point_3_group" style="display: none;">
+                                            <div class="col">
+                                                <label for="io_sample_time3" class="form-label">Tid 3 (HH:MM)</label>
+                                                <input id="io_sample_time3" type="time" class="form-control">
+                                            </div>
+                                            <div class="col">
+                                                <label for="io_conc_p3" class="form-label">Konc. 3 (mg/L)</label>
+                                                <input id="io_conc_p3" type="number" class="form-control" min="0">
+                                            </div>
+                                        </div>
+                                        <!-- Sample Point 4 -->
+                                        <div class="row g-2" id="io_point_4_group" style="display: none;">
+                                            <div class="col">
+                                                <label for="io_sample_time4" class="form-label">Tid 4 (HH:MM)</label>
+                                                <input id="io_sample_time4" type="time" class="form-control">
+                                            </div>
+                                            <div class="col">
+                                                <label for="io_conc_p4" class="form-label">Konc. 4 (mg/L)</label>
+                                                <input id="io_conc_p4" type="number" class="form-control" min="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Actions -->
+                            <div class="col-12 d-grid">
+                                <button id="io_clear_btn" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Återställ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column: Results & Plot -->
+                    <div class="col-lg-7">
+                        <!-- Error Message -->
+                        <div id="io_error" class="alert alert-danger" style="display: none;"></div>
+                        <!-- Results Card -->
+                        <div id="io_results_card" class="result-card" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6 result-group">
+                                    <div class="result-label">Absolut mGFR</div>
+                                    <span class="result-value" id="io_result_gfr">--</span>
+                                    <span class="result-unit">mL/min</span>
+                                </div>
+                                <div class="col-md-6 result-group">
+                                    <div class="result-label">Relativt mGFR</div>
+                                    <span class="result-value" id="io_result_gfr_adj">--</span>
+                                    <span class="result-unit">mL/min/1.73m²</span>
+                                </div>
+                            </div>
+                            <div id="io_result_optimal_time_group" class="result-group">
+                                <div class="result-label">Optimal provtagningstid</div>
+                                <span class="result-value" id="io_result_optimal_time" style="font-size: 1.5rem;">--</span>
+                            </div>
+                            <!-- Sub-calculations accordion placeholder (dynamically filled) -->
+                            <div id="sub_calc_accordion" style="display: none;"></div>
+                        </div>
+                        <!-- Plot Card -->
+                        <div class="card mt-4">
+                            <div class="card-header"><i class="bi bi-graph-up me-2"></i>Koncentration vs. Tid</div>
+                            <div class="card-body">
+                                <!-- Wrapper div to control aspect ratio -->
+                                <div class="chart-wrapper"> 
+                                    <canvas id="iohexolChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- eGFR Adult Tab -->
+            <div class="tab-pane fade" id="nav-adult" role="tabpanel" aria-labelledby="nav-adult-tab">
+                <div class="row g-4">
+                    <!-- Left Column: Inputs -->
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header"><i class="bi bi-person-lines-fill me-2"></i>Patient (vuxen)</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="adult_age" class="form-label">Ålder (år)</label>
+                                    <input id="adult_age" type="number" class="form-control" min="0"
+                                        max="120" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="adult_sex" class="form-label">Kön</label>
+                                    <select id="adult_sex" class="form-select">
+                                        <option value="Man" selected>Man</option>
+                                        <option value="Kvinna">Kvinna</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="adult_creatinine" class="form-label">Kreatinin (µmol/L)</label>
+                                    <input id="adult_creatinine" type="number" class="form-control"
+                                        min="1" max="5000" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="adult_cysc" class="form-label">Cystatin C (mg/L)</label>
+                                    <input id="adult_cysc" type="number" class="form-control"
+                                        min="0.2" max="10" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header"><i class="bi bi-check2-square me-2"></i>Formler (vuxen)</div>
+                            <div class="card-body" id="adult_formulas_container">
+                                <!-- Checkboxes will be injected here -->
+                            </div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button id="adult_clear_btn" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Återställ
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Right Column: Results -->
+                    <div class="col-lg-7">
+                        <div id="adult_age_warning" class="alert alert-warning" style="display: none;">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            För ålder < 18, använd beräkning för barn.
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><i class="bi bi-file-earmark-text me-2"></i>Resultat (vuxen)</div>
+                            <div class="card-body" style="padding: 0;">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="adultResultsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Formel</th>
+                                                <th class="text-end">Resultat (mL/min/1.73m²)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adult_results_tbody">
+                                            <!-- Results injected here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white" style="border-top: 1px solid #e9ecef;">
+                                <div id="adult_mean_result" class="mean-result" style="display: none;"></div>
+                                <div id="adult_footnote" class="footnote" style="display: none;">
+                                    * Beräknat med köns- och åldersjusterad Q-faktor för cystatin C
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- eGFR Child Tab -->
+            <div class="tab-pane fade" id="nav-child" role="tabpanel" aria-labelledby="nav-child-tab">
+                <div class="row g-4">
+                    <!-- Left Column: Inputs -->
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header"><i class="bi bi-person-lines-fill me-2"></i>Patient (barn)</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="child_age" class="form-label">Ålder (år)</label>
+                                    <input id="child_age" type="number" class="form-control" min="0"
+                                        max="25" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="child_sex" class="form-label">Kön</label>
+                                    <select id="child_sex" class="form-select">
+                                        <option value="Man" selected>Pojke</option>
+                                        <option value="Kvinna">Flicka</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="child_height" class="form-label">Längd (cm)</label>
+                                    <input id="child_height" type="number" class="form-control"
+                                        min="30" max="200" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="child_creatinine" class="form-label">Kreatinin (µmol/L)</label>
+                                    <input id="child_creatinine" type="number" class="form-control"
+                                        min="1" max="5000" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="child_cysc" class="form-label">Cystatin C (mg/L)</label>
+                                    <input id="child_cysc" type="number" class="form-control"
+                                        min="0.2" max="10" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header"><i class="bi bi-check2-square me-2"></i>Formler (barn)</div>
+                            <div class="card-body" id="child_formulas_container">
+                                <!-- Checkboxes will be injected here -->
+                            </div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button id="child_clear_btn" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Återställ
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Right Column: Results -->
+                    <div class="col-lg-7">
+                        <div id="child_age_warning" class="alert alert-warning" style="display: none;">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            För ålder > 18, använd beräkning för vuxna.
+                        </div>
+                        <div class="card">
+                             <div class="card-header"><i class="bi bi-file-earmark-text me-2"></i>Resultat (barn)</div>
+                             <div class="card-body" style="padding: 0;">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="childResultsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Formel</th>
+                                                <th class="text-end">Resultat (mL/min/1.73m²)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="child_results_tbody">
+                                            <!-- Results injected here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white" style="border-top: 1px solid #e9ecef;">
+                                <div id="child_mean_result" class="mean-result" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Tab -->
+            <div class="tab-pane fade" id="nav-other" role="tabpanel" aria-labelledby="nav-other-tab">
+                <div class="row g-4">
+                    <!-- Cockcroft-Gault -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header"><i class="bi bi-person-check me-2"></i>Cockcroft-Gault</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="cg_age" class="form-label">Ålder (år)</label>
+                                    <input id="cg_age" type="number" class="form-control" min="0"
+                                        max="120" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cg_sex" class="form-label">Kön</label>
+                                    <select id="cg_sex" class="form-select">
+                                        <option value="Man" selected>Man</option>
+                                        <option value="Kvinna">Kvinna</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cg_weight" class="form-label">Vikt (kg)</label>
+                                    <input id="cg_weight" type="number" class="form-control" min="30"
+                                        max="200" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cg_creatinine" class="form-label">Kreatinin (µmol/L)</label>
+                                    <input id="cg_creatinine" type="number" class="form-control"
+                                        min="1" max="5000" step="1">
+                                </div>
+                                <div id="cg_result_card" class="result-card" style="display: none; margin-top: 1rem;">
+                                    <div class="result-label">Kreatininclearance</div>
+                                    <span class="result-value" id="cg_result">--</span>
+                                    <span class="result-unit">mL/min</span>
+                                </div>
+                                <button id="cg_clear_btn" class="btn btn-outline-secondary w-100 mt-3">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Återställ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Optimal Sampling Time -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header"><i class="bi bi-clock-history me-2"></i>Optimal provtagningstid (1-punkt)</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="opt_sex" class="form-label">Kön</label>
+                                    <select id="opt_sex" class="form-select">
+                                        <option value="Man" selected>Man</option>
+                                        <option value="Kvinna">Kvinna</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="opt_weight" class="form-label">Vikt (kg)</label>
+                                    <input id="opt_weight" type="number" class="form-control" min="30"
+                                        max="200" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="opt_height" class="form-label">Längd (cm)</label>
+                                    <input id="opt_height" type="number" class="form-control"
+                                        min="100" max="230" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="opt_egfr" class="form-label">eGFR (mL/min/1.73m²)</label>
+                                    <input id="opt_egfr" type="number" class="form-control" min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="opt_bsa_formula" class="form-label">BSA-formel</label>
+                                    <select id="opt_bsa_formula" class="form-select"></select>
+                                </div>
+                                <div id="opt_result_card" class="result-card" style="display: none; margin-top: 1rem;">
+                                    <div class="result-label">Optimal tid</div>
+                                    <span class="result-value" id="opt_result">--</span>
+                                </div>
+                                <button id="opt_clear_btn" class="btn btn-outline-secondary w-100 mt-3">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Återställ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- GFR Conversion -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header"><i class="bi bi-arrow-left-right me-2"></i>GFR-konvertering</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="gfr_conv_direction" class="form-label">Konverteringsriktning</label>
+                                    <select id="gfr_conv_direction" class="form-select">
+                                        <option value="abs_to_rel" selected>Absolut till relativ</option>
+                                        <option value="rel_to_abs">Relativ till absolut</option>
+                                    </select>
+                                </div>
+                                <div id="gfr_abs_group" class="mb-3">
+                                    <label for="gfr_abs" class="form-label">Absolut GFR (mL/min)</label>
+                                    <input id="gfr_abs" type="number" class="form-control" min="0">
+                                </div>
+                                <div id="gfr_rel_group" class="mb-3" style="display: none;">
+                                    <label for="gfr_rel" class="form-label">Relativ GFR (mL/min/1.73m²)</label>
+                                    <input id="gfr_rel" type="number" class="form-control" min="0">
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label for="gfr_conv_height" class="form-label">Längd (cm)</label>
+                                    <input id="gfr_conv_height" type="number" class="form-control"
+                                        min="100" max="230" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gfr_conv_weight" class="form-label">Vikt (kg)</label>
+                                    <input id="gfr_conv_weight" type="number" class="form-control"
+                                        min="30" max="200" step="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gfr_conv_sex" class="form-label">Kön</label>
+                                    <select id="gfr_conv_sex" class="form-select">
+                                        <option value="Man" selected>Man</option>
+                                        <option value="Kvinna">Kvinna</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gfr_conv_bsa_formula" class="form-label">BSA-formel</label>
+                                    <select id="gfr_conv_bsa_formula" class="form-select"></select>
+                                </div>
+                                <div id="gfr_conv_result_card" class="result-card"
+                                    style="display: none; margin-top: 1rem;">
+                                    <div class="result-label" id="gfr_conv_result_label">--</div>
+                                    <span class="result-value" id="gfr_conv_result">--</span>
+                                    <span class="result-unit" id="gfr_conv_result_unit">--</span>
+                                </div>
+                                <button id="gfr_conv_clear_btn" class="btn btn-outline-secondary w-100 mt-3">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Återställ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Tab -->
+            <div class="tab-pane fade" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title mt-2">GFR-appen</h5>
+                                <p class="card-text text-muted">Version 1.0 (JS)</p>
+                                <hr>
+                                <p class="card-text">
+                                    Skapad av <span class="text-primary">Filip Landgren</span>
+                                </p>
+                                <p class="card-text text-muted">filip.landgren@gmail.com</p>
+                                <p class="card-text mt-4">
+                                    <small>Denna JavaScript-version är en anpassning av den ursprungliga R/Shiny-appen.</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- App Logic -->
+    <script>
+        // --- Constants ---
+        const BSA_FORMULAS = {
+            "dubois": "Du Bois",
+            "dubois_tweaked": "Du Bois (Tweaked)",
+            "haycock": "Haycock",
+            "boyd": "Boyd",
+            "gehan": "Gehan",
+            "fujimoto": "Fujimoto",
+            "schlich": "Schlich"
+        };
+
+        const EGFR_ADULT_FORMULAS = {
+            "EKFC": "EKFC",
+            "FAS": "FAS",
+            "r-LMR": "r-LMR",
+            "CKD-EPI (2021)": "CKD-EPI (2021)",
+            "LMR18": "LMR18",
+            "CAPA": "CAPA",
+            "MDRD": "MDRD",
+            "BIS": "BIS (≥70 år)"
+        };
+
+        const EGFR_CHILD_FORMULAS = {
+            "Schwartz": "Schwartz (0 - 18 år)",
+            "CKiD_U25": "CKiD U25 (≥1 år)",
+            "EKFC_child": "EKFC (≥2 år)",
+            "LMR18_child": "LMR18 (2-17 år)",
+            "CAPA_child": "CAPA (≥1 år)",
+            "Zappitelli": "Zappitelli (8-17 år)"
+        };
+        
+        const IOHEHOL_CONC_MAP = {
+            "350": 755,
+            "300": 647,
+            "240": 518,
+            "200": 431,
+            "180": 388,
+            "140": 302
+        };
+
+
+        // --- Utility Functions ---
+
+        function isValidNum(x, min = -Infinity, max = Infinity) {
+            if (x === null || x === undefined || x === "") return false;
+            const num = Number(x);
+            return !isNaN(num) && isFinite(num) && num >= min && num <= max;
+        }
+
+        function isValidHHMM(timeStr) {
+            if (typeof timeStr !== 'string' || timeStr.trim() === "") return false;
+            return /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/.test(timeStr);
+        }
+
+        function calcTimeDifferenceMin(time1Str, time2Str) {
+            if (!isValidHHMM(time1Str) || !isValidHHMM(time2Str)) return null;
+            const [h1, m1] = time1Str.split(':').map(Number);
+            const [h2, m2] = time2Str.split(':').map(Number);
+            const date1 = new Date(2000, 0, 1, h1, m1);
+            const date2 = new Date(2000, 0, 1, h2, m2);
+            let diff = (date2.getTime() - date1.getTime()) / (1000 * 60);
+            
+            // Handle overnight wrap-around (e.g., 23:00 to 01:00)
+            if (diff < 0) {
+                 diff += 24 * 60;
+            }
+            return diff;
+        }
+        
+        function formatHoursMinutes(decimalHours) {
+            if (!isValidNum(decimalHours)) return "N/A";
+            const hours = Math.floor(decimalHours);
+            const minutes = Math.round((decimalHours - hours) * 60);
+            return `${hours} h ${minutes} min`;
+        }
+        
+        function formatResult(value, digits = 1) {
+            if (isValidNum(value)) {
+                return value.toFixed(digits);
+            }
+            return "--";
+        }
+
+
+        // --- BSA (Body Surface Area) Calculations ---
+
+        function bsaSelect(weight, height, sex, formulaName) {
+            if (!isValidNum(weight) || !isValidNum(height)) return null;
+            
+            switch (formulaName) {
+                case "dubois":
+                    return 0.007184 * Math.pow(weight, 0.425) * Math.pow(height, 0.725);
+                case "dubois_tweaked":
+                    return 0.007184 * Math.pow(weight, 0.428) * Math.pow(height, 0.725);
+                case "haycock":
+                    return 0.024265 * Math.pow(weight, 0.5378) * Math.pow(height, 0.3964);
+                case "boyd":
+                    const weight_g = weight * 1000;
+                    const exponent = 0.7285 - (0.0188 * Math.log10(weight_g));
+                    return 0.0003207 * Math.pow(height, 0.3) * Math.pow(weight_g, exponent);
+                case "gehan":
+                    return 0.0235 * Math.pow(weight, 0.51456) * Math.pow(height, 0.42246);
+                case "fujimoto":
+                    return 0.008883 * Math.pow(weight, 0.444) * Math.pow(height, 0.663);
+                case "schlich":
+                    if (sex === "Man") {
+                        return 0.000975482 * Math.pow(weight, 0.46) * Math.pow(height, 1.08);
+                    } else { // Kvinna
+                        return 0.000578848 * Math.pow(weight, 0.38) * Math.pow(height, 1.24);
+                    }
+                default:
+                    return null;
+            }
+        }
+        
+        function populateBsaSelect(elementId) {
+            const select = document.getElementById(elementId);
+            if (!select) return;
+            select.innerHTML = ""; // Clear existing options
+            for (const [key, name] of Object.entries(BSA_FORMULAS)) {
+                const option = new Option(name, key);
+                if (key === "dubois") {
+                    option.selected = true;
+                }
+                select.add(option);
+            }
+        }
+
+
+        // --- eGFR (Glomerular Filtration Rate) Calculations ---
+
+        function calculate_q_cysc(age, sex = null) {
+            if (!isValidNum(age, 18)) return null;
+            let q_val;
+            if (sex !== null) {
+                q_val = 0.83 * Math.pow(0.996, age);
+                if (sex === "Man") {
+                    q_val *= 1.05;
+                }
+            } else {
+                q_val = (age < 50) ? 0.83 : (0.83 + 0.005 * (age - 50));
+            }
+            return q_val;
+        }
+
+        function ekfc_gfr(marker_value, q_value, alpha_lt1, alpha_ge1) {
+            if (!isValidNum(marker_value) || !isValidNum(q_value)) return null;
+            const ratio = marker_value / q_value;
+            const exponent = (ratio < 1) ? alpha_lt1 : alpha_ge1;
+            return 107.3 * Math.pow(ratio, exponent);
+        }
+
+        function q_cr_child(sex, age) {
+            if (!isValidNum(age, 2)) return null;
+            let log_q_umol;
+            if (sex === "Man") {
+                log_q_umol = 3.2 + 0.259 * age - 0.543 * Math.log(age) - 0.00763 * Math.pow(age, 2) + 0.000079 * Math.pow(age, 3);
+            } else {
+                log_q_umol = 3.08 + 0.177 * age - 0.223 * Math.log(age) - 0.00596 * Math.pow(age, 2) + 0.0000686 * Math.pow(age, 3);
+            }
+            return Math.exp(log_q_umol);
+        }
+
+        function fas_gfr_cr(scr_mgdl, age) {
+            if (!isValidNum(scr_mgdl) || !isValidNum(age)) return null;
+            let gfr = 107.3 / (scr_mgdl / 0.7);
+            if (age > 40) gfr *= Math.pow(0.988, age - 40);
+            return gfr;
+        }
+
+        function fas_gfr_cys(scys, age) {
+            if (!isValidNum(scys) || !isValidNum(age)) return null;
+            let gfr = 107.3 / (scys / 0.8);
+            if (age > 40) gfr *= Math.pow(0.988, age - 40);
+            return gfr;
+        }
+
+        function r_lmr_gfr_cr(scr_umol, sex, age) {
+            if (!isValidNum(scr_umol) || !isValidNum(age)) return null;
+            let x_val;
+            if (sex === "Man") {
+                x_val = (scr_umol < 180) ? (2.56 + 0.00968 * (180 - scr_umol)) : (2.56 - 0.926 * Math.log(scr_umol / 180));
+            } else { // Kvinna
+                x_val = (scr_umol < 150) ? (2.50 + 0.0121 * (150 - scr_umol)) : (2.50 - 0.926 * Math.log(scr_umol / 150));
+            }
+            return Math.exp(x_val - 0.0158 * age + 0.438 * Math.log(age));
+        }
+
+        function r_lmr_gfr_cys(scys, age, q_value) {
+            if (!isValidNum(scys) || !isValidNum(age) || !isValidNum(q_value)) return null;
+            const b_over_q = scys / q_value;
+            const x_val = (b_over_q < 2.33) ? (4.3087 - 0.7623 * b_over_q) : (3.3145 - 0.9260 * Math.log(b_over_q));
+            return Math.exp(x_val - 0.0158 * age + 0.438 * Math.log(age));
+        }
+
+        function ckdepi2021_gfr_cr(scr_umol, sex, age) {
+            if (!isValidNum(scr_umol) || !isValidNum(age)) return null;
+            const scr_mgdl = scr_umol / 88.4;
+            const kappa = (sex === "Man") ? 0.9 : 0.7;
+            const alpha = (sex === "Man") ? -0.302 : -0.241;
+            const sex_factor = (sex === "Man") ? 1 : 1.012;
+            return 142 * Math.pow(Math.min(scr_mgdl / kappa, 1), alpha) * Math.pow(Math.max(scr_mgdl / kappa, 1), -1.2) * Math.pow(0.9938, age) * sex_factor;
+        }
+
+        function ckdepi2021_gfr_cys(scys, sex, age) {
+            if (!isValidNum(scys) || !isValidNum(age)) return null;
+            const kappa = 0.8;
+            const alpha = -0.4;
+            const sex_factor = (sex === "Man") ? 1 : 1.012;
+            return 130 * Math.pow(Math.min(scys / kappa, 1), alpha) * Math.pow(Math.max(scys / kappa, 1), -0.6) * Math.pow(0.996, age) * sex_factor;
+        }
+        
+        function ckdepi2021_gfr_cr_cys(scr_umol, scys, sex, age) {
+            if (!isValidNum(scr_umol) || !isValidNum(scys) || !isValidNum(age)) return null;
+            const scr_mgdl = scr_umol / 88.4;
+            const kappa_cr = (sex === "Man") ? 0.9 : 0.7;
+            const alpha_cr = (sex === "Man") ? -0.219 : -0.248;
+            const sex_factor = (sex === "Man") ? 1 : 1.018;
+            return 135 * Math.pow(Math.min(scr_mgdl / kappa_cr, 1), alpha_cr) * Math.pow(Math.max(scr_mgdl / kappa_cr, 1), -0.601) *
+                   Math.pow(Math.min(scys / 0.8, 1), -0.375) * Math.pow(Math.max(scys / 0.8, 1), -0.711) * Math.pow(0.9961, age) * sex_factor;
+        }
+
+        function lmr18_gfr_cr(scr_umol, sex, age) {
+            return r_lmr_gfr_cr(scr_umol, sex, age); // In the R code, LMR18 points to the same adult r-LMR
+        }
+        
+        function capa_gfr_cys(scys, age) {
+            if (!isValidNum(scys) || !isValidNum(age)) return null;
+            return 130 * Math.pow(scys, -1.069) * Math.pow(age, -0.117) - 7;
+        }
+
+        function mdrd_gfr(scr_umol, sex, age) {
+            if (!isValidNum(scr_umol) || !isValidNum(age)) return null;
+            const sex_factor = (sex === "Man") ? 1 : 0.742;
+            return 175 * Math.pow(scr_umol / 88.4, -1.154) * Math.pow(age, -0.203) * sex_factor;
+        }
+
+        function bis_gfr(scr_umol, sex, age) {
+            if (!isValidNum(scr_umol) || !isValidNum(age)) return null;
+            const scr_mgdl = scr_umol / 88.4;
+            const sex_factor = (sex === "Kvinna") ? 0.82 : 1;
+            return 3736 * Math.pow(scr_mgdl, -0.87) * Math.pow(age, -0.95) * sex_factor;
+        }
+
+        function schwartz_gfr(height_cm, scr_mgdl) {
+            if (!isValidNum(height_cm) || !isValidNum(scr_mgdl)) return null;
+            return 0.413 * (height_cm / scr_mgdl);
+        }
+
+        function ckid_u25_scr(sex, age, height_m, scr_mgdl) {
+            if (!isValidNum(age) || !isValidNum(height_m) || !isValidNum(scr_mgdl)) return null;
+            let k_htdscr;
+            if (sex === "Man") {
+                k_htdscr = (age < 12) ? 39.0 * Math.pow(1.008, age - 12) : (age < 18) ? 39.0 * Math.pow(1.045, age - 12) : 50.8;
+            } else {
+                k_htdscr = (age < 12) ? 36.1 * Math.pow(1.008, age - 12) : (age < 18) ? 36.1 * Math.pow(1.023, age - 12) : 41.4;
+            }
+            return k_htdscr * (height_m / scr_mgdl);
+        }
+
+        function ckid_u25_cys(sex, age, scys) {
+            if (!isValidNum(age) || !isValidNum(scys)) return null;
+            let k_cysc;
+            if (sex === "Man") {
+                k_cysc = (age < 15) ? 87.2 * Math.pow(1.011, age - 15) : (age < 18) ? 87.2 * Math.pow(0.960, age - 15) : 77.1;
+            } else {
+                k_cysc = (age < 12) ? 79.9 * Math.pow(1.004, age - 12) : (age < 18) ? 79.9 * Math.pow(0.974, age - 12) : 68.3;
+            }
+            return k_cysc * (1 / scys);
+        }
+
+        function lmr18_gfr_child_cr(scr_umol, sex, age) {
+            if (!isValidNum(scr_umol) || !isValidNum(age) || age < 2 || age >= 18) return null;
+            const log_scr = Math.log(scr_umol);
+            let log_adj_scr;
+            if (sex === "Man") {
+                log_adj_scr = log_scr + 0.259 * (18 - age) - 0.543 * Math.log(18 / age) - 0.00763 * (Math.pow(18, 2) - Math.pow(age, 2)) + 0.0000790 * (Math.pow(18, 3) - Math.pow(age, 3));
+            } else {
+                log_adj_scr = log_scr + 0.177 * (18 - age) - 0.223 * Math.log(18 / age) - 0.00596 * (Math.pow(18, 2) - Math.pow(age, 2)) + 0.0000686 * (Math.pow(18, 3) - Math.pow(age, 3));
+            }
+            return lmr18_gfr_cr(Math.exp(log_adj_scr), sex, 18);
+        }
+
+        function zappitelli_gfr_cys(scys) {
+            if (!isValidNum(scys)) return null;
+            return 75.94 / Math.pow(scys, 1.17);
+        }
+
+        function zappitelli_gfr_cys_cr(scr_umol, scys, height_cm) {
+            if (!isValidNum(scr_umol) || !isValidNum(scys) || !isValidNum(height_cm)) return null;
+            return (507.76 * Math.exp(0.003 * height_cm)) / (Math.pow(scys, 0.635) * Math.pow(scr_umol, 0.547));
+        }
+
+        function calc_cockcroft_gault(age, weight, scr_umol, sex) {
+            if (!isValidNum(age) || !isValidNum(weight) || !isValidNum(scr_umol)) return null;
+            const scr_mgdl = scr_umol / 88.4;
+            if (scr_mgdl === 0) return null; // Avoid division by zero
+            let clearance = ((140 - age) * weight) / (72 * scr_mgdl);
+            if (sex === "Kvinna") clearance *= 0.85;
+            return clearance;
+        }
+
+
+        // --- Iohexol Calculations ---
+        
+        function jacobsson_eecv(sex, weight) {
+            if (!isValidNum(weight)) return null;
+            return (sex === "Man") ? (166 * weight + 2490) : (95 * weight + 6170);
+        }
+
+        function iohexol_one_point_gfr(sex, weight, height, dose_mg, plasma_mg_L, t_min, bsa_formula) {
+            if (!isValidNum(dose_mg) || !isValidNum(plasma_mg_L) || !isValidNum(t_min) || t_min <= 0) {
+                return { gfr: null, gfr_adj: null, t_opt_hours: null, eecv_ml: null };
+            }
+
+            const bsa = bsaSelect(weight, height, sex, bsa_formula);
+            if (!isValidNum(bsa)) return { gfr: null, gfr_adj: null, t_opt_hours: null, eecv_ml: null };
+
+            const eecv_ml = jacobsson_eecv(sex, weight);
+            if (!isValidNum(eecv_ml) || eecv_ml <= 0) return { gfr: null, gfr_adj: null, t_opt_hours: null, eecv_ml: eecv_ml };
+            
+            // Handle potential division by zero or log of non-positive
+            if (plasma_mg_L <= 0 || (1000 * dose_mg) / (eecv_ml * plasma_mg_L) <= 0) {
+                 return { gfr: null, gfr_adj: null, t_opt_hours: null, eecv_ml: eecv_ml };
+            }
+            const log_arg_clv = Math.log((1000 * dose_mg) / (eecv_ml * plasma_mg_L));
+            
+            const cl_uncorrected = (1 / ((t_min / eecv_ml) + 0.0016)) * log_arg_clv;
+
+            const m = 0.991 - (0.00122 * cl_uncorrected);
+            const v_prime = eecv_ml / m;
+            
+            if (!isValidNum(v_prime) || v_prime <= 0) return { gfr: null, gfr_adj: null, t_opt_hours: null, eecv_ml: eecv_ml };
+
+             // Handle potential division by zero or log of non-positive
+            if (plasma_mg_L <= 0 || (1000 * dose_mg) / (v_prime * plasma_mg_L) <= 0) {
+                 return { gfr: null, gfr_adj: null, t_opt_hours: null, eecv_ml: eecv_ml };
+            }
+            const log_arg_gfr = Math.log((1000 * dose_mg) / (v_prime * plasma_mg_L));
+           
+            const gfr = (1 / ((t_min / v_prime) + 0.0016)) * log_arg_gfr;
+            const gfr_adj = gfr * (1.73 / bsa);
+            const t_opt_hours = (isValidNum(gfr) && gfr > 0) ? (v_prime / gfr) / 60 : null; // Check gfr before division
+
+            return { gfr, gfr_adj, t_opt_hours, eecv_ml };
+        }
+        
+        function logLinearRegression(x_values, y_values) {
+            if (x_values.length !== y_values.length || x_values.length < 2) return null;
+            
+            // Filter out non-positive y values before log
+            const validIndices = y_values.map((y, i) => y > 0 ? i : -1).filter(i => i !== -1);
+            if (validIndices.length < 2) return null; // Need at least two valid points
+
+            const filtered_x = validIndices.map(i => x_values[i]);
+            const filtered_y = validIndices.map(i => y_values[i]);
+            const log_y_values = filtered_y.map(y => Math.log(y));
+
+            const n = filtered_x.length;
+            let sum_x = 0, sum_y = 0, sum_xy = 0, sum_xx = 0;
+            
+            for (let i = 0; i < n; i++) {
+                sum_x += filtered_x[i];
+                sum_y += log_y_values[i];
+                sum_xy += filtered_x[i] * log_y_values[i];
+                sum_xx += filtered_x[i] * filtered_x[i];
+            }
+
+            const denominator = (n * sum_xx - sum_x * sum_x);
+            if (denominator === 0) return null;
+            
+            const slope = (n * sum_xy - sum_x * sum_y) / denominator;
+            const intercept = (sum_y - slope * sum_x) / n;
+
+            return { slope, intercept };
+        }
+
+        function slope_intercept_gfr(times_min, concs_num, dose_mg, bsa) {
+             if (times_min.length !== concs_num.length || times_min.length < 2) return { gfr: null, gfr_adj: null };
+            
+            const fit = logLinearRegression(times_min, concs_num);
+             // Ensure fit is valid and slope is negative
+            if (!fit || !isValidNum(fit.slope) || !isValidNum(fit.intercept) || fit.slope >= 0) {
+                return { gfr: null, gfr_adj: null };
+            }
+            
+            const { slope, intercept } = fit;
+            const k_pos = -slope;
+            const c0 = Math.exp(intercept);
+            
+             // Avoid division by zero for c0
+            if (!isValidNum(c0) || c0 <= 0) return { gfr: null, gfr_adj: null };
+            
+            const cl_uncorrected = (dose_mg / c0) * k_pos * 1000;
+            
+            // Brøchner-Mortensen correction
+            const gfr = 0.99078 * cl_uncorrected - 0.001218 * Math.pow(cl_uncorrected, 2);
+            const gfr_adj = (isValidNum(bsa)) ? gfr * (1.73 / bsa) : null;
+            
+            return { gfr, gfr_adj, fit };
+        }
+
+
+        // --- DOMContentLoaded: Main Setup ---
+        
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // --- Common Element Cache ---
+            populateBsaSelect("io_bsa_formula");
+            populateBsaSelect("opt_bsa_formula");
+            populateBsaSelect("gfr_conv_bsa_formula");
+            
+            const ioNumPoints = document.getElementById("io_num_points");
+            const ioPointGroups = [
+                null, // 1-based index
+                document.getElementById("io_point_2_group"),
+                document.getElementById("io_point_3_group"),
+                document.getElementById("io_point_4_group")
+            ];
+            
+            const gfrConvDir = document.getElementById("gfr_conv_direction");
+            const gfrAbsGroup = document.getElementById("gfr_abs_group");
+            const gfrRelGroup = document.getElementById("gfr_rel_group");
+
+
+            // --- Iohexol Tab ---
+            
+            const ioSex = document.getElementById("io_sex");
+            const ioHeight = document.getElementById("io_height");
+            const ioWeight = document.getElementById("io_weight");
+            const ioBsaFormula = document.getElementById("io_bsa_formula");
+            const ioConcInj = document.getElementById("io_conc_inj");
+            const ioVolInj = document.getElementById("io_vol_inj");
+            const ioInjTime = document.getElementById("io_inj_time");
+            const ioClearBtn = document.getElementById("io_clear_btn");
+            
+            const ioSampleTimes = [
+                null,
+                document.getElementById("io_sample_time1"),
+                document.getElementById("io_sample_time2"),
+                document.getElementById("io_sample_time3"),
+                document.getElementById("io_sample_time4")
+            ];
+            const ioSampleConcs = [
+                null,
+                document.getElementById("io_conc_p1"),
+                document.getElementById("io_conc_p2"),
+                document.getElementById("io_conc_p3"),
+                document.getElementById("io_conc_p4")
+            ];
+            
+            const ioError = document.getElementById("io_error");
+            const ioResultsCard = document.getElementById("io_results_card");
+            const ioResultGfr = document.getElementById("io_result_gfr");
+            const ioResultGfrAdj = document.getElementById("io_result_gfr_adj");
+            const ioResultOptimalTimeGroup = document.getElementById("io_result_optimal_time_group");
+            const ioResultOptimalTime = document.getElementById("io_result_optimal_time");
+            const subCalcAccordion = document.getElementById("sub_calc_accordion");
+
+
+            // --- Iohexol: Chart Setup ---
+            
+            const ctx = document.getElementById('iohexolChart').getContext('2d');
+            const iohexolChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Regressionslinje (Solid)', // Renamed for clarity
+                            data: [], // [{x: 0, y: 100}, {x: 5, y: 10}]
+                            type: 'line',
+                            borderColor: 'rgba(0, 0, 0, 0.8)',
+                            borderWidth: 2,
+                            borderDash: [], // Solid line
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0.1,
+                            // hidden: true, // Let legend filter handle this
+                        },
+                        {
+                            label: 'Provpunkter',
+                            data: [], // [{x: 2, y: 50}, {x: 4, y: 20}]
+                            backgroundColor: '#0d6efd',
+                            borderColor: '#adb5bd', // Thin gray border
+                            borderWidth: 1,         // 1px border
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: 'Optimal tid',
+                            data: [],
+                            backgroundColor: '#198754', // Green fill
+                            borderColor: '#adb5bd', // Thin gray border
+                            borderWidth: 1,         // 1px border
+                            // Style for the point on the chart
+                            pointStyle: 'rect', // Changed to square
+                            pointRadius: 7,
+                            pointHoverRadius: 9,
+                        },
+                        {
+                            label: 'C0 (beräknad)',
+                            data: [],
+                            backgroundColor: '#6c757d', // Gray fill
+                            borderColor: '#adb5bd', // Thin gray border
+                            borderWidth: 1,         // 1px border
+                            pointStyle: 'triangle',
+                            pointRadius: 7,
+                            pointHoverRadius: 9
+                        },
+                        {
+                            label: 'Regressionslinje (Dashed)', // Renamed for clarity
+                            data: [], 
+                            type: 'line',
+                            borderColor: 'rgba(0, 0, 0, 0.8)',
+                            borderWidth: 2,
+                            borderDash: [5, 5], // Dashed line
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0.1,
+                            // hidden: true, // Let legend filter handle this
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // respect wrapper height
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Tid (timmar)',
+                                font: { size: 14 }
+                            },
+                            beginAtZero: true
+                        },
+                        // Keep logarithmic y-axis but show fewer tick labels.
+                        y: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Koncentration (mg/L)',
+                                font: { size: 14 }
+                            },
+                            // We don't set beginAtZero because log scale cannot represent 0.
+                            // Use a tick callback to suppress labels so only "clean" numbers remain.
+                            ticks: {
+                                // Chart.js passes tick values in natural numbers; round them for checking.
+                                callback: function(value, index, ticks) {
+                                    // value may be numeric (like 1,2,5,10,20,...)
+                                    // Only show labels that are multiples of 10 (10, 20, 30, ...)
+                                    // Round to nearest integer for safety.
+                                    const intVal = Math.round(Number(value));
+                                    if (intVal === 0) return null; // don't show 0 on log scale
+                                    if (intVal % 10 === 0) {
+                                        return intVal;
+                                    }
+                                    // hide other tick labels
+                                    return '';
+                                },
+                                // reduce label density
+                                maxTicksLimit: 6
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true, // Use point style in legend
+                                filter: function(legendItem, chartData) {
+                                    // Don't show legend for empty datasets OR line datasets
+                                    const dataset = chartData.datasets[legendItem.datasetIndex];
+                                    if (dataset.type === 'line') return false; 
+                                    return dataset.data.length > 0;
+                                },
+                                // Force legend icons to be simple rectangles
+                                pointStyle: 'rect', 
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    // Exclude line datasets from tooltips
+                                    if (context.dataset.type === 'line') return null; 
+
+                                    if (label === 'Optimal tid') {
+                                        // Special tooltip for optimal time
+                                        const timeHours = context.parsed.x;
+                                        return `Optimal tid: ${formatHoursMinutes(timeHours)}`;
+                                    }
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += `(${context.parsed.x.toFixed(1)} h, ${context.parsed.y.toFixed(1)} mg/L)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- Iohexol: Event Listeners ---
+
+            // Toggle sample point visibility
+            ioNumPoints.addEventListener("change", () => {
+                const num = parseInt(ioNumPoints.value, 10);
+                ioPointGroups[1].style.display = (num >= 2) ? "flex" : "none";
+                ioPointGroups[2].style.display = (num === 4) ? "flex" : "none";
+                ioPointGroups[3].style.display = (num === 4) ? "flex" : "none";
+                calculateIohexol();
+            });
+
+            // Auto-calculate on any input change
+            const ioInputs = [
+                ioSex, ioHeight, ioWeight, ioBsaFormula, ioConcInj, ioVolInj, ioInjTime,
+                ...ioSampleTimes.slice(1), ...ioSampleConcs.slice(1)
+            ];
+            ioInputs.forEach(el => el.addEventListener("input", calculateIohexol));
+
+            // Reset button
+            const resetIohexolForm = () => {
+                // Patient
+                ioSex.value = "Man";
+                ioHeight.value = "";
+                ioWeight.value = "";
+                ioBsaFormula.value = "dubois";
+                // Injektion
+                ioConcInj.value = "300"; // Fix: Reset to 300
+                ioVolInj.value = "4";
+                ioInjTime.value = "";
+                // Provtagning
+                ioNumPoints.value = "1";
+                for (let i = 1; i <= 4; i++) {
+                    ioSampleTimes[i].value = "";
+                    ioSampleConcs[i].value = "";
+                }
+                // Manually trigger change event to hide fields
+                ioNumPoints.dispatchEvent(new Event('change'));
+                
+                // Clear results
+                ioError.style.display = "none";
+                ioResultsCard.style.display = "none";
+                subCalcAccordion.style.display = "none";
+                subCalcAccordion.innerHTML = "";
+                
+                // Clear chart
+                iohexolChart.data.datasets.forEach(ds => ds.data = []);
+                iohexolChart.update();
+            };
+            ioClearBtn.addEventListener("click", resetIohexolForm);
+            
+            // --- Iohexol: Main Calculation Function ---
+            
+            function calculateIohexol() {
+                // 1. Clear previous state
+                ioError.style.display = "none";
+                iohexolChart.data.datasets.forEach(ds => ds.data = []);
+                subCalcAccordion.style.display = "none";
+                subCalcAccordion.innerHTML = "";
+                
+                // 2. Get and validate patient/dose data
+                const sex = ioSex.value;
+                const height = Number(ioHeight.value);
+                const weight = Number(ioWeight.value);
+                const bsaFormula = ioBsaFormula.value;
+                const iodine_mg_ml = Number(ioConcInj.value);
+                const vol_ml = Number(ioVolInj.value);
+                const injTime = ioInjTime.value;
+                
+                if (!isValidNum(height) || !isValidNum(weight) || !isValidHHMM(injTime) || !isValidNum(vol_ml)) {
+                    ioResultsCard.style.display = "none";
+                    iohexolChart.update();
+                    return; // Not enough data to calculate
+                }
+                
+                const iohexol_mg_ml = IOHEHOL_CONC_MAP[iodine_mg_ml.toString()];
+                if (!isValidNum(iohexol_mg_ml)) {
+                    showIoError("Ogiltig iohexolkoncentration.");
+                    return;
+                }
+                const dose_mg = iohexol_mg_ml * vol_ml;
+                const bsa = bsaSelect(weight, height, sex, bsaFormula);
+                if (!isValidNum(bsa)) {
+                     showIoError("Kunde inte beräkna BSA. Kontrollera längd/vikt.");
+                     return;
+                }
+
+                // 3. Get and validate sample data
+                const numPoints = parseInt(ioNumPoints.value, 10);
+                const times_min = [];
+                const concs_num = [];
+                const times_hours = [];
+                const samplePointsData = [];
+                
+                for(let i = 1; i <= numPoints; i++) {
+                    const timeStr = ioSampleTimes[i].value;
+                    const conc = Number(ioSampleConcs[i].value);
+                    const t_diff_min = calcTimeDifferenceMin(injTime, timeStr);
+                    
+                    if (!isValidNum(t_diff_min) || !isValidNum(conc, 0.001)) {
+                         // Not enough data yet for this point
+                         ioResultsCard.style.display = "none";
+                         iohexolChart.update();
+                         return;
+                    }
+                    if (t_diff_min < 120) {
+                        showIoError("Ogiltig tidsdifferens, provtagning före 2 timmar.");
+                        return;
+                    }
+                    
+                    times_min.push(t_diff_min);
+                    concs_num.push(conc);
+                    const t_diff_hours = t_diff_min / 60;
+                    times_hours.push(t_diff_hours);
+                    samplePointsData.push({ x: t_diff_hours, y: conc });
+                }
+                
+                iohexolChart.data.datasets[1].data = samplePointsData; // Provpunkter
+
+                // 4. Perform calculations
+                if (numPoints === 1) {
+                    const res = iohexol_one_point_gfr(sex, weight, height, dose_mg, concs_num[0], times_min[0], bsaFormula);
+                    if (!res || !isValidNum(res.gfr)) {
+                        showIoError("Beräkning misslyckades. Kontrollera indata.");
+                        return;
+                    }
+                    
+                    displayIohexolResult(res.gfr, res.gfr_adj, res.t_opt_hours);
+                    
+                    // --- Plot 1-point ---
+                    if (isValidNum(res.eecv_ml) && res.eecv_ml > 0) {
+                        const c0 = (dose_mg / (res.eecv_ml / 1000));
+                        const t_diff_hours = times_min[0] / 60;
+                        const conc1 = concs_num[0];
+                        
+                        // C0 point
+                         if (isValidNum(c0)) {
+                             iohexolChart.data.datasets[3].data = [{ x: 0, y: c0 }];
+                         }
+                        
+                        // Optimal Time point
+                        if (isValidNum(res.t_opt_hours) && isValidNum(c0)) {
+                             // Calculate slope from C0 and C1
+                            const log_c0 = Math.log(c0);
+                            const log_c1 = Math.log(conc1);
+                            // Avoid division by zero if t_diff_hours is somehow zero
+                             if (t_diff_hours > 0) { 
+                                const slope = (log_c1 - log_c0) / t_diff_hours;
+                                const log_c_opt = log_c0 + slope * res.t_opt_hours;
+                                const c_opt = Math.exp(log_c_opt);
+                                
+                                if (isValidNum(c_opt)) {
+                                    iohexolChart.data.datasets[2].data = [{ x: res.t_opt_hours, y: c_opt }]; 
+                                }
+                            
+                                // Regression line
+                                const t_end = Math.max(t_diff_hours, res.t_opt_hours) * 1.1;
+                                const log_c_end = log_c0 + slope * t_end;
+                                const c_end = Math.exp(log_c_end);
+
+                                if (isValidNum(c_end)) {
+                                     // Solid line C0 to P1
+                                    iohexolChart.data.datasets[0].data = [ { x: 0, y: c0 }, { x: t_diff_hours, y: conc1 }];
+                                    // Dashed line P1 to t_end
+                                    iohexolChart.data.datasets[4].data = [ { x: t_diff_hours, y: conc1 }, { x: t_end, y: c_end }];
+                                }
+                            }
+                        }
+                    }
+                    
+                    // No expandable section for 1-point — nothing to build
+                } else {
+                    // --- 2- or 4-point calculation ---
+                    const main_res = slope_intercept_gfr(times_min, concs_num, dose_mg, bsa);
+                    if (!main_res || !isValidNum(main_res.gfr) || !main_res.fit) {
+                        showIoError("Beräkning misslyckades. Kontrollera indata.");
+                        return;
+                    }
+                    
+                    displayIohexolResult(main_res.gfr, main_res.gfr_adj, null); // No optimal time for multi-point
+                    
+                    // --- Plot multi-point ---
+                    const { slope, intercept } = main_res.fit;
+                    const c0 = Math.exp(intercept);
+                    
+                    if (isValidNum(c0)) {
+                        iohexolChart.data.datasets[3].data = [{ x: 0, y: c0 }]; // C0
+                    }
+                    
+                    const t_end = Math.max(...times_hours) * 1.1;
+                    const log_c_end = intercept + slope * (t_end * 60); // slope is in 1/min
+                    const c_end = Math.exp(log_c_end);
+                    
+                    if (isValidNum(c0) && isValidNum(c_end)) {
+                        // Solid line from C0 to t_end
+                        iohexolChart.data.datasets[0].data = [ { x: 0, y: c0 }, { x: t_end, y: c_end }];
+                    }
+                    
+                    // --- Sub-calculations ---
+                    buildSubCalcs(numPoints, sex, weight, height, dose_mg, bsa, bsaFormula, times_min, concs_num);
+                }
+
+                // 5. Update chart
+                iohexolChart.update();
+            }
+            
+            function showIoError(message) {
+                ioError.textContent = message;
+                ioError.style.display = "block";
+                ioResultsCard.style.display = "none";
+                iohexolChart.data.datasets.forEach(ds => ds.data = []);
+                iohexolChart.update();
+            }
+            
+            function displayIohexolResult(gfr, gfr_adj, t_opt_hours) {
+                ioResultsCard.style.display = "block";
+                ioResultGfr.textContent = formatResult(gfr, 1);
+                ioResultGfrAdj.textContent = formatResult(gfr_adj, 1);
+                
+                if (isValidNum(t_opt_hours)) {
+                    ioResultOptimalTime.textContent = formatHoursMinutes(t_opt_hours);
+                    ioResultOptimalTimeGroup.style.display = "block";
+                } else {
+                    ioResultOptimalTimeGroup.style.display = "none";
+                }
+            }
+            
+            /**
+             * Build sub-calculation HTML and accordion(s).
+             * - For 1-point: do not show any expandable section.
+             * - For 2-point: show one accordion item "Visa enpunktsberäkningar" containing the one-point results.
+             * - For 4-point: show two accordion items:
+             *      "Visa enpunktsberäkningar" (1-pt results)
+             *      "Visa tvåpunktsberäkningar" (all 2-pt pair results)
+             *
+             * Both displayed values are styled blue & bold. Units are shown after values.
+             */
+            function buildSubCalcs(numPoints, sex, weight, height, dose_mg, bsa, bsaFormula, times_min, concs_num) {
+                // If 1-point calculations, no expandable section is required.
+                if (numPoints === 1) {
+                    subCalcAccordion.style.display = "none";
+                    subCalcAccordion.innerHTML = "";
+                    return;
+                }
+
+                function formatSubResult(label, result) {
+                    let lines = '';
+                    if (result && isValidNum(result.gfr_adj)) {
+                        lines += `<div><strong class="text-primary fw-bold">${formatResult(result.gfr_adj,1)}</strong> <span class="text-muted" style="font-size:0.95rem;">mL/min/1.73m²</span></div>`;
+                    }
+                    if (result && isValidNum(result.gfr)) {
+                        lines += `<div class="mt-1"><strong class="text-primary fw-bold">${formatResult(result.gfr,1)}</strong> <span class="text-muted" style="font-size:0.95rem;">mL/min</span></div>`;
+                    }
+                    if (!lines) {
+                        lines = `<div class="text-muted">Ingen beräkning möjlig</div>`;
+                    }
+
+                    return `
+                        <div class="col-md-6 mb-3">
+                            <div class="p-2 border rounded" style="background-color: #f8f9fa;">
+                                <strong class="d-block mb-1">${label}</strong>
+                                ${lines}
+                            </div>
+                        </div>`;
+                }
+
+                // Build 1-point HTML
+                const results_1pt = times_min.map((t_min, i) => {
+                    return iohexol_one_point_gfr(sex, weight, height, dose_mg, concs_num[i], t_min, bsaFormula);
+                });
+
+                let onePointHtml = '<div class="row">';
+                results_1pt.forEach((res, i) => {
+                    onePointHtml += formatSubResult(`Prov ${i + 1}:`, res);
+                });
+                onePointHtml += '</div>';
+
+                // For 2-point, only show the "Visa enpunktsberäkningar" accordion with onePointHtml
+                if (numPoints === 2) {
+                    const accordionHtml = `
+                        <div class="accordion" id="sub_calc_inner_accordion">
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading_onepoint">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_onepoint" aria-expanded="false" aria-controls="collapse_onepoint">
+                                Visa enpunktsberäkningar
+                              </button>
+                            </h2>
+                            <div id="collapse_onepoint" class="accordion-collapse collapse" aria-labelledby="heading_onepoint" data-bs-parent="#sub_calc_inner_accordion">
+                              <div class="accordion-body">
+                                ${onePointHtml}
+                              </div>
+                            </div>
+                          </div>
+                        </div>`;
+                    subCalcAccordion.innerHTML = accordionHtml;
+                    subCalcAccordion.style.display = "block";
+                    return;
+                }
+
+                // For 4-point, build both sections: one-point and two-point
+                if (numPoints === 4) {
+                    // compute 2-point pairs
+                    const point_pairs = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]];
+                    const results_2pt = point_pairs.map(pair => {
+                        return slope_intercept_gfr([times_min[pair[0]], times_min[pair[1]]], [concs_num[pair[0]], concs_num[pair[1]]], dose_mg, bsa);
+                    });
+
+                    let twoPointHtml = '<div class="row">';
+                    results_2pt.forEach((res, i) => {
+                        const pair = point_pairs[i];
+                        twoPointHtml += formatSubResult(`Prov ${pair[0] + 1} & ${pair[1] + 1}:`, res);
+                    });
+                    twoPointHtml += '</div>';
+
+                    const accordionHtml = `
+                        <div class="accordion" id="sub_calc_inner_accordion">
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading_onepoint">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_onepoint" aria-expanded="false" aria-controls="collapse_onepoint">
+                                Visa enpunktsberäkningar
+                              </button>
+                            </h2>
+                            <div id="collapse_onepoint" class="accordion-collapse collapse" aria-labelledby="heading_onepoint" data-bs-parent="#sub_calc_inner_accordion">
+                              <div class="accordion-body">
+                                ${onePointHtml}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="accordion-item mt-2">
+                            <h2 class="accordion-header" id="heading_twopoint">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_twopoint" aria-expanded="false" aria-controls="collapse_twopoint">
+                                Visa tvåpunktsberäkningar
+                              </button>
+                            </h2>
+                            <div id="collapse_twopoint" class="accordion-collapse collapse" aria-labelledby="heading_twopoint" data-bs-parent="#sub_calc_inner_accordion">
+                              <div class="accordion-body">
+                                ${twoPointHtml}
+                              </div>
+                            </div>
+                          </div>
+                        </div>`;
+                    subCalcAccordion.innerHTML = accordionHtml;
+                    subCalcAccordion.style.display = "block";
+                    return;
+                }
+
+                // Fallback: if numPoints other than 1/2/4, show onePointHtml
+                subCalcAccordion.innerHTML = `<div class="accordion" id="sub_calc_inner_accordion"><div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_onepoint" aria-expanded="false">Visa enpunktsberäkningar</button></h2><div id="collapse_onepoint" class="accordion-collapse collapse"><div class="accordion-body">${onePointHtml}</div></div></div></div>`;
+                subCalcAccordion.style.display = "block";
+            }
+            
+            
+            // --- eGFR Adult Tab ---
+            
+            const adultAge = document.getElementById("adult_age");
+            const adultSex = document.getElementById("adult_sex");
+            const adultCreatinine = document.getElementById("adult_creatinine");
+            const adultCysc = document.getElementById("adult_cysc");
+            const adultFormulasContainer = document.getElementById("adult_formulas_container");
+            const adultClearBtn = document.getElementById("adult_clear_btn");
+            const adultAgeWarning = document.getElementById("adult_age_warning");
+            const adultResultsTbody = document.getElementById("adult_results_tbody");
+            const adultMeanResult = document.getElementById("adult_mean_result");
+            const adultFootnote = document.getElementById("adult_footnote");
+            
+            let selectedAdultRows = new Set();
+            
+            // Populate adult formulas
+            for (const [key, name] of Object.entries(EGFR_ADULT_FORMULAS)) {
+                adultFormulasContainer.innerHTML += `
+                    <div class="form-check">
+                        <input class="form-check-input adult-formula-check" type="checkbox" value="${key}" id="adult_check_${key}">
+                        <label class="form-check-label" for="adult_check_${key}">
+                            ${name}
+                        </label>
+                    </div>`;
+            }
+            // Set default checked
+            document.getElementById("adult_check_EKFC").checked = true;
+
+            const adultFormulaCheckboxes = adultFormulasContainer.querySelectorAll(".adult-formula-check");
+            
+            // --- eGFR Adult: Event Listeners ---
+            
+            const adultInputs = [adultAge, adultSex, adultCreatinine, adultCysc];
+            adultInputs.forEach(el => el.addEventListener("input", calculateAdultEgfr));
+            adultFormulaCheckboxes.forEach(cb => cb.addEventListener("change", calculateAdultEgfr));
+            
+            adultAge.addEventListener("input", () => {
+                const age = Number(adultAge.value);
+                const bisCheckbox = document.getElementById("adult_check_BIS");
+                const bisLabel = bisCheckbox.parentElement;
+                
+                if (isValidNum(age) && age >= 70) {
+                    bisCheckbox.disabled = false;
+                    bisLabel.classList.remove("text-muted");
+                } else {
+                    bisCheckbox.disabled = true;
+                    bisCheckbox.checked = false;
+                    bisLabel.classList.add("text-muted");
+                    // Trigger calculation update if BIS was unchecked
+                    calculateAdultEgfr();
+                }
+            });
+            
+            adultClearBtn.addEventListener("click", () => {
+                adultAge.value = "";
+                adultSex.value = "Man";
+                adultCreatinine.value = "";
+                adultCysc.value = "";
+                adultFormulaCheckboxes.forEach(cb => {
+                    cb.checked = (cb.value === "EKFC");
+                    cb.disabled = (cb.value === "BIS");
+                    if (cb.value === "BIS") {
+                        cb.parentElement.classList.add("text-muted");
+                    }
+                });
+                selectedAdultRows.clear();
+                calculateAdultEgfr();
+            });
+            
+            adultResultsTbody.addEventListener("click", (e) => {
+                const row = e.target.closest("tr");
+                if (!row) return;
+                
+                const formula = row.dataset.formula;
+                if (selectedAdultRows.has(formula)) {
+                    selectedAdultRows.delete(formula);
+                    row.classList.remove("selected");
+                } else {
+                    selectedAdultRows.add(formula);
+                    row.classList.add("selected");
+                }
+                updateAdultMean();
+            });
+            
+            // --- eGFR Adult: Main Calculation (UPDATED) ---
+            
+            function calculateAdultEgfr() {
+                // Use the raw input string to avoid Number("") -> 0 for empty input
+                const ageInput = adultAge.value;
+                // If age is empty or invalid, clear results and hide warning (prevents warning after reset)
+                if (!isValidNum(ageInput)) {
+                    adultAgeWarning.style.display = "none";
+                    adultResultsTbody.innerHTML = "";
+                    selectedAdultRows.clear();
+                    adultMeanResult.style.display = "none";
+                    adultFootnote.style.display = "none";
+                    return; // Not enough data
+                }
+
+                const age = Number(ageInput);
+                const sex = adultSex.value;
+                const scr_umol = Number(adultCreatinine.value);
+                const scys = Number(adultCysc.value);
+                const formulas = Array.from(adultFormulaCheckboxes)
+                                    .filter(cb => cb.checked)
+                                    .map(cb => cb.value);
+
+                // Reset UI pieces
+                adultResultsTbody.innerHTML = "";
+                selectedAdultRows.clear();
+                adultMeanResult.style.display = "none";
+                adultFootnote.style.display = "none";
+
+                adultAgeWarning.style.display = (age < 18) ? "block" : "none";
+                if (age < 18) return;
+
+                const scr_mgdl = isValidNum(scr_umol) ? scr_umol / 88.4 : null;
+                const results = [];
+                let showFootnote = false;
+
+                // Q-values
+                const q_sex_age_adj = calculate_q_cysc(age, sex);
+                const q_age_adj_rlmr = calculate_q_cysc(age);
+
+                if (formulas.includes("EKFC")) {
+                    if (isValidNum(scr_mgdl)) {
+                        const gfr = ekfc_gfr(scr_mgdl, (sex === "Man" ? 0.9 : 0.7), -0.322, -1.132);
+                        results.push({ name: "EKFC (kreatinin)", value: gfr });
+                    }
+                    if (isValidNum(scys)) {
+                        const gfr_cys = ekfc_gfr(scys, 0.83, -0.322, -1.132);
+                        results.push({ name: "EKFC (cystatin C)", value: gfr_cys });
+                        if (isValidNum(q_sex_age_adj)) {
+                            const gfr_cys_sexadj = ekfc_gfr(scys, q_sex_age_adj, -0.322, -1.132);
+                            results.push({ name: "EKFC (cystatin C)*", value: gfr_cys_sexadj });
+                            showFootnote = true;
+                        }
+                    }
+                    if (isValidNum(scr_mgdl) && isValidNum(scys)) {
+                        const gfr_cr = ekfc_gfr(scr_mgdl, (sex === "Man" ? 0.9 : 0.7), -0.322, -1.132);
+                        const gfr_cys = ekfc_gfr(scys, 0.83, -0.322, -1.132);
+                        results.push({ name: "EKFC (kreatinin & cystatin C)", value: (gfr_cr + gfr_cys) / 2 });
+                        if (isValidNum(q_sex_age_adj)) {
+                            const gfr_cys_sexadj = ekfc_gfr(scys, q_sex_age_adj, -0.322, -1.132);
+                            results.push({ name: "EKFC (kreatinin & cystatin C)*", value: (gfr_cr + gfr_cys_sexadj) / 2 });
+                            showFootnote = true;
+                        }
+                    }
+                }
+                if (formulas.includes("FAS")) {
+                    if (isValidNum(scr_mgdl)) results.push({ name: "FAS (kreatinin)", value: fas_gfr_cr(scr_mgdl, age) });
+                    if (isValidNum(scys)) results.push({ name: "FAS (cystatin C)", value: fas_gfr_cys(scys, age) });
+                    if (isValidNum(scr_mgdl) && isValidNum(scys)) results.push({ name: "FAS (kreatinin & cystatin C)", value: (fas_gfr_cr(scr_mgdl, age) + fas_gfr_cys(scys, age)) / 2 });
+                }
+                if (formulas.includes("r-LMR")) {
+                    if (isValidNum(scr_umol)) results.push({ name: "r-LMR (kreatinin)", value: r_lmr_gfr_cr(scr_umol, sex, age) });
+                    if (isValidNum(scys)) results.push({ name: "r-LMR (cystatin C)", value: r_lmr_gfr_cys(scys, age, q_age_adj_rlmr) });
+                    if (isValidNum(scr_umol) && isValidNum(scys)) results.push({ name: "r-LMR (kreatinin & cystatin C)", value: (r_lmr_gfr_cr(scr_umol, sex, age) + r_lmr_gfr_cys(scys, age, q_age_adj_rlmr)) / 2 });
+                }
+                if (formulas.includes("CKD-EPI (2021)")) {
+                    if (isValidNum(scr_umol)) results.push({ name: "CKD-EPI (kreatinin)", value: ckdepi2021_gfr_cr(scr_umol, sex, age) });
+                    if (isValidNum(scys)) results.push({ name: "CKD-EPI (cystatin C)", value: ckdepi2021_gfr_cys(scys, sex, age) });
+                    if (isValidNum(scr_umol) && isValidNum(scys)) results.push({ name: "CKD-EPI (kreatinin & cystatin C)", value: ckdepi2021_gfr_cr_cys(scr_umol, scys, sex, age) });
+                }
+                if (formulas.includes("LMR18")) {
+                    if (isValidNum(scr_umol)) results.push({ name: "LMR18 (kreatinin)", value: lmr18_gfr_cr(scr_umol, sex, age) });
+                }
+                if (formulas.includes("CAPA")) {
+                    if (isValidNum(scys)) results.push({ name: "CAPA (cystatin C)", value: capa_gfr_cys(scys, age) });
+                }
+                if (formulas.includes("MDRD")) {
+                    if (isValidNum(scr_umol)) results.push({ name: "MDRD (kreatinin)", value: mdrd_gfr(scr_umol, sex, age) });
+                }
+                if (formulas.includes("BIS") && age >= 70) {
+                    if (isValidNum(scr_umol)) results.push({ name: "BIS (kreatinin)", value: bis_gfr(scr_umol, sex, age) });
+                }
+                
+                // Only show rows that actually have a numeric result
+                const visibleResults = results.filter(r => isValidNum(r.value));
+                visibleResults.forEach(res => {
+                    const val = Math.round(res.value);
+                    adultResultsTbody.innerHTML += `
+                        <tr data-formula="${res.name}" data-value="${res.value}">
+                            <td>${res.name}</td>
+                            <td class="text-end fw-bold">${val}</td>
+                        </tr>`;
+                });
+                
+                adultFootnote.style.display = showFootnote ? "block" : "none";
+                updateAdultMean();
+            }
+            
+            function updateAdultMean() {
+                let sum = 0;
+                let count = 0;
+                selectedAdultRows.forEach(formula => {
+                    const row = adultResultsTbody.querySelector(`tr[data-formula="${formula}"]`);
+                    const value = Number(row.dataset.value);
+                    if (isValidNum(value)) {
+                        sum += value;
+                        count++;
+                    }
+                });
+                
+                if (count > 0) {
+                    const mean = sum / count;
+                    adultMeanResult.textContent = `Medelvärde av valda: ${mean.toFixed(0)} mL/min/1.73m²`;
+                    adultMeanResult.style.display = "block";
+                } else {
+                    adultMeanResult.style.display = "none";
+                }
+            }
+            
+            
+            // --- eGFR Child Tab ---
+            
+            const childAge = document.getElementById("child_age");
+            const childSex = document.getElementById("child_sex");
+            const childHeight = document.getElementById("child_height");
+            const childCreatinine = document.getElementById("child_creatinine");
+            const childCysc = document.getElementById("child_cysc");
+            const childFormulasContainer = document.getElementById("child_formulas_container");
+            const childClearBtn = document.getElementById("child_clear_btn");
+            const childAgeWarning = document.getElementById("child_age_warning");
+            const childResultsTbody = document.getElementById("child_results_tbody");
+            const childMeanResult = document.getElementById("child_mean_result");
+            
+            let selectedChildRows = new Set();
+            
+            // Populate child formulas
+            for (const [key, name] of Object.entries(EGFR_CHILD_FORMULAS)) {
+                childFormulasContainer.innerHTML += `
+                    <div class="form-check">
+                        <input class="form-check-input child-formula-check" type="checkbox" value="${key}" id="child_check_${key}" disabled>
+                        <label class="form-check-label text-muted" for="child_check_${key}">
+                            ${name}
+                        </label>
+                    </div>`;
+            }
+            // Set default checked (Schwartz is always enabled)
+            document.getElementById("child_check_Schwartz").disabled = false;
+            document.getElementById("child_check_Schwartz").checked = true;
+            document.querySelector('label[for="child_check_Schwartz"]').classList.remove("text-muted");
+            
+            const childFormulaCheckboxes = childFormulasContainer.querySelectorAll(".child-formula-check");
+
+            // --- eGFR Child: Event Listeners ---
+            
+            const childInputs = [childAge, childSex, childHeight, childCreatinine, childCysc];
+            childInputs.forEach(el => el.addEventListener("input", calculateChildEgfr));
+            childFormulaCheckboxes.forEach(cb => cb.addEventListener("change", calculateChildEgfr));
+            
+            childAge.addEventListener("input", () => {
+                const age = Number(childAge.value);
+                
+                // Logic to enable/disable checkboxes based on age
+                const rules = {
+                    "CKiD_U25": age >= 1,
+                    "EKFC_child": age >= 2,
+                    "LMR18_child": age >= 2 && age < 18,
+                    "CAPA_child": age >= 1,
+                    "Zappitelli": age >= 8 && age <= 17,
+                    "Schwartz": true // Always enabled
+                };
+                
+                let reCalc = false;
+                childFormulaCheckboxes.forEach(cb => {
+                    const rule = rules[cb.value];
+                    const label = cb.parentElement.querySelector("label");
+                    if (rule) {
+                        cb.disabled = false;
+                        label.classList.remove("text-muted");
+                    } else {
+                        cb.disabled = true;
+                        label.classList.add("text-muted");
+                        if (cb.checked) {
+                            cb.checked = false;
+                            reCalc = true; // Was checked, now disabled
+                        }
+                    }
+                });
+                
+                if (reCalc) calculateChildEgfr();
+            });
+            
+            childClearBtn.addEventListener("click", () => {
+                childAge.value = "";
+                childSex.value = "Man";
+                childHeight.value = "";
+                childCreatinine.value = "";
+                childCysc.value = "";
+                childFormulaCheckboxes.forEach(cb => {
+                    const isSchwartz = (cb.value === "Schwartz");
+                    cb.checked = isSchwartz;
+                    cb.disabled = !isSchwartz;
+                    if (!isSchwartz) {
+                        cb.parentElement.querySelector("label").classList.add("text-muted");
+                    }
+                });
+                selectedChildRows.clear();
+                calculateChildEgfr();
+            });
+
+            childResultsTbody.addEventListener("click", (e) => {
+                const row = e.target.closest("tr");
+                if (!row) return;
+                
+                const formula = row.dataset.formula;
+                if (selectedChildRows.has(formula)) {
+                    selectedChildRows.delete(formula);
+                    row.classList.remove("selected");
+                } else {
+                    selectedChildRows.add(formula);
+                    row.classList.add("selected");
+                }
+                updateChildMean();
+            });
+            
+            // --- eGFR Child: Main Calculation (UPDATED) ---
+            
+            function calculateChildEgfr() {
+                // Use the raw input string to avoid Number("") -> 0 for empty input
+                const ageInput = childAge.value;
+                if (!isValidNum(ageInput)) {
+                    childAgeWarning.style.display = "none";
+                    childResultsTbody.innerHTML = "";
+                    selectedChildRows.clear();
+                    childMeanResult.style.display = "none";
+                    return; // Not enough data
+                }
+
+                const age = Number(ageInput);
+                const sex = childSex.value;
+                const height_cm = Number(childHeight.value);
+                const scr_umol = Number(childCreatinine.value);
+                const scys = Number(childCysc.value);
+                const formulas = Array.from(childFormulaCheckboxes)
+                                    .filter(cb => cb.checked)
+                                    .map(cb => cb.value);
+
+                // Reset UI pieces
+                childResultsTbody.innerHTML = "";
+                selectedChildRows.clear();
+                childMeanResult.style.display = "none";
+
+                childAgeWarning.style.display = (age > 18) ? "block" : "none";
+                if (age > 18) return;
+
+                const scr_mgdl = isValidNum(scr_umol) ? scr_umol / 88.4 : null;
+                const height_m = isValidNum(height_cm) ? height_cm / 100 : null;
+                const results = [];
+
+                if (formulas.includes("Schwartz")) {
+                    if (isValidNum(height_cm) && isValidNum(scr_mgdl)) {
+                        results.push({ name: "Schwartz (0 - 18 år)", value: schwartz_gfr(height_cm, scr_mgdl) });
+                    }
+                }
+                if (formulas.includes("CKiD_U25") && age >= 1) {
+                    if (isValidNum(height_m) && isValidNum(scr_mgdl)) {
+                        results.push({ name: "CKiD U25 (kreatinin)", value: ckid_u25_scr(sex, age, height_m, scr_mgdl) });
+                    }
+                    if (isValidNum(scys)) {
+                        results.push({ name: "CKiD U25 (cystatin C)", value: ckid_u25_cys(sex, age, scys) });
+                    }
+                    if (isValidNum(height_m) && isValidNum(scr_mgdl) && isValidNum(scys)) {
+                        results.push({ name: "CKiD U25 (medel)", value: (ckid_u25_scr(sex, age, height_m, scr_mgdl) + ckid_u25_cys(sex, age, scys)) / 2 });
+                    }
+                }
+                if (formulas.includes("EKFC_child") && age >= 2) {
+                    if (isValidNum(scr_mgdl)) {
+                        const q_cr = q_cr_child(sex, age);
+                        if (isValidNum(q_cr)) {
+                            results.push({ name: "EKFC (kreatinin)", value: ekfc_gfr(scr_mgdl, q_cr / 88.4, -0.322, -1.132) });
+                        }
+                    }
+                    if (isValidNum(scys)) {
+                        results.push({ name: "EKFC (cystatin C)", value: ekfc_gfr(scys, 0.83, -0.322, -1.132) });
+                    }
+                    if (isValidNum(scr_mgdl) && isValidNum(scys)) {
+                         const q_cr = q_cr_child(sex, age);
+                         if (isValidNum(q_cr)) {
+                            const gfr_cr = ekfc_gfr(scr_mgdl, q_cr / 88.4, -0.322, -1.132);
+                            const gfr_cys = ekfc_gfr(scys, 0.83, -0.322, -1.132);
+                            results.push({ name: "EKFC (kreatinin & cystatin C)", value: (gfr_cr + gfr_cys) / 2 });
+                         }
+                    }
+                }
+                if (formulas.includes("LMR18_child") && age >= 2 && age < 18) {
+                    if (isValidNum(scr_umol)) {
+                        results.push({ name: "LMR18 (2-17 år)", value: lmr18_gfr_child_cr(scr_umol, sex, age) });
+                    }
+                }
+                if (formulas.includes("CAPA_child") && age >= 1) {
+                    if (isValidNum(scys)) {
+                        results.push({ name: "CAPA (≥1 år)", value: capa_gfr_cys(scys, age) });
+                    }
+                }
+                if (formulas.includes("Zappitelli") && age >= 8 && age <= 17) {
+                    if (isValidNum(scys)) {
+                        results.push({ name: "Zappitelli (cystatin C)", value: zappitelli_gfr_cys(scys) });
+                    }
+                    if (isValidNum(scr_umol) && isValidNum(scys) && isValidNum(height_cm)) {
+                        results.push({ name: "Zappitelli (kreatinin & cystatin C)", value: zappitelli_gfr_cys_cr(scr_umol, scys, height_cm) });
+                    }
+                }
+                
+                // Only display rows that have a numeric result
+                const visibleResults = results.filter(r => isValidNum(r.value));
+                visibleResults.forEach(res => {
+                    const val = Math.round(res.value);
+                    childResultsTbody.innerHTML += `
+                        <tr data-formula="${res.name}" data-value="${res.value}">
+                            <td>${res.name}</td>
+                            <td class="text-end fw-bold">${val}</td>
+                        </tr>`;
+                });
+                
+                updateChildMean();
+            }
+
+            function updateChildMean() {
+                let sum = 0;
+                let count = 0;
+                selectedChildRows.forEach(formula => {
+                    const row = childResultsTbody.querySelector(`tr[data-formula="${formula}"]`);
+                    const value = Number(row.dataset.value);
+                    if (isValidNum(value)) {
+                        sum += value;
+                        count++;
+                    }
+                });
+                
+                if (count > 0) {
+                    const mean = sum / count;
+                    childMeanResult.textContent = `Medelvärde av valda: ${mean.toFixed(0)} mL/min/1.73m²`;
+                    childMeanResult.style.display = "block";
+                } else {
+                    childMeanResult.style.display = "none";
+                }
+            }
+
+
+            // --- Other Tab ---
+            
+            // Cockcroft-Gault
+            const cgAge = document.getElementById("cg_age");
+            const cgSex = document.getElementById("cg_sex");
+            const cgWeight = document.getElementById("cg_weight");
+            const cgCreatinine = document.getElementById("cg_creatinine");
+            const cgResultCard = document.getElementById("cg_result_card");
+            const cgResult = document.getElementById("cg_result");
+            const cgClearBtn = document.getElementById("cg_clear_btn");
+
+            const cgInputs = [cgAge, cgSex, cgWeight, cgCreatinine];
+            cgInputs.forEach(el => el.addEventListener("input", () => {
+                const res = calc_cockcroft_gault(Number(cgAge.value), Number(cgWeight.value), Number(cgCreatinine.value), cgSex.value);
+                if (isValidNum(res)) {
+                    cgResult.textContent = formatResult(res, 1);
+                    cgResultCard.style.display = "block";
+                } else {
+                    cgResultCard.style.display = "none";
+                }
+            }));
+            cgClearBtn.addEventListener("click", () => {
+                cgInputs.forEach(el => el.value = (el.tagName === "SELECT") ? "Man" : "");
+                cgResultCard.style.display = "none";
+            });
+
+            // Optimal Sampling Time
+            const optSex = document.getElementById("opt_sex");
+            const optWeight = document.getElementById("opt_weight");
+            const optHeight = document.getElementById("opt_height");
+            const optEgfr = document.getElementById("opt_egfr");
+            const optBsaFormula = document.getElementById("opt_bsa_formula");
+            const optResultCard = document.getElementById("opt_result_card");
+            const optResult = document.getElementById("opt_result");
+            const optClearBtn = document.getElementById("opt_clear_btn");
+
+            const optInputs = [optSex, optWeight, optHeight, optEgfr, optBsaFormula];
+            optInputs.forEach(el => el.addEventListener("input", () => {
+                const sex = optSex.value;
+                const weight = Number(optWeight.value);
+                const height = Number(optHeight.value);
+                const egfr = Number(optEgfr.value);
+                const bsaFormula = optBsaFormula.value;
+                
+                const eecv = jacobsson_eecv(sex, weight);
+                const bsa = bsaSelect(weight, height, sex, bsaFormula);
+                
+                if (isValidNum(egfr) && egfr > 0 && isValidNum(eecv) && isValidNum(bsa)) {
+                    const abs_gfr = egfr * bsa / 1.73;
+                    const t_opt_min = eecv / abs_gfr;
+                    const t_opt_hours = t_opt_min / 60;
+                    optResult.textContent = formatHoursMinutes(t_opt_hours);
+                    optResultCard.style.display = "block";
+                } else {
+                    optResultCard.style.display = "none";
+                }
+            }));
+            optClearBtn.addEventListener("click", () => {
+                optSex.value = "Man";
+                optWeight.value = "";
+                optHeight.value = "";
+                optEgfr.value = "";
+                optBsaFormula.value = "dubois";
+                optResultCard.style.display = "none";
+            });
+
+            // GFR Conversion
+            const gfrAbs = document.getElementById("gfr_abs");
+            const gfrRel = document.getElementById("gfr_rel");
+            const gfrConvHeight = document.getElementById("gfr_conv_height");
+            const gfrConvWeight = document.getElementById("gfr_conv_weight");
+            const gfrConvSex = document.getElementById("gfr_conv_sex");
+            const gfrConvBsaFormula = document.getElementById("gfr_conv_bsa_formula");
+            const gfrConvResultCard = document.getElementById("gfr_conv_result_card");
+            const gfrConvResultLabel = document.getElementById("gfr_conv_result_label");
+            const gfrConvResult = document.getElementById("gfr_conv_result");
+            const gfrConvResultUnit = document.getElementById("gfr_conv_result_unit");
+            const gfrConvClearBtn = document.getElementById("gfr_conv_clear_btn");
+
+            gfrConvDir.addEventListener("change", () => {
+                if (gfrConvDir.value === "abs_to_rel") {
+                    gfrAbsGroup.style.display = "block";
+                    gfrRelGroup.style.display = "none";
+                } else {
+                    gfrAbsGroup.style.display = "none";
+                    gfrRelGroup.style.display = "block";
+                }
+                calculateGfrConversion();
+            });
+            
+            const gfrConvInputs = [gfrAbs, gfrRel, gfrConvHeight, gfrConvWeight, gfrConvSex, gfrConvBsaFormula];
+            gfrConvInputs.forEach(el => el.addEventListener("input", calculateGfrConversion));
+            
+            function calculateGfrConversion() {
+                const direction = gfrConvDir.value;
+                const height = Number(gfrConvHeight.value);
+                const weight = Number(gfrConvWeight.value);
+                const sex = gfrConvSex.value;
+                const bsaFormula = gfrConvBsaFormula.value;
+                
+                const bsa = bsaSelect(weight, height, sex, bsaFormula);
+                if (!isValidNum(bsa)) {
+                    gfrConvResultCard.style.display = "none";
+                    return;
+                }
+                
+                if (direction === "abs_to_rel") {
+                    const abs_gfr = Number(gfrAbs.value);
+                    if (!isValidNum(abs_gfr)) {
+                        gfrConvResultCard.style.display = "none";
+                        return;
+                    }
+                    const rel_gfr = abs_gfr * (1.73 / bsa);
+                    gfrConvResultLabel.textContent = "Relativ GFR";
+                    gfrConvResult.textContent = formatResult(rel_gfr, 1);
+                    gfrConvResultUnit.textContent = "mL/min/1.73m²";
+                    gfrConvResultCard.style.display = "block";
+                } else { // rel_to_abs
+                    const rel_gfr = Number(gfrRel.value);
+                     if (!isValidNum(rel_gfr)) {
+                        gfrConvResultCard.style.display = "none";
+                        return;
+                    }
+                    const abs_gfr = rel_gfr * bsa / 1.73;
+                    gfrConvResultLabel.textContent = "Absolut GFR";
+                    gfrConvResult.textContent = formatResult(abs_gfr, 1);
+                    gfrConvResultUnit.textContent = "mL/min";
+                    gfrConvResultCard.style.display = "block";
+                }
+            }
+            
+            gfrConvClearBtn.addEventListener("click", () => {
+                gfrConvDir.value = "abs_to_rel";
+                gfrAbs.value = "";
+                gfrRel.value = "";
+                gfrConvHeight.value = "";
+                gfrConvWeight.value = "";
+                gfrConvSex.value = "Man";
+                gfrConvBsaFormula.value = "dubois";
+                gfrAbsGroup.style.display = "block";
+                gfrRelGroup.style.display = "none";
+                gfrConvResultCard.style.display = "none";
+            });
+            
+            // --- Initial State Triggers ---
+            // Set initial disabled states
+            document.getElementById("adult_check_BIS").parentElement.classList.add("text-muted");
+            childFormulaCheckboxes.forEach(cb => {
+                if (cb.value !== "Schwartz") {
+                    cb.parentElement.querySelector("label").classList.add("text-muted");
+                }
+            });
+            // Run Iohexol reset to set defaults
+            resetIohexolForm();
+        });
+    </script>
+</body>
+
+</html>
